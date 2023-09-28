@@ -1,0 +1,47 @@
+#include <stdarg.h>
+#include <stdio.h>
+#include <assert.h>
+#include <onomondo/ipa/log.h>
+#include <onomondo/ipa/utils.h>
+
+uint32_t ipa_log_mask = 0xffffffff;
+
+/* TODO: how to modify log levels at runtime or from getopt */
+static uint32_t subsys_lvl[_NUM_LOG_SUBSYS] = {
+	[SMAIN] = LDEBUG,
+	[SHTTP] = LDEBUG,
+	[SSCARD] = LDEBUG,
+};
+
+static const char *subsys_str[_NUM_LOG_SUBSYS] = {
+	[SMAIN] = "MAIN",
+	[SHTTP] = "HTTP",
+	[SSCARD] = "SCARD",
+};
+
+static const char *level_str[_NUM_LOG_LEVEL] = {
+	[LERROR] = "ERROR",
+	[LINFO] = "INFO",
+	[LDEBUG] = "DEBUG",
+};
+
+void ipa_logp(uint32_t subsys, uint32_t level, const char *file, int line,
+	      const char *format, ...)
+{
+	va_list ap;
+
+	if (!(ipa_log_mask & (1 << subsys)))
+		return;
+
+	assert(subsys < IPA_ARRAY_SIZE(subsys_lvl));
+
+	if (level > subsys_lvl[subsys])
+		return;
+
+	/* TODO: print file/line */
+
+	fprintf(stderr, "%8s %8s ", subsys_str[subsys], level_str[level]);
+	va_start(ap, format);
+	vfprintf(stderr, format, ap);
+	va_end(ap);
+}
