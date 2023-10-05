@@ -69,6 +69,7 @@ extern struct asn_TYPE_descriptor_s asn_DEF_Octet2;
 extern struct asn_TYPE_descriptor_s asn_DEF_GetEuiccInfo1Request;
 extern struct asn_TYPE_descriptor_s asn_DEF_GetEuiccInfo2Request;
 extern struct asn_TYPE_descriptor_s asn_DEF_CertificateInfo;
+extern struct asn_TYPE_descriptor_s asn_DEF_ProfileInfoListResponse;
 extern struct asn_TYPE_descriptor_s asn_DEF_UpdateMetadataRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_PrepareDownloadRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_AuthenticateServerRequest;
@@ -82,6 +83,7 @@ extern struct asn_TYPE_descriptor_s asn_DEF_SetNicknameResponse;
 extern struct asn_TYPE_descriptor_s asn_DEF_ConfigureISDPRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_ReplaceSessionKeysRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_RetrieveNotificationsListRequest;
+extern struct asn_TYPE_descriptor_s asn_DEF_RetrieveNotificationsListResponse;
 extern struct asn_TYPE_descriptor_s asn_DEF_NotificationSentRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_NotificationSentResponse;
 extern struct asn_TYPE_descriptor_s asn_DEF_EnableProfileRequest;
@@ -111,12 +113,11 @@ extern struct asn_TYPE_descriptor_s asn_DEF_LpaeActivationRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_LpaeActivationResponse;
 extern struct asn_TYPE_descriptor_s asn_DEF_SetDefaultDpAddressRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_SetDefaultDpAddressResponse;
-extern struct asn_TYPE_descriptor_s asn_DEF_IoTSpecificInfo;
-extern struct asn_TYPE_descriptor_s asn_DEF_IpaMode;
 extern struct asn_TYPE_descriptor_s asn_DEF_AddInitialEimRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_AddInitialEimResponse;
 extern struct asn_TYPE_descriptor_s asn_DEF_GetCertsRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_GetCertsResponse;
+extern struct asn_TYPE_descriptor_s asn_DEF_SGP32_RetrieveNotificationsListRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_EnableUsingDDRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_EnableUsingDDResponse;
 extern struct asn_TYPE_descriptor_s asn_DEF_ProfileRollbackRequest;
@@ -125,11 +126,6 @@ extern struct asn_TYPE_descriptor_s asn_DEF_ConfigureAutoProfileEnablingRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_ConfigureAutoProfileEnablingResponse;
 extern struct asn_TYPE_descriptor_s asn_DEF_GetEimConfigurationDataRequest;
 extern struct asn_TYPE_descriptor_s asn_DEF_GetEimConfigurationDataResponse;
-extern struct asn_TYPE_descriptor_s asn_DEF_CompactPrepareDownloadResponseOk;
-extern struct asn_TYPE_descriptor_s asn_DEF_CompactAuthenticateResponseOk;
-extern struct asn_TYPE_descriptor_s asn_DEF_CompactProfileInstallationResult;
-extern struct asn_TYPE_descriptor_s asn_DEF_CompactOtherSignedNotification;
-extern struct asn_TYPE_descriptor_s asn_DEF_CompactCancelSessionResponseOk;
 extern struct asn_TYPE_descriptor_s asn_DEF_EsipaMessageFromIpaToEim;
 extern struct asn_TYPE_descriptor_s asn_DEF_EsipaMessageFromEimToIpa;
 
@@ -203,6 +199,7 @@ struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
 	&asn_DEF_GetEuiccInfo1Request,	
 	&asn_DEF_GetEuiccInfo2Request,	
 	&asn_DEF_CertificateInfo,	
+	&asn_DEF_ProfileInfoListResponse,	
 	&asn_DEF_UpdateMetadataRequest,	
 	&asn_DEF_PrepareDownloadRequest,	
 	&asn_DEF_AuthenticateServerRequest,	
@@ -216,6 +213,7 @@ struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
 	&asn_DEF_ConfigureISDPRequest,	
 	&asn_DEF_ReplaceSessionKeysRequest,	
 	&asn_DEF_RetrieveNotificationsListRequest,	
+	&asn_DEF_RetrieveNotificationsListResponse,	
 	&asn_DEF_NotificationSentRequest,	
 	&asn_DEF_NotificationSentResponse,	
 	&asn_DEF_EnableProfileRequest,	
@@ -246,12 +244,11 @@ struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
 	&asn_DEF_SetDefaultDpAddressRequest,	
 	&asn_DEF_SetDefaultDpAddressResponse,	
 	/* From module SGP32Definitions in ../asn/SGP32Definitions.asn */
-	&asn_DEF_IoTSpecificInfo,	
-	&asn_DEF_IpaMode,	
 	&asn_DEF_AddInitialEimRequest,	
 	&asn_DEF_AddInitialEimResponse,	
 	&asn_DEF_GetCertsRequest,	
 	&asn_DEF_GetCertsResponse,	
+	&asn_DEF_SGP32_RetrieveNotificationsListRequest,	
 	&asn_DEF_EnableUsingDDRequest,	
 	&asn_DEF_EnableUsingDDResponse,	
 	&asn_DEF_ProfileRollbackRequest,	
@@ -260,11 +257,6 @@ struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
 	&asn_DEF_ConfigureAutoProfileEnablingResponse,	
 	&asn_DEF_GetEimConfigurationDataRequest,	
 	&asn_DEF_GetEimConfigurationDataResponse,	
-	&asn_DEF_CompactPrepareDownloadResponseOk,	
-	&asn_DEF_CompactAuthenticateResponseOk,	
-	&asn_DEF_CompactProfileInstallationResult,	
-	&asn_DEF_CompactOtherSignedNotification,	
-	&asn_DEF_CompactCancelSessionResponseOk,	
 	&asn_DEF_EsipaMessageFromIpaToEim,	
 	&asn_DEF_EsipaMessageFromEimToIpa,	
 	0

@@ -35,6 +35,8 @@ typedef struct CompactOtherSignedNotification {
 
 /* Implementation */
 extern asn_TYPE_descriptor_t asn_DEF_CompactOtherSignedNotification;
+extern asn_SEQUENCE_specifics_t asn_SPC_CompactOtherSignedNotification_specs_1;
+extern asn_TYPE_member_t asn_MBR_CompactOtherSignedNotification_1[2];
 
 #ifdef __cplusplus
 }

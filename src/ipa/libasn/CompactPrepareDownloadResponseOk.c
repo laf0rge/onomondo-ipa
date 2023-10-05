@@ -7,7 +7,7 @@
 
 #include "CompactPrepareDownloadResponseOk.h"
 
-static asn_TYPE_member_t asn_MBR_CompactPrepareDownloadResponseOk_1[] = {
+asn_TYPE_member_t asn_MBR_CompactPrepareDownloadResponseOk_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct CompactPrepareDownloadResponseOk, compactEuiccSigned2),
 		(ASN_TAG_CLASS_UNIVERSAL | (16 << 2)),
 		0,
@@ -34,7 +34,7 @@ static const asn_TYPE_tag2member_t asn_MAP_CompactPrepareDownloadResponseOk_tag2
     { (ASN_TAG_CLASS_UNIVERSAL | (16 << 2)), 0, 0, 0 }, /* compactEuiccSigned2 */
     { (ASN_TAG_CLASS_APPLICATION | (55 << 2)), 1, 0, 0 } /* euiccSignature2 */
 };
-static asn_SEQUENCE_specifics_t asn_SPC_CompactPrepareDownloadResponseOk_specs_1 = {
+asn_SEQUENCE_specifics_t asn_SPC_CompactPrepareDownloadResponseOk_specs_1 = {
 	sizeof(struct CompactPrepareDownloadResponseOk),
 	offsetof(struct CompactPrepareDownloadResponseOk, _asn_ctx),
 	asn_MAP_CompactPrepareDownloadResponseOk_tag2el_1,

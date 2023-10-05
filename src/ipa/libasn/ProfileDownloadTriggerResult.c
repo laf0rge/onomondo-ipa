@@ -63,7 +63,7 @@ static asn_TYPE_member_t asn_MBR_profileDownloadTriggerResultData_3[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct ProfileDownloadTriggerResult__profileDownloadTriggerResultData, choice.profileInstallationResult),
 		(ASN_TAG_CLASS_CONTEXT | (55 << 2)),
 		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_ProfileInstallationResult,
+		&asn_DEF_SGP32_ProfileInstallationResult,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */

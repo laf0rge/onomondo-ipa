@@ -28,7 +28,7 @@ static asn_TYPE_member_t asn_MBR_ePRAndNotifications_3[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct TransferEimPackageResponse__ePRAndNotifications, notificationList),
 		(ASN_TAG_CLASS_CONTEXT | (43 << 2)),
 		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_RetrieveNotificationsListResponse,
+		&asn_DEF_SGP32_RetrieveNotificationsListResponse,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */

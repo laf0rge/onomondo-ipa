@@ -15,7 +15,7 @@
 #include "EnableProfileResult.h"
 #include "DisableProfileResult.h"
 #include "DeleteProfileResult.h"
-#include "ProfileInfoListResponse.h"
+#include "SGP32-ProfileInfoListResponse.h"
 #include "RulesAuthorisationTable.h"
 #include "ConfigureAutoEnableResult.h"
 #include "AddEimResult.h"
@@ -62,7 +62,7 @@ typedef struct EuiccResultData {
 		EnableProfileResult_t	 enableResult;
 		DisableProfileResult_t	 disableResult;
 		DeleteProfileResult_t	 deleteResult;
-		ProfileInfoListResponse_t	 listProfileInfoResult;
+		SGP32_ProfileInfoListResponse_t	 listProfileInfoResult;
 		RulesAuthorisationTable_t	 getRATResult;
 		ConfigureAutoEnableResult_t	 configureAutoEnableResult;
 		AddEimResult_t	 addEimResult;

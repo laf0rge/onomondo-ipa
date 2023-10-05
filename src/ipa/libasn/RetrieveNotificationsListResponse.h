@@ -59,9 +59,6 @@ typedef struct RetrieveNotificationsListResponse {
 
 /* Implementation */
 extern asn_TYPE_descriptor_t asn_DEF_RetrieveNotificationsListResponse;
-extern asn_CHOICE_specifics_t asn_SPC_RetrieveNotificationsListResponse_specs_1;
-extern asn_TYPE_member_t asn_MBR_RetrieveNotificationsListResponse_1[2];
-extern asn_per_constraints_t asn_PER_type_RetrieveNotificationsListResponse_constr_1;
 
 #ifdef __cplusplus
 }

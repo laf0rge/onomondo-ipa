@@ -29,7 +29,7 @@ asn_TYPE_member_t asn_MBR_IpaEuiccData_1[] = {
 	{ ATF_POINTER, 8, offsetof(struct IpaEuiccData, euiccInfo2),
 		(ASN_TAG_CLASS_CONTEXT | (34 << 2)),
 		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_EUICCInfo2,
+		&asn_DEF_SGP32_EUICCInfo2,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */
@@ -92,7 +92,7 @@ asn_TYPE_member_t asn_MBR_IpaEuiccData_1[] = {
 	{ ATF_POINTER, 1, offsetof(struct IpaEuiccData, notificationsList),
 		(ASN_TAG_CLASS_CONTEXT | (43 << 2)),
 		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_RetrieveNotificationsListResponse,
+		&asn_DEF_SGP32_RetrieveNotificationsListResponse,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */

@@ -16,7 +16,7 @@
 #include "IpaEuiccDataResponse.h"
 #include "ProfileDownloadTriggerResult.h"
 #include <NativeInteger.h>
-#include "RetrieveNotificationsListResponse.h"
+#include "SGP32-RetrieveNotificationsListResponse.h"
 #include <constr_SEQUENCE.h>
 #include <constr_CHOICE.h>
 
@@ -48,7 +48,7 @@ typedef struct ProvideEimPackageResult {
 		EuiccPackageResult_t	 euiccPackageResult;
 		struct ProvideEimPackageResult__ePRAndNotifications {
 			EuiccPackageResult_t	 euiccPackageResult;
-			RetrieveNotificationsListResponse_t	 notificationList;
+			SGP32_RetrieveNotificationsListResponse_t	 notificationList;
 			/*
 			 * This type is extensible,
 			 * possible extensions are below.

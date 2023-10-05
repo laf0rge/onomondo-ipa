@@ -46,7 +46,7 @@ asn_TYPE_member_t asn_MBR_EuiccResultData_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct EuiccResultData, choice.listProfileInfoResult),
 		(ASN_TAG_CLASS_CONTEXT | (45 << 2)),
 		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_ProfileInfoListResponse,
+		&asn_DEF_SGP32_ProfileInfoListResponse,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */

@@ -7,7 +7,7 @@
 
 #include "CompactOtherSignedNotification.h"
 
-static asn_TYPE_member_t asn_MBR_CompactOtherSignedNotification_1[] = {
+asn_TYPE_member_t asn_MBR_CompactOtherSignedNotification_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct CompactOtherSignedNotification, tbsOtherNotification),
 		(ASN_TAG_CLASS_CONTEXT | (47 << 2)),
 		0,
@@ -34,7 +34,7 @@ static const asn_TYPE_tag2member_t asn_MAP_CompactOtherSignedNotification_tag2el
     { (ASN_TAG_CLASS_APPLICATION | (55 << 2)), 1, 0, 0 }, /* euiccNotificationSignature */
     { (ASN_TAG_CLASS_CONTEXT | (47 << 2)), 0, 0, 0 } /* tbsOtherNotification */
 };
-static asn_SEQUENCE_specifics_t asn_SPC_CompactOtherSignedNotification_specs_1 = {
+asn_SEQUENCE_specifics_t asn_SPC_CompactOtherSignedNotification_specs_1 = {
 	sizeof(struct CompactOtherSignedNotification),
 	offsetof(struct CompactOtherSignedNotification, _asn_ctx),
 	asn_MAP_CompactOtherSignedNotification_tag2el_1,

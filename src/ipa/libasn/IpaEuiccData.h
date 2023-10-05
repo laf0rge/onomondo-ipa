@@ -22,24 +22,24 @@ extern "C" {
 
 /* Forward declarations */
 struct EUICCInfo1;
-struct EUICCInfo2;
+struct SGP32_EUICCInfo2;
 struct Certificate;
 struct IpaCapabilities;
 struct DeviceInfo;
-struct RetrieveNotificationsListResponse;
+struct SGP32_RetrieveNotificationsListResponse;
 
 /* IpaEuiccData */
 typedef struct IpaEuiccData {
 	UTF8String_t	*defaultSmdpAddress	/* OPTIONAL */;
 	struct EUICCInfo1	*euiccInfo1	/* OPTIONAL */;
-	struct EUICCInfo2	*euiccInfo2	/* OPTIONAL */;
+	struct SGP32_EUICCInfo2	*euiccInfo2	/* OPTIONAL */;
 	UTF8String_t	*rootSmdsAddress	/* OPTIONAL */;
 	long	*associationToken	/* OPTIONAL */;
 	struct Certificate	*eumCertificate	/* OPTIONAL */;
 	struct Certificate	*euiccCertificate	/* OPTIONAL */;
 	struct IpaCapabilities	*ipaCapabilities	/* OPTIONAL */;
 	struct DeviceInfo	*deviceInfo	/* OPTIONAL */;
-	struct RetrieveNotificationsListResponse	*notificationsList	/* OPTIONAL */;
+	struct SGP32_RetrieveNotificationsListResponse	*notificationsList	/* OPTIONAL */;
 	/*
 	 * This type is extensible,
 	 * possible extensions are below.
@@ -60,11 +60,11 @@ extern asn_TYPE_member_t asn_MBR_IpaEuiccData_1[10];
 
 /* Referred external types */
 #include "EUICCInfo1.h"
-#include "EUICCInfo2.h"
+#include "SGP32-EUICCInfo2.h"
 #include "Certificate.h"
 #include "IpaCapabilities.h"
 #include "DeviceInfo.h"
-#include "RetrieveNotificationsListResponse.h"
+#include "SGP32-RetrieveNotificationsListResponse.h"
 
 #endif	/* _IpaEuiccData_H_ */
 #include <asn_internal.h>

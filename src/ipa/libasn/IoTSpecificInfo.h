@@ -40,6 +40,8 @@ typedef struct IoTSpecificInfo {
 
 /* Implementation */
 extern asn_TYPE_descriptor_t asn_DEF_IoTSpecificInfo;
+extern asn_SEQUENCE_specifics_t asn_SPC_IoTSpecificInfo_specs_1;
+extern asn_TYPE_member_t asn_MBR_IoTSpecificInfo_1[1];
 
 #ifdef __cplusplus
 }

@@ -12,7 +12,7 @@
 #include <asn_application.h>
 
 /* Including external dependencies */
-#include "CancelSessionOk.h"
+#include "SGP32-CancelSessionOk.h"
 #include <NativeInteger.h>
 #include <constr_CHOICE.h>
 
@@ -38,7 +38,7 @@ typedef enum CancelSessionResponseEsipa__cancelSessionError {
 typedef struct CancelSessionResponseEsipa {
 	CancelSessionResponseEsipa_PR present;
 	union CancelSessionResponseEsipa_u {
-		CancelSessionOk_t	 cancelSessionOk;
+		SGP32_CancelSessionOk_t	 cancelSessionOk;
 		long	 cancelSessionError;
 		/*
 		 * This type is extensible,

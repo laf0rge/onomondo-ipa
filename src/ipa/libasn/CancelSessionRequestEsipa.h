@@ -13,7 +13,7 @@
 
 /* Including external dependencies */
 #include "TransactionId.h"
-#include "CancelSessionResponse.h"
+#include "SGP32-CancelSessionResponse.h"
 #include <constr_SEQUENCE.h>
 
 #ifdef __cplusplus
@@ -23,7 +23,7 @@ extern "C" {
 /* CancelSessionRequestEsipa */
 typedef struct CancelSessionRequestEsipa {
 	TransactionId_t	 transactionId;
-	CancelSessionResponse_t	 cancelSessionResponse;
+	SGP32_CancelSessionResponse_t	 cancelSessionResponse;
 	/*
 	 * This type is extensible,
 	 * possible extensions are below.

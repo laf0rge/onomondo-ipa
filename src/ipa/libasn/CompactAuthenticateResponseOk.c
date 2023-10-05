@@ -64,7 +64,7 @@ asn_TYPE_descriptor_t asn_DEF_signedData_2 = {
 	&asn_SPC_signedData_specs_2	/* Additional specs */
 };
 
-static asn_TYPE_member_t asn_MBR_CompactAuthenticateResponseOk_1[] = {
+asn_TYPE_member_t asn_MBR_CompactAuthenticateResponseOk_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct CompactAuthenticateResponseOk, signedData),
 		-1 /* Ambiguous tag (CHOICE?) */,
 		0,
@@ -113,7 +113,7 @@ static const asn_TYPE_tag2member_t asn_MAP_CompactAuthenticateResponseOk_tag2el_
     { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 2, 0, 0 }, /* euiccCertificate */
     { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 3, 0, 0 } /* eumCertificate */
 };
-static asn_SEQUENCE_specifics_t asn_SPC_CompactAuthenticateResponseOk_specs_1 = {
+asn_SEQUENCE_specifics_t asn_SPC_CompactAuthenticateResponseOk_specs_1 = {
 	sizeof(struct CompactAuthenticateResponseOk),
 	offsetof(struct CompactAuthenticateResponseOk, _asn_ctx),
 	asn_MAP_CompactAuthenticateResponseOk_tag2el_1,

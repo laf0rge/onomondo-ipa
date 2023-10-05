@@ -13,7 +13,7 @@
 
 /* Including external dependencies */
 #include "TransactionId.h"
-#include "PrepareDownloadResponse.h"
+#include "SGP32-PrepareDownloadResponse.h"
 #include <constr_SEQUENCE.h>
 
 #ifdef __cplusplus
@@ -23,7 +23,7 @@ extern "C" {
 /* GetBoundProfilePackageRequestEsipa */
 typedef struct GetBoundProfilePackageRequestEsipa {
 	TransactionId_t	 transactionId;
-	PrepareDownloadResponse_t	 prepareDownloadResponse;
+	SGP32_PrepareDownloadResponse_t	 prepareDownloadResponse;
 	/*
 	 * This type is extensible,
 	 * possible extensions are below.

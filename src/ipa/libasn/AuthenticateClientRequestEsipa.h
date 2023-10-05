@@ -13,7 +13,7 @@
 
 /* Including external dependencies */
 #include "TransactionId.h"
-#include "AuthenticateServerResponse.h"
+#include "SGP32-AuthenticateServerResponse.h"
 #include <constr_SEQUENCE.h>
 
 #ifdef __cplusplus
@@ -23,7 +23,7 @@ extern "C" {
 /* AuthenticateClientRequestEsipa */
 typedef struct AuthenticateClientRequestEsipa {
 	TransactionId_t	 transactionId;
-	AuthenticateServerResponse_t	 authenticateServerResponse;
+	SGP32_AuthenticateServerResponse_t	 authenticateServerResponse;
 	/*
 	 * This type is extensible,
 	 * possible extensions are below.

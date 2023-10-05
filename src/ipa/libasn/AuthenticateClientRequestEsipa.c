@@ -20,7 +20,7 @@ asn_TYPE_member_t asn_MBR_AuthenticateClientRequestEsipa_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct AuthenticateClientRequestEsipa, authenticateServerResponse),
 		(ASN_TAG_CLASS_CONTEXT | (56 << 2)),
 		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_AuthenticateServerResponse,
+		&asn_DEF_SGP32_AuthenticateServerResponse,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */

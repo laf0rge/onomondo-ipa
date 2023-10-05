@@ -7,7 +7,7 @@
 
 #include "CompactCancelSessionResponseOk.h"
 
-static asn_TYPE_member_t asn_MBR_CompactCancelSessionResponseOk_1[] = {
+asn_TYPE_member_t asn_MBR_CompactCancelSessionResponseOk_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct CompactCancelSessionResponseOk, compactEuiccCancelSessionSigned),
 		(ASN_TAG_CLASS_UNIVERSAL | (16 << 2)),
 		0,
@@ -34,7 +34,7 @@ static const asn_TYPE_tag2member_t asn_MAP_CompactCancelSessionResponseOk_tag2el
     { (ASN_TAG_CLASS_UNIVERSAL | (16 << 2)), 0, 0, 0 }, /* compactEuiccCancelSessionSigned */
     { (ASN_TAG_CLASS_APPLICATION | (55 << 2)), 1, 0, 0 } /* euiccCancelSessionSignature */
 };
-static asn_SEQUENCE_specifics_t asn_SPC_CompactCancelSessionResponseOk_specs_1 = {
+asn_SEQUENCE_specifics_t asn_SPC_CompactCancelSessionResponseOk_specs_1 = {
 	sizeof(struct CompactCancelSessionResponseOk),
 	offsetof(struct CompactCancelSessionResponseOk, _asn_ctx),
 	asn_MAP_CompactCancelSessionResponseOk_tag2el_1,

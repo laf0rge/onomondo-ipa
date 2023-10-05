@@ -6,7 +6,6 @@ AM_CPPFLAGS = \
 
 AM_CFLAGS = \
 	-Wall \
-	-Werror \
 	$(NULL)
 
 AM_LDFLAGS = \
@@ -295,6 +294,8 @@ ASN_MODULE_SRCS=	\
 	EnableProfileResult.c	\
 	DisableProfileResult.c	\
 	DeleteProfileResult.c	\
+	SGP32-ProfileInfoListResponse.c	\
+	SGP32-ProfileInfoListError.c	\
 	RollbackProfileResult.c	\
 	AddEimResult.c	\
 	DeleteEimResult.c	\
@@ -305,12 +306,15 @@ ASN_MODULE_SRCS=	\
 	IpaEuiccData.c	\
 	ProfileDownloadTriggerResult.c	\
 	IpaCapabilities.c	\
+	SGP32-EUICCInfo2.c	\
 	IoTSpecificInfo.c	\
 	IpaMode.c	\
 	AddInitialEimRequest.c	\
 	AddInitialEimResponse.c	\
 	GetCertsRequest.c	\
 	GetCertsResponse.c	\
+	SGP32-RetrieveNotificationsListRequest.c	\
+	SGP32-RetrieveNotificationsListResponse.c	\
 	EnableUsingDDRequest.c	\
 	EnableUsingDDResponse.c	\
 	ProfileRollbackRequest.c	\
@@ -319,14 +323,19 @@ ASN_MODULE_SRCS=	\
 	ConfigureAutoProfileEnablingResponse.c	\
 	GetEimConfigurationDataRequest.c	\
 	GetEimConfigurationDataResponse.c	\
+	SGP32-PrepareDownloadResponse.c	\
 	CompactPrepareDownloadResponseOk.c	\
 	CompactEuiccSigned2.c	\
+	SGP32-AuthenticateServerResponse.c	\
 	CompactAuthenticateResponseOk.c	\
 	CompactEuiccSigned1.c	\
+	SGP32-PendingNotification.c	\
+	SGP32-ProfileInstallationResult.c	\
 	CompactProfileInstallationResult.c	\
 	CompactProfileInstallationResultData.c	\
 	CompactSuccessResult.c	\
 	CompactOtherSignedNotification.c	\
+	SGP32-CancelSessionResponse.c	\
 	CompactCancelSessionResponseOk.c	\
 	CompactEuiccCancelSessionSigned.c	\
 	EsipaMessageFromIpaToEim.c	\
@@ -344,6 +353,7 @@ ASN_MODULE_SRCS=	\
 	HandleNotificationEsipa.c	\
 	CancelSessionRequestEsipa.c	\
 	CancelSessionResponseEsipa.c	\
+	SGP32-CancelSessionOk.c	\
 	GetEimPackageRequest.c	\
 	GetEimPackageResponse.c	\
 	ProvideEimPackageResult.c	\
@@ -631,6 +641,8 @@ ASN_MODULE_HDRS=	\
 	EnableProfileResult.h	\
 	DisableProfileResult.h	\
 	DeleteProfileResult.h	\
+	SGP32-ProfileInfoListResponse.h	\
+	SGP32-ProfileInfoListError.h	\
 	RollbackProfileResult.h	\
 	AddEimResult.h	\
 	DeleteEimResult.h	\
@@ -641,12 +653,15 @@ ASN_MODULE_HDRS=	\
 	IpaEuiccData.h	\
 	ProfileDownloadTriggerResult.h	\
 	IpaCapabilities.h	\
+	SGP32-EUICCInfo2.h	\
 	IoTSpecificInfo.h	\
 	IpaMode.h	\
 	AddInitialEimRequest.h	\
 	AddInitialEimResponse.h	\
 	GetCertsRequest.h	\
 	GetCertsResponse.h	\
+	SGP32-RetrieveNotificationsListRequest.h	\
+	SGP32-RetrieveNotificationsListResponse.h	\
 	EnableUsingDDRequest.h	\
 	EnableUsingDDResponse.h	\
 	ProfileRollbackRequest.h	\
@@ -655,14 +670,19 @@ ASN_MODULE_HDRS=	\
 	ConfigureAutoProfileEnablingResponse.h	\
 	GetEimConfigurationDataRequest.h	\
 	GetEimConfigurationDataResponse.h	\
+	SGP32-PrepareDownloadResponse.h	\
 	CompactPrepareDownloadResponseOk.h	\
 	CompactEuiccSigned2.h	\
+	SGP32-AuthenticateServerResponse.h	\
 	CompactAuthenticateResponseOk.h	\
 	CompactEuiccSigned1.h	\
+	SGP32-PendingNotification.h	\
+	SGP32-ProfileInstallationResult.h	\
 	CompactProfileInstallationResult.h	\
 	CompactProfileInstallationResultData.h	\
 	CompactSuccessResult.h	\
 	CompactOtherSignedNotification.h	\
+	SGP32-CancelSessionResponse.h	\
 	CompactCancelSessionResponseOk.h	\
 	CompactEuiccCancelSessionSigned.h	\
 	EsipaMessageFromIpaToEim.h	\
@@ -680,6 +700,7 @@ ASN_MODULE_HDRS=	\
 	HandleNotificationEsipa.h	\
 	CancelSessionRequestEsipa.h	\
 	CancelSessionResponseEsipa.h	\
+	SGP32-CancelSessionOk.h	\
 	GetEimPackageRequest.h	\
 	GetEimPackageResponse.h	\
 	ProvideEimPackageResult.h	\
@@ -795,7 +816,6 @@ ASN_MODULE_SRCS+=NativeEnumerated_oer.c
 ASN_MODULE_SRCS+=constr_CHOICE_oer.c
 ASN_MODULE_SRCS+=constr_SEQUENCE_oer.c
 ASN_MODULE_SRCS+=constr_SET_OF_oer.c
-
 
 libasn_a_SOURCES = $(ASN_MODULE_SRCS)
 

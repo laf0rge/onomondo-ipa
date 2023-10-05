@@ -13,7 +13,7 @@
 
 /* Including external dependencies */
 #include "TransactionId.h"
-#include "ProfileInstallationResult.h"
+#include "SGP32-ProfileInstallationResult.h"
 #include <OCTET_STRING.h>
 #include <constr_SEQUENCE.h>
 #include <constr_CHOICE.h>
@@ -37,7 +37,7 @@ typedef struct ProfileDownloadTriggerResult {
 	struct ProfileDownloadTriggerResult__profileDownloadTriggerResultData {
 		ProfileDownloadTriggerResult__profileDownloadTriggerResultData_PR present;
 		union ProfileDownloadTriggerResult__profileDownloadTriggerResultData_u {
-			ProfileInstallationResult_t	 profileInstallationResult;
+			SGP32_ProfileInstallationResult_t	 profileInstallationResult;
 			struct ProfileDownloadTriggerResult__profileDownloadTriggerResultData__profileDownloadError {
 				OCTET_STRING_t	*errorResponse	/* OPTIONAL */;
 				/*

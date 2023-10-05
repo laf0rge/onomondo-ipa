@@ -20,7 +20,7 @@ asn_TYPE_member_t asn_MBR_GetBoundProfilePackageRequestEsipa_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct GetBoundProfilePackageRequestEsipa, prepareDownloadResponse),
 		(ASN_TAG_CLASS_CONTEXT | (33 << 2)),
 		-1,	/* IMPLICIT tag at current level */
-		&asn_DEF_PrepareDownloadResponse,
+		&asn_DEF_SGP32_PrepareDownloadResponse,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */

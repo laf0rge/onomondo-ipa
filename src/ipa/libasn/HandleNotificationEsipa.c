@@ -19,7 +19,7 @@ asn_TYPE_member_t asn_MBR_HandleNotificationEsipa_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct HandleNotificationEsipa, choice.pendingNotification),
 		(ASN_TAG_CLASS_CONTEXT | (0 << 2)),
 		+1,	/* EXPLICIT tag at current level */
-		&asn_DEF_PendingNotification,
+		&asn_DEF_SGP32_PendingNotification,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */

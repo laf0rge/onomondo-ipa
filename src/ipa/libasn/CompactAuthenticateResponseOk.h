@@ -64,6 +64,8 @@ typedef struct CompactAuthenticateResponseOk {
 
 /* Implementation */
 extern asn_TYPE_descriptor_t asn_DEF_CompactAuthenticateResponseOk;
+extern asn_SEQUENCE_specifics_t asn_SPC_CompactAuthenticateResponseOk_specs_1;
+extern asn_TYPE_member_t asn_MBR_CompactAuthenticateResponseOk_1[4];
 
 #ifdef __cplusplus
 }

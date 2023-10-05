@@ -44,7 +44,7 @@ asn_TYPE_descriptor_t asn_DEF_iotVersion_2 = {
 	&asn_SPC_iotVersion_specs_2	/* Additional specs */
 };
 
-static asn_TYPE_member_t asn_MBR_IoTSpecificInfo_1[] = {
+asn_TYPE_member_t asn_MBR_IoTSpecificInfo_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct IoTSpecificInfo, iotVersion),
 		(ASN_TAG_CLASS_CONTEXT | (0 << 2)),
 		0,
@@ -61,7 +61,7 @@ static const ber_tlv_tag_t asn_DEF_IoTSpecificInfo_tags_1[] = {
 static const asn_TYPE_tag2member_t asn_MAP_IoTSpecificInfo_tag2el_1[] = {
     { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 } /* iotVersion */
 };
-static asn_SEQUENCE_specifics_t asn_SPC_IoTSpecificInfo_specs_1 = {
+asn_SEQUENCE_specifics_t asn_SPC_IoTSpecificInfo_specs_1 = {
 	sizeof(struct IoTSpecificInfo),
 	offsetof(struct IoTSpecificInfo, _asn_ctx),
 	asn_MAP_IoTSpecificInfo_tag2el_1,

@@ -12,7 +12,7 @@
 #include <asn_application.h>
 
 /* Including external dependencies */
-#include "PendingNotification.h"
+#include "SGP32-PendingNotification.h"
 #include "ProvideEimPackageResult.h"
 #include <constr_CHOICE.h>
 
@@ -33,7 +33,7 @@ typedef enum HandleNotificationEsipa_PR {
 typedef struct HandleNotificationEsipa {
 	HandleNotificationEsipa_PR present;
 	union HandleNotificationEsipa_u {
-		PendingNotification_t	 pendingNotification;
+		SGP32_PendingNotification_t	 pendingNotification;
 		ProvideEimPackageResult_t	 provideEimPackageResult;
 		/*
 		 * This type is extensible,
