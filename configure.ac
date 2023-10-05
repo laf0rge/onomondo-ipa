@@ -98,4 +98,5 @@ AC_OUTPUT(
     tests/Makefile
     tests/atlocal
     tests/utils/Makefile
+    tests/activation_code/Makefile
     Makefile)

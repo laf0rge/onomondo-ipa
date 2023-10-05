@@ -16,10 +16,12 @@ AM_LDFLAGS = \
 noinst_LIBRARIES = libipa.a
 
 libipa_a_SOURCES = \
+	activation_code.c \
 	utils.c \
 	log.c \
 	$(NULL)
 
 noinst_HEADERS = \
+	activation_code.h \
 	utils.h \
 	$(NULL)
