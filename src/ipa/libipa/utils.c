@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <errno.h>
 #include <onomondo/ipa/utils.h>
 
 /*! Generate a hexdump string from the input data.
@@ -43,4 +44,17 @@ char *ipa_hexdump(const uint8_t *data, size_t len)
 
 	*out_ptr = '\0';
 	return out[idx];
+}
+
+int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv)
+{
+	struct ipa_buf *buf_encoded = priv;
+
+	if (size > buf_encoded->len + size)
+		return -ENOMEM;
+
+	memcpy(buf_encoded->data + buf_encoded->len, buffer, size);
+	buf_encoded->len += size;
+
+	return 0;
 }
