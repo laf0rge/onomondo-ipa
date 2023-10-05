@@ -66,7 +66,7 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res, struct ipa_buf *req,
 		 char *url)
 {
 	struct http_ctx *ctx = http_ctx;
-	CURL *curl;
+	CURL *curl = NULL;
 	CURLcode rc;
 	struct curl_slist *list = NULL;
 
@@ -75,7 +75,7 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res, struct ipa_buf *req,
 	curl = curl_easy_init();
 	if (!curl) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure!\n");
-		return -EIO;
+		goto error;
 	}
 #ifdef SKIP_VERIFICATION
 	/* Bypass SSL certificate verification (only for debug, disable in productive use!) */
@@ -83,7 +83,7 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res, struct ipa_buf *req,
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
 			 curl_easy_strerror(rc));
-		return -EIO;
+		goto error;
 	}
 
 	/* Bypass SSL hostname verification (only for debug, disable in productive use!) */
@@ -91,7 +91,7 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res, struct ipa_buf *req,
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
 			 curl_easy_strerror(rc));
-		return -EIO;
+		goto error;
 	}
 	IPA_LOGP(SHTTP, LINFO,
 		 "security disabled: will not verify server certificate and hostname\n");
@@ -108,7 +108,7 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res, struct ipa_buf *req,
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
 			 curl_easy_strerror(rc));
-		return -EIO;
+		goto error;
 	}
 
 	/* Perform HTTP Request */
@@ -116,39 +116,48 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res, struct ipa_buf *req,
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
 			 curl_easy_strerror(rc));
-		return -EIO;
+		goto error;
 	}
 	rc = curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req->data);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
 			 curl_easy_strerror(rc));
-		return -EIO;
+		goto error;
+	}
+	rc = curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, req->len);
+	if (rc != CURLE_OK) {
+		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
+			 curl_easy_strerror(rc));
+		goto error;
 	}
 	rc = curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, store_response_cb);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
 			 curl_easy_strerror(rc));
-		return -EIO;
+		goto error;
 	}
 	rc = curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)res);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
 			 curl_easy_strerror(rc));
-		return -EIO;
+		goto error;
 	}
 	rc = curl_easy_perform(curl);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "HTTP request to %s failed: %s\n", url,
 			 curl_easy_strerror(rc));
-		return -EIO;
+		goto error;
 	}
 	IPA_LOGP(SHTTP, LINFO, "HTTP request to %s successful: %s\n", url,
 		 curl_easy_strerror(rc));
 
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(list);
-
 	return 0;
+error:
+	curl_easy_cleanup(curl);
+	curl_slist_free_all(list);
+	return -EIO;
 }
 
 /*! Free HTTP client.
