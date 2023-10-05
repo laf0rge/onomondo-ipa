@@ -22,6 +22,14 @@ struct ipa_buf {
 	size_t len;
 };
 
+/*! Generate a hexdump string from an ipa_buf object.
+ *  \param[in] buf pointer to ss_buf object.
+ *  \returns pointer to generated human readable string. */
+static inline char *ipa_buf_hexdump(const struct ipa_buf *buf)
+{
+	return ipa_hexdump(buf->data, buf->len);
+}
+
 /*! Allocate a new ipa_buf object.
  *  \param[in] len number of bytes to allocate inside ipa_buf.
  *  \returns pointer to newly allocated ipa_buf object. */
