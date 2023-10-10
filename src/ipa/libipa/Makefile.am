@@ -3,6 +3,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_builddir) \
 	-I$(top_srcdir)/src/ipa \
+	-I$(top_srcdir)/src/ipa/libasn \
 	$(NULL)
 
 AM_CFLAGS = \
