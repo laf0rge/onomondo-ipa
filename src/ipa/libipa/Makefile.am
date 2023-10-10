@@ -7,7 +7,6 @@ AM_CPPFLAGS = \
 
 AM_CFLAGS = \
 	-Wall \
-	-Werror \
 	$(NULL)
 
 AM_LDFLAGS = \
