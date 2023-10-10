@@ -3,6 +3,7 @@
 #include <onomondo/ipa/mem.h>
 #include <onomondo/ipa/http.h>
 #include <onomondo/ipa/log.h>
+#include "eim_package.h"
 #include "context.h"
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
@@ -20,7 +21,10 @@ struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 
 void ipa_poll(struct ipa_context *ctx)
 {
-	return;
+	struct ipa_eim_package *eim_package;
+	eim_package = ipa_eim_package_fetch(ctx, (uint8_t*)"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F");
+	ipa_eim_package_dump(eim_package, 0, SIPA, LINFO);
+	ipa_eim_package_free(eim_package);
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)

@@ -1,0 +1,207 @@
+#include <stdint.h>
+#include <onomondo/ipa/http.h>
+#include <onomondo/ipa/log.h>
+#include "utils.h"
+#include "length.h"
+#include "context.h"
+#include "eim_package.h"
+
+#include <EsipaMessageFromIpaToEim.h>
+#include <EsipaMessageFromEimToIpa.h>
+#include <GetEimPackageRequest.h>
+#include <ProfileDownloadTriggerRequest.h>
+
+static struct ipa_buf *enc_gepr(uint8_t *eid_value)
+{
+	struct EsipaMessageFromIpaToEim msg_to_eim;
+	asn_enc_rval_t rc;
+	struct ipa_buf *buf_encoded = ipa_buf_alloc(1024);
+
+	memset(&msg_to_eim, 0, sizeof(msg_to_eim));
+	msg_to_eim.present = EsipaMessageFromIpaToEim_PR_getEimPackageRequest;
+	msg_to_eim.choice.getEimPackageRequest.eidValue.buf = eid_value;
+	msg_to_eim.choice.getEimPackageRequest.eidValue.size = IPA_LEN_EID;
+
+	rc = der_encode(&asn_DEF_EsipaMessageFromIpaToEim, &msg_to_eim,
+			ipa_asn1c_consume_bytes_cb, buf_encoded);
+
+	if (rc.encoded <= 0) {
+		IPA_FREE(buf_encoded);
+		return NULL;
+	}
+
+	return buf_encoded;
+}
+
+static struct ipa_eim_package *dec_pdtr(ProfileDownloadTriggerRequest_t * pdtr)
+{
+	struct ipa_eim_package *eim_package = NULL;
+	struct ProfileDownloadData *pdd;
+
+	if (!pdtr->profileDownloadData) {
+		IPA_LOGP(SIPA, LERROR,
+			 "profile download trigger request did not contain any profile download data.\n");
+		return NULL;
+	}
+	pdd = pdtr->profileDownloadData;
+
+	switch (pdd->present) {
+	case ProfileDownloadData_PR_activationCode:
+		if (pdd->choice.activationCode.size >
+		    sizeof(eim_package->u.ac.code)) {
+			IPA_LOGP(SIPA, LERROR,
+				 "no space for over-long activation code!\n");
+			goto error;
+		}
+		eim_package = IPA_ALLOC(struct EsipaMessageFromEimToIpa);
+		assert(eim_package);
+		memcpy(eim_package->u.ac.code, pdd->choice.activationCode.buf,
+		       pdd->choice.activationCode.size);
+		eim_package->u.ac.code[pdd->choice.activationCode.size] = '\0';
+		eim_package->type = IPA_EIM_PACKAE_AC;
+		break;
+	case ProfileDownloadData_PR_contactDefaultSmdp:
+		/* TODO (open question: is this an optional feature and do we have to support it?) */
+		assert(NULL);
+		break;
+	case ProfileDownloadData_PR_contactSmds:
+		/* TODO (open question: is this an optional feature and do we have to support it?) */
+		assert(NULL);
+		break;
+	default:
+		IPA_LOGP(SIPA, LERROR, "Profile download data is empty!\n");
+		break;
+	}
+
+error:
+	return eim_package;
+}
+
+static struct ipa_eim_package *dec_gepr(struct ipa_buf *msg_to_ipa_encoded)
+{
+	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
+	asn_dec_rval_t rc;
+	struct ipa_eim_package *eim_package = NULL;
+
+	if (msg_to_ipa_encoded->len == 0) {
+		IPA_LOGP(SIPA, LERROR, "eIM response contained no data!\n");
+		return NULL;
+	}
+
+	rc = ber_decode(0, &asn_DEF_EsipaMessageFromEimToIpa,
+			(void **)&msg_to_ipa, msg_to_ipa_encoded->data,
+			msg_to_ipa_encoded->len);
+
+	if (rc.code != RC_OK) {
+		IPA_LOGP(SIPA, LERROR,
+			 "cannot decode eIM response! (invalid asn1c)\n");
+		return NULL;
+	}
+
+	if (msg_to_ipa->present !=
+	    EsipaMessageFromEimToIpa_PR_getEimPackageResponse) {
+		IPA_LOGP(SIPA, LERROR, "eIM response is not an eIM package\n");
+		goto error;
+	}
+
+	switch (msg_to_ipa->choice.getEimPackageResponse.present) {
+	case GetEimPackageResponse_PR_euiccPackageRequest:
+		break;
+	case GetEimPackageResponse_PR_ipaEuiccDataRequest:
+		/* TODO */
+		assert(NULL);
+		break;
+	case GetEimPackageResponse_PR_profileDownloadTriggerRequest:
+		eim_package =
+		    dec_pdtr(&msg_to_ipa->choice.getEimPackageResponse.
+			     choice.profileDownloadTriggerRequest);
+		break;
+	case GetEimPackageResponse_PR_eimPackageError:
+		/* TODO */
+		assert(NULL);
+		break;
+	default:
+		IPA_LOGP(SIPA, LERROR, "eIM package is empty!\n");
+		break;
+	}
+
+#if 0
+	asn_fprint(stdout, &asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
+#endif
+
+error:
+	ASN_STRUCT_FREE(asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
+	return eim_package;
+}
+
+struct ipa_eim_package *ipa_eim_package_fetch(struct ipa_context *ctx,
+					      uint8_t *eid)
+{
+
+	struct ipa_buf *esipa_req;
+	struct ipa_buf *esipa_res;
+	struct ipa_eim_package *eim_package = NULL;
+	int rc;
+
+	IPA_LOGP(SIPA, LINFO, "Requesting eIM package for eID:%s...\n",
+		 ipa_hexdump(eid, IPA_LEN_EID));
+
+	esipa_req = enc_gepr(eid);
+	esipa_res = ipa_buf_alloc(IPA_LIMIT_HTTP_REQ);
+	rc = ipa_http_req(ctx->http_ctx, esipa_res, esipa_req,
+			  "http://127.0.0.1:4430/gsma/rsp2/asn1");
+	if (rc < 0) {
+		IPA_LOGP(SIPA, LERROR, "eIM package request failed!\n");
+		goto error;
+	}
+
+	eim_package = dec_gepr(esipa_res);
+
+error:
+	IPA_FREE(esipa_req);
+	IPA_FREE(esipa_res);
+	return eim_package;
+}
+
+void ipa_eim_package_dump(struct ipa_eim_package *eim_package, uint8_t indent,
+			  enum log_subsys log_subsys, enum log_level log_level)
+{
+	char indent_str[256];
+
+	memset(indent_str, ' ', indent);
+	indent_str[indent] = '\0';
+
+	IPA_LOGP(log_subsys, log_level, "%seIM package: \n", indent_str);
+
+	if (!eim_package) {
+		IPA_LOGP(log_subsys, log_level, "%s (none)\n", indent_str);
+		return;
+	}
+
+	switch (eim_package->type) {
+	case IPA_EIM_PACKAE_AC:
+		IPA_LOGP(log_subsys, log_level, "%s activation-code: \"%s\"\n",
+			 indent_str, eim_package->u.ac.code);
+		break;
+	default:
+		IPA_LOGP(log_subsys, log_level,
+			 "%s (unknown eIM package type)\n", indent_str);
+		break;
+	}
+
+}
+
+void ipa_eim_package_free(struct ipa_eim_package *eim_package)
+{
+	if (!eim_package)
+		return;
+
+	/* we do not have any dynamically allocated members yet */
+	switch (eim_package->type) {
+	case IPA_EIM_PACKAE_AC:
+	default:
+		break;
+	}
+
+	IPA_FREE(eim_package);
+}

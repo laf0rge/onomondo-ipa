@@ -17,6 +17,7 @@ noinst_LIBRARIES = libipa.a
 
 libipa_a_SOURCES = \
 	activation_code.c \
+	eim_package.c \
 	ipad.c \
 	utils.c \
 	log.c \
@@ -25,5 +26,7 @@ libipa_a_SOURCES = \
 noinst_HEADERS = \
 	activation_code.h \
 	context.h \
+	eim_package.h \
+	length.h \
 	utils.h \
 	$(NULL)
