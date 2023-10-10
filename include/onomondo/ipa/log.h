@@ -14,6 +14,7 @@ enum log_subsys {
 	SMAIN,
 	SHTTP,
 	SSCARD,
+	SIPA,
 	_NUM_LOG_SUBSYS
 };
 

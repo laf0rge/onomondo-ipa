@@ -21,6 +21,7 @@
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/http.h>
 #include <onomondo/ipa/scard.h>
+#include <onomondo/ipa/ipad.h>
 
 #include <EsipaMessageFromIpaToEim.h>
 #include <GetEuiccDataRequest.h>
@@ -155,7 +156,16 @@ int main(void)
 //      testme_es10_encode();
 //      testme_es10_decode();
 //      testme_http();
-	testme_scard();
+//	testme_scard();
 
+#if 1
+	struct ipa_config cfg;
+	struct ipa_context *ctx;
+
+	strcpy(cfg.default_smdp_addr, "www.example.net");
+	ctx = ipa_new_ctx(&cfg);
+	ipa_poll(ctx);
+	ipa_free_ctx(ctx);
+#endif
 	return 0;
 }

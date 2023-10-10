@@ -11,12 +11,14 @@ static uint32_t subsys_lvl[_NUM_LOG_SUBSYS] = {
 	[SMAIN] = LDEBUG,
 	[SHTTP] = LDEBUG,
 	[SSCARD] = LDEBUG,
+	[SIPA] = LDEBUG,
 };
 
 static const char *subsys_str[_NUM_LOG_SUBSYS] = {
 	[SMAIN] = "MAIN",
 	[SHTTP] = "HTTP",
 	[SSCARD] = "SCARD",
+	[SIPA] = "IPA",
 };
 
 static const char *level_str[_NUM_LOG_LEVEL] = {

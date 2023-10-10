@@ -17,11 +17,13 @@ noinst_LIBRARIES = libipa.a
 
 libipa_a_SOURCES = \
 	activation_code.c \
+	ipad.c \
 	utils.c \
 	log.c \
 	$(NULL)
 
 noinst_HEADERS = \
 	activation_code.h \
+	context.h \
 	utils.h \
 	$(NULL)
