@@ -164,7 +164,7 @@ EuiccResultData ::= CHOICE {
   enableResult [3] EnableProfileResult,
   disableResult [4] DisableProfileResult,
   deleteResult [5] DeleteProfileResult,
-  listProfileInfoResult [45] ProfileInfoListResponse,
+  listProfileInfoResult [45] SGP32-ProfileInfoListResponse,
   getRATResult [6] RulesAuthorisationTable, -- see SGP.22
   configureAutoEnableResult [7] ConfigureAutoEnableResult,
   addEimResult [8] AddEimResult,
@@ -218,11 +218,11 @@ DeleteProfileResult ::= INTEGER {
   profileNotInDisabledState(2),
   undefinedError(127)
 }
-ProfileInfoListResponse ::= [45] CHOICE {
+SGP32-ProfileInfoListResponse ::= [45] CHOICE {
   profileInfoListOk SEQUENCE OF ProfileInfo, -- see SGP.22
-  profileInfoListError ProfileInfoListError
+  profileInfoListError SGP32-ProfileInfoListError
 }
-ProfileInfoListError ::= INTEGER {
+SGP32-ProfileInfoListError ::= INTEGER {
   incorrectInputValues(1),
   profileChangeOngoing (11),
   undefinedError(127)
@@ -284,14 +284,14 @@ IpaEuiccDataResponse ::= [82] CHOICE { -- Tag 'BF52'
 IpaEuiccData ::= SEQUENCE {
   defaultSmdpAddress [0] UTF8String OPTIONAL, -- Tag '80'
   euiccInfo1 [32] EUICCInfo1 OPTIONAL, -- Tag 'BF20'
-  euiccInfo2 [34] EUICCInfo2 OPTIONAL, -- Tag 'BF22'
+  euiccInfo2 [34] SGP32-EUICCInfo2 OPTIONAL, -- Tag 'BF22'
   rootSmdsAddress [3] UTF8String OPTIONAL, -- Tag '83'
   associationToken [4] INTEGER OPTIONAL, -- Tag '84'
   eumCertificate [5] Certificate OPTIONAL, -- Tag 'A5'
   euiccCertificate [6] Certificate OPTIONAL, -- Tag 'A6'
   ipaCapabilities [8] IpaCapabilities OPTIONAL, -- Tag '88'
   deviceInfo [9] DeviceInfo OPTIONAL, -- Tag 'A9'
-  notificationsList [43] RetrieveNotificationsListResponse OPTIONAL -- Tag 'BF2B'.
+  notificationsList [43] SGP32-RetrieveNotificationsListResponse OPTIONAL -- Tag 'BF2B'.
 }
 -- ASN1STOP
 
@@ -300,7 +300,7 @@ IpaEuiccData ::= SEQUENCE {
 ProfileDownloadTriggerResult ::= [84] SEQUENCE { -- tag 'BF54'
   eimTransactionId [2] TransactionId OPTIONAL,
   profileDownloadTriggerResultData CHOICE {
-    profileInstallationResult [55] ProfileInstallationResult, -- see SGP.22 [4]
+    profileInstallationResult [55] SGP32-ProfileInstallationResult, -- see SGP.22 [4]
     profileDownloadError SEQUENCE {
       errorResponse OCTET STRING OPTIONAL
     }
@@ -331,7 +331,7 @@ IpaCapabilities ::= SEQUENCE {
 
 -- Section 5.9.2
 -- ASN1START
-EUICCInfo2 ::= [34] SEQUENCE { -- Tag 'BF22'
+SGP32-EUICCInfo2 ::= [34] SEQUENCE { -- Tag 'BF22'
   profileVersion [1] VersionType, -- Base eUICC Profile package version supported
   svn [2] VersionType, -- GSMA SGP.22 version supported (SVN)referenced by SGP.32
   euiccFirmwareVer [3] VersionType, -- eUICC Firmware version
@@ -420,7 +420,7 @@ GetCertsResponse ::= [86] CHOICE { -- Tag 'BF56'
 -- ASN1STOP
 
 -- Section 5.9.11 (no ASN1START/STOP)!
-RetrieveNotificationsListRequest ::= [43] SEQUENCE { -- Tag 'BF2B'
+SGP32-RetrieveNotificationsListRequest ::= [43] SEQUENCE { -- Tag 'BF2B'
   searchCriteria CHOICE {
     seqNumber [0] INTEGER,
     profileManagementOperation [1] NotificationEvent,
@@ -429,12 +429,12 @@ RetrieveNotificationsListRequest ::= [43] SEQUENCE { -- Tag 'BF2B'
 }
 
 -- ASN1START
-RetrieveNotificationsListResponse ::= [43] CHOICE { -- Tag 'BF2B'
-  notificationList SEQUENCE OF PendingNotification,
+SGP32-RetrieveNotificationsListResponse ::= [43] CHOICE { -- Tag 'BF2B'
+  notificationList SEQUENCE OF SGP32-PendingNotification,
   notificationsListResultError INTEGER { undefinedError(127)},
   euiccPackageResultList SEQUENCE OF EuiccPackageResult,
   notificationAndEprList SEQUENCE {
-    notificationList SEQUENCE OF PendingNotification,
+    notificationList SEQUENCE OF SGP32-PendingNotification,
     euiccPackageResultList SEQUENCE OF EuiccPackageResult
   }
 }
@@ -507,7 +507,7 @@ GetEimConfigurationDataResponse ::= [85] SEQUENCE { -- Tag 'BF55'
 
 -- Section 5.14.2
 -- ASN1START
-PrepareDownloadResponse ::= [33] CHOICE { -- Tag 'BF21'
+SGP32-PrepareDownloadResponse ::= [33] CHOICE { -- Tag 'BF21'
   downloadResponseOk PrepareDownloadResponseOk,
   downloadResponseError PrepareDownloadResponseError,
   compactDownloadResponseOk CompactPrepareDownloadResponseOk
@@ -524,7 +524,7 @@ CompactEuiccSigned2 ::= SEQUENCE {
 
 -- Section 5.14.3
 -- ASN1START
-AuthenticateServerResponse ::= [56] CHOICE { -- Tag 'BF38'
+SGP32-AuthenticateServerResponse ::= [56] CHOICE { -- Tag 'BF38'
   authenticateResponseOk AuthenticateResponseOk,
   authenticateResponseError AuthenticateResponseError,
   compactAuthenticateResponseOk CompactAuthenticateResponseOk
@@ -546,13 +546,13 @@ CompactEuiccSigned1 ::= SEQUENCE {
 
 -- Section 5.14.7
 -- ASN1START
-PendingNotification ::= CHOICE {
-  profileInstallationResult [55] ProfileInstallationResult, -- tag 'BF37'
+SGP32-PendingNotification ::= CHOICE {
+  profileInstallationResult [55] SGP32-ProfileInstallationResult, -- tag 'BF37'
   otherSignedNotification OtherSignedNotification,
   compactProfileInstallationResult [0] CompactProfileInstallationResult,
   compactOtherSignedNotification [1] CompactOtherSignedNotification
 }
-ProfileInstallationResult ::= [55] SEQUENCE { -- Tag 'BF37'
+SGP32-ProfileInstallationResult ::= [55] SEQUENCE { -- Tag 'BF37'
   profileInstallationResultData [39] ProfileInstallationResultData,
   euiccSignPIR EuiccSignPIR
 }
@@ -581,7 +581,7 @@ CompactOtherSignedNotification ::= SEQUENCE {
 
 -- Section 5.14.8
 -- ASN1START
-CancelSessionResponse ::= [65] CHOICE { -- Tag 'BF41'
+SGP32-CancelSessionResponse ::= [65] CHOICE { -- Tag 'BF41'
   cancelSessionResponseOk CancelSessionResponseOk,
   cancelSessionResponseError INTEGER {invalidTransactionId(5), undefinedError(127)},
   compactCancelSessionResponseOk CompactCancelSessionResponseOk
@@ -650,7 +650,7 @@ InitiateAuthenticationOkEsipa ::= SEQUENCE {
 -- ASN1START
 AuthenticateClientRequestEsipa ::= [59] SEQUENCE { -- Tag 'BF3B'
   transactionId [0] TransactionId,
-  authenticateServerResponse [56] AuthenticateServerResponse -- This is the response from ES10b.AuthenticateServer, possibly in compact format
+  authenticateServerResponse [56] SGP32-AuthenticateServerResponse -- This is the response from ES10b.AuthenticateServer, possibly in compact format
 }
 AuthenticateClientResponseEsipa ::= [59] CHOICE { -- Tag 'BF3B'
   authenticateClientOkDPEsipa AuthenticateClientOkDPEsipa,
@@ -690,7 +690,7 @@ AuthenticateClientOkDSEsipa ::= SEQUENCE {
 -- ASN1START
 GetBoundProfilePackageRequestEsipa ::= [58] SEQUENCE { -- Tag 'BF3A'
   transactionId [0] TransactionId,
-  prepareDownloadResponse [33] PrepareDownloadResponse -- This is the response from ES10b.PrepareDownload, possibly in compact format
+  prepareDownloadResponse [33] SGP32-PrepareDownloadResponse -- This is the response from ES10b.PrepareDownload, possibly in compact format
 }
 GetBoundProfilePackageResponseEsipa ::= [58] CHOICE { -- Tag 'BF3A'
   getBoundProfilePackageOkEsipa GetBoundProfilePackageOkEsipa,
@@ -715,7 +715,7 @@ GetBoundProfilePackageOkEsipa ::= SEQUENCE {
 -- Section 6.3.2.4
 -- ASN1START
 HandleNotificationEsipa ::= [61] CHOICE { -- Tag 'BF3D'
-  pendingNotification PendingNotification, -- A Notification to be delivered to a Notification Receiver, possibly in compact format
+  pendingNotification SGP32-PendingNotification, -- A Notification to be delivered to a Notification Receiver, possibly in compact format
   provideEimPackageResult ProvideEimPackageResult
 }
 -- ASN1STOP
@@ -724,17 +724,17 @@ HandleNotificationEsipa ::= [61] CHOICE { -- Tag 'BF3D'
 -- ASN1START
 CancelSessionRequestEsipa ::= [65] SEQUENCE { -- Tag 'BF41'
   transactionId TransactionId,
-  cancelSessionResponse CancelSessionResponse -- This is the response from ES10b.  CancelSession function, possibly in compact format
+  cancelSessionResponse SGP32-CancelSessionResponse -- This is the response from ES10b.  CancelSession function, possibly in compact format
 }
 CancelSessionResponseEsipa ::= [65] CHOICE { -- Tag 'BF41'
-  cancelSessionOk CancelSessionOk,
+  cancelSessionOk SGP32-CancelSessionOk,
   cancelSessionError INTEGER {
     invalidTransactionId(1),
     euiccSignatureInvalid(2),
     undefinedError(127)
   }
 }
-CancelSessionOk ::= SEQUENCE { -- This function has no output data
+SGP32-CancelSessionOk ::= SEQUENCE { -- This function has no output data
 }
 -- ASN1STOP
 
@@ -763,7 +763,7 @@ ProvideEimPackageResult ::= [80] CHOICE { -- Tag 'BF50'
   euiccPackageResult [81] EuiccPackageResult, -- Tag 'BF51'
   ePRAndNotifications SEQUENCE {
     euiccPackageResult [81] EuiccPackageResult, -- Tag 'BF51'
-    notificationList [43] RetrieveNotificationsListResponse -- Tag 'BF2B'
+    notificationList [43] SGP32-RetrieveNotificationsListResponse -- Tag 'BF2B'
   },
   ipaEuiccDataResponse [82] IpaEuiccDataResponse, -- Tag 'BF52'
   profileDownloadTriggerResult [84] ProfileDownloadTriggerResult, -- Tag 'BF54'
@@ -790,7 +790,7 @@ TransferEimPackageResponse ::= [78] CHOICE { -- Tag 'BF4E'
   euiccPackageResult [81] EuiccPackageResult, -- Tag 'BF51'
   ePRAndNotifications SEQUENCE {
     euiccPackageResult [81] EuiccPackageResult, -- Tag 'BF51'
-    notificationList [43] RetrieveNotificationsListResponse -- Tag 'BF2B'
+    notificationList [43] SGP32-RetrieveNotificationsListResponse -- Tag 'BF2B'
   },
   ipaEuiccDataResponse [82] IpaEuiccDataResponse, -- Tag 'BF52'
   eimPackageReceived NULL,
