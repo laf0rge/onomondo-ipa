@@ -131,7 +131,7 @@ extern struct asn_TYPE_descriptor_s asn_DEF_EsipaMessageFromEimToIpa;
 
 
 struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
-	/* From module PKIX1Explicit88 in ../asn/PKIX1Explicit88.asn */
+	/* From module PKIX1Explicit88 in ../../../asn1/PKIX1Explicit88.asn */
 	&asn_DEF_X520name,	
 	&asn_DEF_X520CommonName,	
 	&asn_DEF_X520LocalityName,	
@@ -169,7 +169,7 @@ struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
 	&asn_DEF_ExtendedNetworkAddress,	
 	&asn_DEF_TerminalType,	
 	&asn_DEF_TeletexDomainDefinedAttributes,	
-	/* From module PKIX1Implicit88 in ../asn/PKIX1Implicit88.asn */
+	/* From module PKIX1Implicit88 in ../../../asn1/PKIX1Implicit88.asn */
 	&asn_DEF_AuthorityKeyIdentifier,	
 	&asn_DEF_KeyUsage,	
 	&asn_DEF_PrivateKeyUsagePeriod,	
@@ -194,7 +194,7 @@ struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
 	&asn_DEF_CertificateIssuer,	
 	&asn_DEF_HoldInstructionCode,	
 	&asn_DEF_InvalidityDate,	
-	/* From module RSPDefinitions in ../asn/RSPDefinitions.asn */
+	/* From module RSPDefinitions in ../../../asn1/RSPDefinitions.asn */
 	&asn_DEF_Octet2,	
 	&asn_DEF_GetEuiccInfo1Request,	
 	&asn_DEF_GetEuiccInfo2Request,	
@@ -243,7 +243,7 @@ struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
 	&asn_DEF_LpaeActivationResponse,	
 	&asn_DEF_SetDefaultDpAddressRequest,	
 	&asn_DEF_SetDefaultDpAddressResponse,	
-	/* From module SGP32Definitions in ../asn/SGP32Definitions.asn */
+	/* From module SGP32Definitions in ../../../asn1/SGP32Definitions.asn */
 	&asn_DEF_AddInitialEimRequest,	
 	&asn_DEF_AddInitialEimResponse,	
 	&asn_DEF_GetCertsRequest,	
