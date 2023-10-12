@@ -5,6 +5,9 @@ struct ipa_context;
 /* Context for one softsim instance. */
 struct ipa_config {
 	char default_smdp_addr[1024];
+
+	/* ID number of the cardreader that interfaces the eUICC */
+	unsigned int reader_num;
 };
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg);

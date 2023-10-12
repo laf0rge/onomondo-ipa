@@ -163,6 +163,7 @@ int main(void)
 	struct ipa_context *ctx;
 
 	strcpy(cfg.default_smdp_addr, "www.example.net");
+	cfg.reader_num = 0;
 	ctx = ipa_new_ctx(&cfg);
 	ipa_poll(ctx);
 	ipa_free_ctx(ctx);

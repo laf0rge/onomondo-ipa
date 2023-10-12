@@ -2,7 +2,9 @@
 #include <assert.h>
 #include <onomondo/ipa/mem.h>
 #include <onomondo/ipa/http.h>
+#include <onomondo/ipa/scard.h>
 #include <onomondo/ipa/log.h>
+#include <onomondo/ipa/ipad.h>
 #include "eim_package.h"
 #include "context.h"
 
@@ -15,7 +17,8 @@ struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 	ctx->cfg = cfg;
 	
 	ctx->http_ctx = ipa_http_init();
-	
+	ctx->scard_ctx = ipa_scard_init(cfg->reader_num);
+
 	return ctx;
 }
 
@@ -30,5 +33,6 @@ void ipa_poll(struct ipa_context *ctx)
 void ipa_free_ctx(struct ipa_context *ctx)
 {
 	ipa_http_free(ctx->http_ctx);
+	ipa_scard_free(ctx->http_ctx);
 	IPA_FREE(ctx);
 }

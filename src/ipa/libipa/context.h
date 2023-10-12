@@ -6,4 +6,5 @@ struct ipa_config;
 struct ipa_context {
 	struct ipa_config *cfg;	
 	void *http_ctx;
+	void *scard_ctx;
 };
