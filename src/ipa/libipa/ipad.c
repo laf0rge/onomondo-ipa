@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 #include <onomondo/ipa/mem.h>
 #include <onomondo/ipa/http.h>
 #include <onomondo/ipa/scard.h>
@@ -12,14 +13,22 @@ struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 {
 	struct ipa_context *ctx;
 	ctx = IPA_ALLOC(struct ipa_context);
-
 	assert(cfg);
+	memset(ctx, 0, sizeof(*ctx));
 	ctx->cfg = cfg;
-	
+
 	ctx->http_ctx = ipa_http_init();
+	if (!ctx->http_ctx)
+		goto error;
+
 	ctx->scard_ctx = ipa_scard_init(cfg->reader_num);
+	if (!ctx->scard_ctx)
+		goto error;
 
 	return ctx;
+error:
+	ipa_free_ctx(ctx);
+	return NULL;
 }
 
 void ipa_poll(struct ipa_context *ctx)
