@@ -6,7 +6,8 @@
 struct ipa_context;
 
 enum ipa_eim_package_type {
-	IPA_EIM_PACKAE_AC
+	IPA_EIM_PACKAGE_AC,
+	IPA_EIM_PACKAGE_ERR,
 };
 
 struct ipa_eim_package_ac {
@@ -21,6 +22,7 @@ struct ipa_eim_package {
 	enum ipa_eim_package_type type;
 	union {
 		struct ipa_eim_package_ac ac;
+		int error;
 	} u;
 };
 

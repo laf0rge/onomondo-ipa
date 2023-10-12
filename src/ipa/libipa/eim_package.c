@@ -53,12 +53,12 @@ static struct ipa_eim_package *dec_pdtr(ProfileDownloadTriggerRequest_t * pdtr)
 				 "no space for over-long activation code!\n");
 			goto error;
 		}
-		eim_package = IPA_ALLOC(struct EsipaMessageFromEimToIpa);
+		eim_package = IPA_ALLOC(struct ipa_eim_package);
 		assert(eim_package);
 		memcpy(eim_package->u.ac.code, pdd->choice.activationCode.buf,
 		       pdd->choice.activationCode.size);
 		eim_package->u.ac.code[pdd->choice.activationCode.size] = '\0';
-		eim_package->type = IPA_EIM_PACKAE_AC;
+		eim_package->type = IPA_EIM_PACKAGE_AC;
 		break;
 	case ProfileDownloadData_PR_contactDefaultSmdp:
 		/* TODO (open question: is this an optional feature and do we have to support it?) */
@@ -92,6 +92,10 @@ static struct ipa_eim_package *dec_gepr(struct ipa_buf *msg_to_ipa_encoded)
 			(void **)&msg_to_ipa, msg_to_ipa_encoded->data,
 			msg_to_ipa_encoded->len);
 
+#if 1
+	asn_fprint(stdout, &asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
+#endif
+
 	if (rc.code != RC_OK) {
 		IPA_LOGP(SIPA, LERROR,
 			 "cannot decode eIM response! (invalid asn1c)\n");
@@ -106,6 +110,8 @@ static struct ipa_eim_package *dec_gepr(struct ipa_buf *msg_to_ipa_encoded)
 
 	switch (msg_to_ipa->choice.getEimPackageResponse.present) {
 	case GetEimPackageResponse_PR_euiccPackageRequest:
+		/* TODO */
+		assert(NULL);
 		break;
 	case GetEimPackageResponse_PR_ipaEuiccDataRequest:
 		/* TODO */
@@ -113,21 +119,21 @@ static struct ipa_eim_package *dec_gepr(struct ipa_buf *msg_to_ipa_encoded)
 		break;
 	case GetEimPackageResponse_PR_profileDownloadTriggerRequest:
 		eim_package =
-		    dec_pdtr(&msg_to_ipa->choice.getEimPackageResponse.
-			     choice.profileDownloadTriggerRequest);
+		    dec_pdtr(&msg_to_ipa->choice.getEimPackageResponse.choice.
+			     profileDownloadTriggerRequest);
 		break;
 	case GetEimPackageResponse_PR_eimPackageError:
-		/* TODO */
-		assert(NULL);
+		eim_package = IPA_ALLOC(struct ipa_eim_package);
+		assert(eim_package);
+		eim_package->u.error =
+		    msg_to_ipa->choice.getEimPackageResponse.choice.
+		    eimPackageError;
+		eim_package->type = IPA_EIM_PACKAGE_ERR;
 		break;
 	default:
 		IPA_LOGP(SIPA, LERROR, "eIM package is empty!\n");
 		break;
 	}
-
-#if 0
-	asn_fprint(stdout, &asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
-#endif
 
 error:
 	ASN_STRUCT_FREE(asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
@@ -179,9 +185,13 @@ void ipa_eim_package_dump(struct ipa_eim_package *eim_package, uint8_t indent,
 	}
 
 	switch (eim_package->type) {
-	case IPA_EIM_PACKAE_AC:
+	case IPA_EIM_PACKAGE_AC:
 		IPA_LOGP(log_subsys, log_level, "%s activation-code: \"%s\"\n",
 			 indent_str, eim_package->u.ac.code);
+		break;
+	case IPA_EIM_PACKAGE_ERR:
+		IPA_LOGP(log_subsys, log_level, "%s error-code: \"%d\"\n",
+			 indent_str, eim_package->u.error);
 		break;
 	default:
 		IPA_LOGP(log_subsys, log_level,
@@ -198,7 +208,8 @@ void ipa_eim_package_free(struct ipa_eim_package *eim_package)
 
 	/* we do not have any dynamically allocated members yet */
 	switch (eim_package->type) {
-	case IPA_EIM_PACKAE_AC:
+	case IPA_EIM_PACKAGE_AC:
+	case IPA_EIM_PACKAGE_ERR:
 	default:
 		break;
 	}
