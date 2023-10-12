@@ -172,7 +172,9 @@ int ipa_scard_free(void *scard_ctx)
 {
 	struct scard_ctx *ctx = scard_ctx;
 	LONG rc;
-	assert(ctx);
+
+	if (!scard_ctx)
+		return 0;
 
 	rc = SCardDisconnect(ctx->hCard, SCARD_UNPOWER_CARD);
 	PCSC_ERROR(ctx->reader_num, rc, "SCardDisconnect");
