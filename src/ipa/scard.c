@@ -97,7 +97,7 @@ error:
  *  \param[out] req buffer with smartcard request.
  *  \returns 0 on success, -EIO on failure. */
 int ipa_scard_transceive(void *scard_ctx, struct ipa_buf *res,
-			 struct ipa_buf *req)
+			 const struct ipa_buf *req)
 {
 	struct scard_ctx *ctx = scard_ctx;
 	LONG rc;
