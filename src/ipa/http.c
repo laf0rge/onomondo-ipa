@@ -167,6 +167,9 @@ void ipa_http_free(void *http_ctx)
 {
 	struct http_ctx *ctx = http_ctx;
 
+	if (!http_ctx)
+		return;
+
 	curl_global_cleanup();
 	IPA_FREE(ctx);
 	IPA_LOGP(SHTTP, LINFO, "HTTP client freed.\n");
