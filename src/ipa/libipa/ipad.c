@@ -42,6 +42,6 @@ void ipa_poll(struct ipa_context *ctx)
 void ipa_free_ctx(struct ipa_context *ctx)
 {
 	ipa_http_free(ctx->http_ctx);
-	ipa_scard_free(ctx->http_ctx);
+	ipa_scard_free(ctx->scard_ctx);
 	IPA_FREE(ctx);
 }
