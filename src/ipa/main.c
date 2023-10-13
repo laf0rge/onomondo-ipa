@@ -165,6 +165,11 @@ int main(void)
 	strcpy(cfg.default_smdp_addr, "www.example.net");
 	cfg.reader_num = 0;
 	ctx = ipa_new_ctx(&cfg);
+	if (!ctx) {
+		IPA_LOGP(LERROR, LINFO, "no context, initialization failed!\n");
+		return -EINVAL;
+	}
+
 	ipa_poll(ctx);
 	ipa_free_ctx(ctx);
 #endif
