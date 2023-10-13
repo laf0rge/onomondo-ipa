@@ -18,7 +18,7 @@
 
 #define PCSC_ERROR(reader_num, rv, text) \
 if (rv != SCARD_S_SUCCESS) { \
-	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d error: %s (%s,0x%lX)\n\n", \
+	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d error: %s (%s,0x%lX)\n", \
 		 reader_num, pcsc_stringify_error(rv), text, rv); \
 	goto error; \
 }
@@ -85,6 +85,8 @@ void *ipa_scard_init(unsigned int reader_num)
 	SCardFreeMemory(ctx->hContext, mszReaders);
 	return ctx;
 error:
+	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d initialization failed!\n",
+		 reader_num);
 	if (mszReaders)
 		SCardFreeMemory(ctx->hContext, mszReaders);
 	IPA_FREE(ctx);
@@ -103,6 +105,9 @@ int ipa_scard_transceive(void *scard_ctx, struct ipa_buf *res,
 	LONG rc;
 	assert(ctx);
 
+	assert(res);
+	assert(req);
+
 	res->len = res->data_len;
 	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d TX:%s\n", ctx->reader_num,
 		 ipa_hexdump(req->data, req->len));
@@ -116,6 +121,8 @@ int ipa_scard_transceive(void *scard_ctx, struct ipa_buf *res,
 
 	return 0;
 error:
+	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d transceive failed!\n",
+		 ctx->reader_num);
 	return -EIO;
 }
 
@@ -135,6 +142,8 @@ int ipa_scard_reset(void *scard_ctx)
 		 ctx->reader_num);
 	return 0;
 error:
+	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d reset failed!\n",
+		 ctx->reader_num);
 	return -EIO;
 }
 
@@ -162,6 +171,8 @@ int ipa_scard_atr(void *scard_ctx, struct ipa_buf *atr)
 		 ipa_hexdump(atr->data, atr->len));
 	return 0;
 error:
+	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d atr query failed!\n",
+		 ctx->reader_num);
 	return -EIO;
 }
 
@@ -187,5 +198,7 @@ int ipa_scard_free(void *scard_ctx)
 	IPA_FREE(ctx);
 	return 0;
 error:
+	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d free failed!\n",
+		 ctx->reader_num);
 	return -EIO;
 }
