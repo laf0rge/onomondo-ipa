@@ -40,7 +40,10 @@ void ipa_logp(uint32_t subsys, uint32_t level, const char *file, int line,
 	if (level > subsys_lvl[subsys])
 		return;
 
-	/* TODO: print file/line */
+	/* TODO: print file and line, but make it an optional feature that
+	 * can be selected via commandline option. The reason for this is that
+	 * the unit-tests may compare the log output against .err files and
+	 * even on minor changes we would constantly upset the unit-tests. */
 
 	fprintf(stderr, "%8s %8s ", subsys_str[subsys], level_str[level]);
 	va_start(ap, format);
