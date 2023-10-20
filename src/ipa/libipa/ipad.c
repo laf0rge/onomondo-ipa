@@ -33,8 +33,8 @@ error:
 	return NULL;
 }
 
-/* A testcase to try out a full ES10b tranmssion cycle, see also TC_es10b_transceive */
-void testme_es10b(struct ipa_context *ctx)
+/* A testcase to try out a full ES10b tranmssion cycle, see also TC_es10x_transceive */
+void testme_es10x(struct ipa_context *ctx)
 {
 	struct ipa_buf *req = ipa_buf_alloc(1024);
 	struct ipa_buf *res;
@@ -61,7 +61,7 @@ void ipa_poll(struct ipa_context *ctx)
 	ipa_eim_package_free(eim_package);
 #endif
 
-	testme_es10b(ctx);
+	testme_es10x(ctx);
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)
