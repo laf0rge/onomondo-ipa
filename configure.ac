@@ -82,6 +82,14 @@ then
 	CPPFLAGS="$CPPFLAGS -pg"
 fi
 
+AC_ARG_ENABLE(asn1-debug,
+		[AS_HELP_STRING([--enable-asn1-debug], [Compile with ASN.1 debug output enabled], )],
+		[asn1_debug=$enableval], [asn1_debug="no"])
+if test x"$asn1_debug" = x"yes"
+then
+	CPPFLAGS="$CPPFLAGS -DIPA_DEBUG_ASN1"
+fi
+
 AC_MSG_RESULT([CFLAGS="$CFLAGS"])
 AC_MSG_RESULT([CPPFLAGS="$CPPFLAGS"])
 

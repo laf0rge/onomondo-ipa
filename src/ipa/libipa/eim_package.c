@@ -93,15 +93,15 @@ static struct ipa_eim_package *dec_gepr(struct ipa_buf *msg_to_ipa_encoded)
 			(void **)&msg_to_ipa, msg_to_ipa_encoded->data,
 			msg_to_ipa_encoded->len);
 
-#if 1
-	asn_fprint(stdout, &asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
-#endif
-
 	if (rc.code != RC_OK) {
 		IPA_LOGP(SIPA, LERROR,
 			 "cannot decode eIM response! (invalid asn1c)\n");
 		return NULL;
 	}
+
+#ifdef IPA_DEBUG_ASN1
+	asn_fprint(stdout, &asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
+#endif
 
 	if (msg_to_ipa->present !=
 	    EsipaMessageFromEimToIpa_PR_getEimPackageResponse) {
