@@ -26,8 +26,7 @@ struct ipa_eim_package {
 	} u;
 };
 
-struct ipa_eim_package *ipa_eim_package_fetch(struct ipa_context *ctx,
-					      uint8_t *eid);
-void ipa_eim_package_dump(struct ipa_eim_package *eim_package, uint8_t indent,
+struct ipa_eim_package *ipa_esipa_get_eim_package(struct ipa_context *ctx, uint8_t *eid);
+void ipa_dump_eim_package(struct ipa_eim_package *eim_package, uint8_t indent,
 			  enum log_subsys log_subsys, enum log_level log_level);
-void ipa_eim_package_free(struct ipa_eim_package *eim_package);
+void ipa_free_eim_package(struct ipa_eim_package *eim_package);

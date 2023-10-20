@@ -17,7 +17,8 @@ noinst_LIBRARIES = libipa.a
 
 libipa_a_SOURCES = \
 	activation_code.c \
-	eim_package.c \
+	esipa.c \
+	esipa_get_eim_package.c \
 	es10b_get_euicc_challenge.c \
 	es10b_get_euicc_info.c \
 	euicc.c \
@@ -29,7 +30,8 @@ libipa_a_SOURCES = \
 noinst_HEADERS = \
 	activation_code.h \
 	context.h \
-	eim_package.h \
+	esipa.h \
+	esipa_get_eim_package.h \
 	es10b.h \
 	es10b_get_euicc_challenge.h \
 	es10b_get_euicc_info.h \

@@ -7,7 +7,7 @@
 #include <onomondo/ipa/log.h>
 #include <onomondo/ipa/ipad.h>
 #include <onomondo/ipa/utils.h>
-#include "eim_package.h"
+#include "esipa_get_eim_package.h"
 #include "context.h"
 #include "euicc.h"
 #include "es10b_get_euicc_info.h"
@@ -67,6 +67,7 @@ void testme_get_euicc_info(struct ipa_context *ctx)
 	ipa_es10b_free_euicc_info(euicc_info);
 }
 
+/* A testcase to try out the ES10b function GetEuiccInfo, see also TC_es10b_get_euicc_info */
 void testme_get_euicc_challenge(struct ipa_context *ctx) {
 	uint8_t euicc_challenge[IPA_ES10B_EUICC_CHALLENGE_LEN];
 	int rc;
@@ -76,19 +77,20 @@ void testme_get_euicc_challenge(struct ipa_context *ctx) {
 	       ipa_hexdump(euicc_challenge, sizeof(euicc_challenge)), rc);
 }
 
+/* A testcase to try out the ESipa function GetEimPackage, see also TC_esipa_get_eim_package */
+void testme_get_eim_package(struct ipa_context *ctx) {
+	struct ipa_eim_package *eim_package;
+	eim_package = ipa_esipa_get_eim_package(ctx, (uint8_t*)"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F");
+	ipa_dump_eim_package(eim_package, 0, SIPA, LINFO);
+	ipa_free_eim_package(eim_package);
+}
+
 void ipa_poll(struct ipa_context *ctx)
 {
-#if 0
-	struct ipa_eim_package *eim_package;
-	eim_package = ipa_eim_package_fetch(ctx, (uint8_t*)"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F");
-	ipa_eim_package_dump(eim_package, 0, SIPA, LINFO);
-	ipa_eim_package_free(eim_package);
-#endif
-
 //	testme_es10x(ctx);
 //	testme_get_euicc_info(ctx);
-	testme_get_euicc_challenge(ctx);
-
+//	testme_get_euicc_challenge(ctx);
+	testme_get_eim_package(ctx);
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)

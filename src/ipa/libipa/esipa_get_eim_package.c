@@ -1,17 +1,18 @@
 #include <stdint.h>
 #include <onomondo/ipa/http.h>
 #include <onomondo/ipa/log.h>
+#include <onomondo/ipa/ipad.h>
 #include "utils.h"
 #include "length.h"
 #include "context.h"
-#include "eim_package.h"
-
+#include "esipa.h"
+#include "esipa_get_eim_package.h"
 #include <EsipaMessageFromIpaToEim.h>
 #include <EsipaMessageFromEimToIpa.h>
 #include <GetEimPackageRequest.h>
 #include <ProfileDownloadTriggerRequest.h>
 
-static struct ipa_buf *enc_gepr(uint8_t *eid_value)
+static struct ipa_buf *enc_get_eim_package_req(uint8_t *eid_value)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim;
 	asn_enc_rval_t rc;
@@ -34,7 +35,7 @@ static struct ipa_buf *enc_gepr(uint8_t *eid_value)
 	return buf_encoded;
 }
 
-static struct ipa_eim_package *dec_pdtr(ProfileDownloadTriggerRequest_t * pdtr)
+static struct ipa_eim_package *dec_profile_dwnld_trig_req(ProfileDownloadTriggerRequest_t * pdtr)
 {
 	struct ipa_eim_package *eim_package = NULL;
 	struct ProfileDownloadData *pdd;
@@ -78,7 +79,7 @@ error:
 	return eim_package;
 }
 
-static struct ipa_eim_package *dec_gepr(struct ipa_buf *msg_to_ipa_encoded)
+static struct ipa_eim_package *dec_get_eim_package_req(struct ipa_buf *msg_to_ipa_encoded)
 {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
 	asn_dec_rval_t rc;
@@ -120,7 +121,7 @@ static struct ipa_eim_package *dec_gepr(struct ipa_buf *msg_to_ipa_encoded)
 		break;
 	case GetEimPackageResponse_PR_profileDownloadTriggerRequest:
 		eim_package =
-		    dec_pdtr(&msg_to_ipa->choice.getEimPackageResponse.choice.
+		    dec_profile_dwnld_trig_req(&msg_to_ipa->choice.getEimPackageResponse.choice.
 			     profileDownloadTriggerRequest);
 		break;
 	case GetEimPackageResponse_PR_eimPackageError:
@@ -141,28 +142,26 @@ error:
 	return eim_package;
 }
 
-struct ipa_eim_package *ipa_eim_package_fetch(struct ipa_context *ctx,
-					      uint8_t *eid)
+struct ipa_eim_package *ipa_esipa_get_eim_package(struct ipa_context *ctx, uint8_t *eid)
 {
 
 	struct ipa_buf *esipa_req;
 	struct ipa_buf *esipa_res;
 	struct ipa_eim_package *eim_package = NULL;
 	int rc;
-
+	
 	IPA_LOGP(SIPA, LINFO, "Requesting eIM package for eID:%s...\n",
 		 ipa_hexdump(eid, IPA_LEN_EID));
 
-	esipa_req = enc_gepr(eid);
+	esipa_req = enc_get_eim_package_req(eid);
 	esipa_res = ipa_buf_alloc(IPA_LIMIT_HTTP_REQ);
-	rc = ipa_http_req(ctx->http_ctx, esipa_res, esipa_req,
-			  "http://127.0.0.1:4430/gsma/rsp2/asn1");
+	rc = ipa_http_req(ctx->http_ctx, esipa_res, esipa_req, ipa_esipa_get_eim_url(ctx));
 	if (rc < 0) {
 		IPA_LOGP(SIPA, LERROR, "eIM package request failed!\n");
 		goto error;
 	}
 
-	eim_package = dec_gepr(esipa_res);
+	eim_package = dec_get_eim_package_req(esipa_res);
 
 error:
 	IPA_FREE(esipa_req);
@@ -170,7 +169,7 @@ error:
 	return eim_package;
 }
 
-void ipa_eim_package_dump(struct ipa_eim_package *eim_package, uint8_t indent,
+void ipa_dump_eim_package(struct ipa_eim_package *eim_package, uint8_t indent,
 			  enum log_subsys log_subsys, enum log_level log_level)
 {
 	char indent_str[256];
@@ -202,7 +201,7 @@ void ipa_eim_package_dump(struct ipa_eim_package *eim_package, uint8_t indent,
 
 }
 
-void ipa_eim_package_free(struct ipa_eim_package *eim_package)
+void ipa_free_eim_package(struct ipa_eim_package *eim_package)
 {
 	if (!eim_package)
 		return;
