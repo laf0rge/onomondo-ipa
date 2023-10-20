@@ -50,6 +50,8 @@ int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv)
 {
 	struct ipa_buf *buf_encoded = priv;
 
+	assert(priv);
+
 	if (size > buf_encoded->len + size)
 		return -ENOMEM;
 
