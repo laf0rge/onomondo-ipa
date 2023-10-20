@@ -37,13 +37,13 @@ error:
 void testme_es10b(struct ipa_context *ctx)
 {
 	struct ipa_buf *req = ipa_buf_alloc(1024);
-	struct ipa_buf *res = ipa_buf_alloc(1024);
+	struct ipa_buf *res;
 
 	memset(req->data, 0x41, 300);
 	req->data[299] = 0xEE;
 	req->len = 300;
 
-	ipa_euicc_transceive_es10x(ctx, res, req);
+	res = ipa_euicc_transceive_es10x(ctx, req);
 
 	printf("============> GOT DATA: %s (%zu bytes)\n",
 	       ipa_hexdump(res->data, res->len), res->len);

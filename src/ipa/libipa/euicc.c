@@ -40,9 +40,12 @@ struct res_apdu {
 	uint16_t sw;
 };
 
+/* Format the given req_apdu struct into an IPA_BUF that contains the APDU
+ * bytes to send. */
 struct ipa_buf *format_req_apdu(struct req_apdu *req_apdu)
 {
 	struct ipa_buf *buf_req = ipa_buf_alloc(5 + req_apdu->lc);
+	assert(buf_req);
 
 	buf_req->data[0] = req_apdu->cla;
 	buf_req->data[1] = req_apdu->ins;
@@ -72,6 +75,8 @@ struct ipa_buf *format_req_apdu(struct req_apdu *req_apdu)
 	return buf_req;
 }
 
+/* Take the received APDU bytes in res_encoded and parse them into an APDU
+ * struct (res_apdu) */
 int parse_res_apdu(struct res_apdu *res_apdu, struct ipa_buf *res_encoded)
 {
 	memset(res_apdu, 0, sizeof(*res_apdu));
@@ -96,8 +101,8 @@ static int send_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 {
 	size_t len_req;
 	int rc;
-	struct req_apdu req_apdu;
-	struct res_apdu res_apdu;
+	struct req_apdu req_apdu = { 0 };
+	struct res_apdu res_apdu = { 0 };
 	struct ipa_buf *buf_req;
 	struct ipa_buf *buf_res;
 
@@ -125,8 +130,8 @@ static int send_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	buf_req = format_req_apdu(&req_apdu);
 	rc = ipa_scard_transceive(ctx->scard_ctx, buf_res, buf_req);
 	if (rc < 0) {
-		IPA_LOGP(SIPA, LERROR,
-			 "unable to send ES10b block %u, offset=%zu\n",
+		IPA_LOGP(SEUICC, LERROR,
+			 "unable to send ES10x block %u, offset=%zu\n",
 			 block_nr, offset);
 		goto exit;
 	}
@@ -134,15 +139,15 @@ static int send_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	/* parse response */
 	rc = parse_res_apdu(&res_apdu, buf_res);
 	if (rc < 0) {
-		IPA_LOGP(SIPA, LERROR,
-			 "invalid response while sending ES10b block %u, offset=%zu\n",
+		IPA_LOGP(SEUICC, LERROR,
+			 "invalid response while sending ES10x block %u, offset=%zu\n",
 			 block_nr, offset);
 		goto exit;
 	}
 	*sw = res_apdu.sw;
 
-	IPA_LOGP(SIPA, LINFO,
-		 "successfully sent ES10b block %u, offset=%zu, sw=%04x\n",
+	IPA_LOGP(SEUICC, LINFO,
+		 "successfully sent ES10x block %u, offset=%zu, sw=%04x\n",
 		 block_nr, offset, *sw);
 
 	/* Return how many data we have sent. */
@@ -158,8 +163,8 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 			    uint8_t block_nr)
 {
 	int rc;
-	struct req_apdu req_apdu;
-	struct res_apdu res_apdu;
+	struct req_apdu req_apdu = { 0 };
+	struct res_apdu res_apdu = { 0 };
 	struct ipa_buf *buf_req;
 	struct ipa_buf *buf_res;
 
@@ -187,8 +192,8 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	buf_req = format_req_apdu(&req_apdu);
 	rc = ipa_scard_transceive(ctx->scard_ctx, buf_res, buf_req);
 	if (rc < 0) {
-		IPA_LOGP(SIPA, LERROR,
-			 "unable to receive ES10b block %u, offset=%zu\n",
+		IPA_LOGP(SEUICC, LERROR,
+			 "unable to receive ES10x block %u, offset=%zu\n",
 			 block_nr, es10x_res->len);
 		rc = -EIO;
 		goto exit;
@@ -197,22 +202,22 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	/* parse response */
 	rc = parse_res_apdu(&res_apdu, buf_res);
 	if (rc < 0) {
-		IPA_LOGP(SIPA, LERROR,
-			 "invalid response while sending ES10b block %u, offset=%zu\n",
+		IPA_LOGP(SEUICC, LERROR,
+			 "invalid response while sending ES10x block %u, offset=%zu\n",
 			 block_nr, es10x_res->len);
 		rc = -EINVAL;
 		goto exit;
 	}
 	if (res_apdu.le != block_len) {
-		IPA_LOGP(SIPA, LERROR,
-			 "unexpected block length (expected:%u, got:%u) while sending ES10b block %u, offset=%zu\n",
+		IPA_LOGP(SEUICC, LERROR,
+			 "unexpected block length (expected:%u, got:%u) while sending ES10x block %u, offset=%zu\n",
 			 block_len, res_apdu.le, block_nr, es10x_res->len);
 		rc = -EINVAL;
 		goto exit;
 	}
 	if (es10x_res->len + res_apdu.le > es10x_res->data_len) {
-		IPA_LOGP(SIPA, LERROR,
-			 "out of memory (have:%zu, needed:%zu) while sending ES10b block %u, offset=%zu\n",
+		IPA_LOGP(SEUICC, LERROR,
+			 "out of memory (have:%zu, needed:%zu) while sending ES10x block %u, offset=%zu\n",
 			 es10x_res->data_len, es10x_res->len + res_apdu.le,
 			 block_nr, es10x_res->len);
 		rc = -EINVAL;
@@ -223,8 +228,8 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	es10x_res->len += res_apdu.le;
 	*sw = res_apdu.sw;
 
-	IPA_LOGP(SIPA, LINFO,
-		 "successfully received ES10b block %u, offset=%zu, sw=%04x\n",
+	IPA_LOGP(SEUICC, LINFO,
+		 "successfully received ES10x block %u, offset=%zu, sw=%04x\n",
 		 block_nr, es10x_res->len, *sw);
 
 	/* Return how many data we have received. */
@@ -235,14 +240,9 @@ exit:
 	return rc;
 }
 
-/*! Transceive eUICC/es10x APDU.
- *  \param[inout] scard_ctx smartcard reader context.
- *  \param[out] es10x_res buffer to store eUICC/es10x response.
- *  \param[out] es10x_res buffer with eUICC/es10x request.
- *  \returns 0 on success, -EIO on failure. */
-int ipa_euicc_transceive_es10x(struct ipa_context *ctx,
-			       struct ipa_buf *es10x_res,
-			       const struct ipa_buf *es10x_req)
+static int euicc_transceive_es10x(struct ipa_context *ctx,
+				  struct ipa_buf *es10x_res,
+				  const struct ipa_buf *es10x_req)
 {
 
 	uint16_t sw;
@@ -265,8 +265,8 @@ int ipa_euicc_transceive_es10x(struct ipa_context *ctx,
 		 * be confirmied with 61xx to indicate that response data is
 		 * available */
 		if (sw != 0x9000 && offset < es10x_req->len) {
-			IPA_LOGP(SIPA, LERROR,
-				 "ES10b transmission aborted early by eUICC, sw=%04x\n",
+			IPA_LOGP(SEUICC, LERROR,
+				 "ES10x transmission aborted early by eUICC, sw=%04x\n",
 				 sw);
 			break;
 		}
@@ -274,18 +274,18 @@ int ipa_euicc_transceive_es10x(struct ipa_context *ctx,
 		/* We can only transmit a maximum amount of 255 blocks in one
 		 * STORE DATA cycle. */
 		if (block_nr == 255) {
-			IPA_LOGP(SIPA, LERROR,
-				 "ES10b request exceeds maximum transmission length (%zu)!\n",
+			IPA_LOGP(SEUICC, LERROR,
+				 "ES10x request exceeds maximum transmission length (%zu)!\n",
 				 es10x_req->len);
 			return -EINVAL;
 		}
 	}
 
-	/* When the transfer of the ES10b request is done, we expect the eUICC
+	/* When the transfer of the ES10x request is done, we expect the eUICC
 	 * to answer with a response. */
 	if (sw == 0x9000) {
-		IPA_LOGP(SIPA, LERROR,
-			 "ES10b transmission successful, but no response, sw=%04x\n",
+		IPA_LOGP(SEUICC, LERROR,
+			 "ES10x transmission successful, but no response, sw=%04x\n",
 			 sw);
 		return -EINVAL;
 	} else if ((sw & 0xff00) == 0x6100) {
@@ -299,24 +299,44 @@ int ipa_euicc_transceive_es10x(struct ipa_context *ctx,
 			block_nr++;
 
 			if (sw == 0x9000) {
-				IPA_LOGP(SIPA, LINFO,
-					 "ES10b transmission successful, sw=%04x\n",
+				IPA_LOGP(SEUICC, LINFO,
+					 "ES10x transmission successful, sw=%04x\n",
 					 sw);
 				return 0;
 			}
 
 			if ((sw & 0xff00) != 0x6100) {
-				IPA_LOGP(SIPA, LINFO,
-					 "ES10b transmission failed, sw=%04x\n",
+				IPA_LOGP(SEUICC, LINFO,
+					 "ES10x transmission failed, sw=%04x\n",
 					 sw);
 				return -EINVAL;
 			}
 		}
 	} else {
-		IPA_LOGP(SIPA, LERROR, "ES10b transmission failed! sw=%04x\n",
+		IPA_LOGP(SEUICC, LERROR, "ES10x transmission failed! sw=%04x\n",
 			 sw);
 		return -EINVAL;
 	}
 
 	return 0;
+}
+
+/*! Transceive eUICC/es10x APDU.
+ *  \param[inout] scard_ctx smartcard reader context.
+ *  \param[out] es10x_res buffer with eUICC/es10x request.
+ *  \returns IPA_BUF with ES10x response on success, NULL on failure. */
+struct ipa_buf *ipa_euicc_transceive_es10x(struct ipa_context *ctx,
+					   const struct ipa_buf *es10x_req)
+{
+	struct ipa_buf *es10x_res = ipa_buf_alloc(1024);
+	int rc;
+
+	rc = euicc_transceive_es10x(ctx, es10x_res, es10x_req);
+
+	if (rc < 0) {
+		IPA_FREE(es10x_res);
+		return NULL;
+	}
+
+	return es10x_res;
 }
