@@ -10,6 +10,7 @@
 #include "eim_package.h"
 #include "context.h"
 #include "euicc.h"
+#include "es10b_get_euicc_info.h"
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 {
@@ -52,6 +53,19 @@ void testme_es10x(struct ipa_context *ctx)
 	IPA_FREE(res);
 }
 
+/* A testcase to try out the ES10b function GetEuiccInfo, see also TC_es10b_get_euicc_info */
+void testme_get_euicc_info(struct ipa_context *ctx)
+{
+	struct ipa_es10b_euicc_info *euicc_info;
+	euicc_info = ipa_es10b_get_euicc_info(ctx, false);
+	ipa_es10b_dump_euicc_info(euicc_info, 0, SES10B, LINFO);
+	ipa_es10b_free_euicc_info(euicc_info);
+
+	euicc_info = ipa_es10b_get_euicc_info(ctx, true);
+	ipa_es10b_dump_euicc_info(euicc_info, 0, SES10B, LINFO);
+	ipa_es10b_free_euicc_info(euicc_info);
+}
+
 void ipa_poll(struct ipa_context *ctx)
 {
 #if 0
@@ -61,7 +75,9 @@ void ipa_poll(struct ipa_context *ctx)
 	ipa_eim_package_free(eim_package);
 #endif
 
-	testme_es10x(ctx);
+//	testme_es10x(ctx);
+	testme_get_euicc_info(ctx);
+
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)

@@ -18,6 +18,7 @@ noinst_LIBRARIES = libipa.a
 libipa_a_SOURCES = \
 	activation_code.c \
 	eim_package.c \
+	es10b_get_euicc_info.c \
 	euicc.c \
 	ipad.c \
 	utils.c \
@@ -28,6 +29,8 @@ noinst_HEADERS = \
 	activation_code.h \
 	context.h \
 	eim_package.h \
+	es10b.h \
+	es10b_get_euicc_info.h \
 	euicc.h \
 	length.h \
 	utils.h \
