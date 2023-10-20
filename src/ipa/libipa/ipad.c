@@ -11,6 +11,7 @@
 #include "context.h"
 #include "euicc.h"
 #include "es10b_get_euicc_info.h"
+#include "es10b_get_euicc_challenge.h"
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 {
@@ -66,6 +67,15 @@ void testme_get_euicc_info(struct ipa_context *ctx)
 	ipa_es10b_free_euicc_info(euicc_info);
 }
 
+void testme_get_euicc_challenge(struct ipa_context *ctx) {
+	uint8_t euicc_challenge[IPA_ES10B_EUICC_CHALLENGE_LEN];
+	int rc;
+	rc = ipa_es10b_get_euicc_challenge(ctx, euicc_challenge);
+
+	printf("============> GOT EUICC CHALLENGE: %s (rc=%d)\n",
+	       ipa_hexdump(euicc_challenge, sizeof(euicc_challenge)), rc);
+}
+
 void ipa_poll(struct ipa_context *ctx)
 {
 #if 0
@@ -76,7 +86,8 @@ void ipa_poll(struct ipa_context *ctx)
 #endif
 
 //	testme_es10x(ctx);
-	testme_get_euicc_info(ctx);
+//	testme_get_euicc_info(ctx);
+	testme_get_euicc_challenge(ctx);
 
 }
 
