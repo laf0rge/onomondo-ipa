@@ -117,7 +117,7 @@ int ipa_scard_transceive(void *scard_ctx, struct ipa_buf *res,
 	PCSC_ERROR(ctx->reader_num, rc, "SCardEndTransaction");
 
 	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d RX:%s\n", ctx->reader_num,
-		 ipa_hexdump(res->data, res->len));
+		 res->len ? ipa_hexdump(res->data, res->len) : "(no data)");
 
 	return 0;
 error:
