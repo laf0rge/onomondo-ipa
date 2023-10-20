@@ -22,6 +22,7 @@ static struct ipa_buf *enc_gepr(uint8_t *eid_value)
 	msg_to_eim.choice.getEimPackageRequest.eidValue.buf = eid_value;
 	msg_to_eim.choice.getEimPackageRequest.eidValue.size = IPA_LEN_EID;
 
+	assert(buf_encoded);
 	rc = der_encode(&asn_DEF_EsipaMessageFromIpaToEim, &msg_to_eim,
 			ipa_asn1c_consume_bytes_cb, buf_encoded);
 
