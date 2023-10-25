@@ -51,6 +51,28 @@ static inline struct ipa_buf *ipa_buf_alloc(size_t len)
 	return buf;
 }
 
+/*! Duplicate (exact copy) from another ipa_buf object.
+ *  \param[in] buf ipa_buf object to duplicate.
+ *  \returns pointer to newly allocated ipa_buf object. */
+static inline struct ipa_buf *ipa_buf_dup(const struct ipa_buf *buf)
+{
+	struct ipa_buf *buf_dup = ipa_buf_alloc(buf->data_len);
+	memcpy(buf_dup->data, buf->data, buf->data_len);
+	buf_dup->len = buf->len;
+	return buf_dup;
+}
+
+/*! Allocate a new ipa_buf and copy the data from another ipa_buf object.
+ *  \param[in] buf ipa_buf object to copy from.
+ *  \returns pointer to newly allocated ipa_buf object. */
+static inline struct ipa_buf *ipa_buf_copy(const struct ipa_buf *buf)
+{
+	struct ipa_buf *buf_dup = ipa_buf_alloc(buf->len);
+	memcpy(buf_dup->data, buf->data, buf->len);
+	buf_dup->len = buf->len;
+	return buf_dup;
+}
+
 /*! Free an ipa_buf object.
  *  \param[in] pointer to ipa_buf object to free. */
 static inline void ipa_buf_free(struct ipa_buf *buf)
