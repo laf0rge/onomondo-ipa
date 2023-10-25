@@ -23,7 +23,7 @@ struct ipa_buf {
 };
 
 /*! Generate a hexdump string from an ipa_buf object.
- *  \param[in] buf pointer to ss_buf object.
+ *  \param[in] buf pointer to ipa_buf object.
  *  \returns pointer to generated human readable string. */
 static inline char *ipa_buf_hexdump(const struct ipa_buf *buf)
 {
