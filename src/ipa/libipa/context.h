@@ -2,7 +2,7 @@
 
 struct ipa_config;
 
-/* Context for one softsim instance. */
+/* Context for one IPA instance. */
 struct ipa_context {
 	struct ipa_config *cfg;	
 	void *http_ctx;
