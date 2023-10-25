@@ -27,6 +27,8 @@ struct ipa_buf {
  *  \returns pointer to generated human readable string. */
 static inline char *ipa_buf_hexdump(const struct ipa_buf *buf)
 {
+	if (!buf)
+		return "(null)";
 	return ipa_hexdump(buf->data, buf->len);
 }
 
