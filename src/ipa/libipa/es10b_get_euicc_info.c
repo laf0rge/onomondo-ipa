@@ -21,7 +21,7 @@
 #include <EUICCInfo1.h>
 #include <EUICCInfo2.h>
 
-static struct ipa_buf *enc_get_euicc1_info(void)
+static struct ipa_buf *enc_get_euicc_info1(void)
 {
 	struct GetEuiccInfo1Request asn = { 0 };
 	asn_enc_rval_t rc;
@@ -38,7 +38,7 @@ static struct ipa_buf *enc_get_euicc1_info(void)
 	return buf_encoded;
 }
 
-static int dec_get_euicc1_info(struct ipa_es10b_euicc_info *euicc_info, struct ipa_buf *es10b_res)
+static int dec_get_euicc_info1(struct ipa_es10b_euicc_info *euicc_info, struct ipa_buf *es10b_res)
 {
 	asn_dec_rval_t rc;
 	struct EUICCInfo1 *asn = NULL;
@@ -80,7 +80,7 @@ struct ipa_es10b_euicc_info *get_euicc_info1(struct ipa_context *ctx)
 	memset(euicc_info, 0, sizeof(*euicc_info));
 
 	/* Request minimal set of the eUICC information */
-	es10b_req = enc_get_euicc1_info();
+	es10b_req = enc_get_euicc_info1();
 	if (!es10b_req) {
 		IPA_LOGP_ES10B("GetEuiccInfo1Request", LERROR, "unable to encode ES10b request\n");
 		goto error;
@@ -92,7 +92,8 @@ struct ipa_es10b_euicc_info *get_euicc_info1(struct ipa_context *ctx)
 		goto error;
 	}
 
-	rc = dec_get_euicc1_info(euicc_info, es10b_res);
+	rc = dec_get_euicc_info1(euicc_info, es10b_res);
+
 	if (rc < 0)
 		goto error;
 
@@ -106,7 +107,7 @@ error:
 	return NULL;
 }
 
-static int dec_get_euicc2_info(struct ipa_es10b_euicc_info *euicc_info, struct ipa_buf *es10b_res)
+static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, struct ipa_buf *es10b_res)
 {
 	asn_dec_rval_t rc;
 	struct EUICCInfo2 *asn = NULL;
@@ -171,7 +172,7 @@ static int dec_get_euicc2_info(struct ipa_es10b_euicc_info *euicc_info, struct i
 	return 0;
 }
 
-static struct ipa_buf *enc_get_euicc2_info(void)
+static struct ipa_buf *enc_get_euicc_info2(void)
 {
 	struct GetEuiccInfo2Request asn = { 0 };
 	asn_enc_rval_t rc;
@@ -200,7 +201,7 @@ struct ipa_es10b_euicc_info *get_euicc_info2(struct ipa_context *ctx)
 	euicc_info->full = true;
 
 	/* Request full set of the eUICC information */
-	es10b_req = enc_get_euicc2_info();
+	es10b_req = enc_get_euicc_info2();
 	if (!es10b_req) {
 		IPA_LOGP_ES10B("GetEuiccInfo2Request", LERROR, "unable to encode ES10b request\n");
 		goto error;
@@ -212,7 +213,8 @@ struct ipa_es10b_euicc_info *get_euicc_info2(struct ipa_context *ctx)
 		goto error;
 	}
 
-	rc = dec_get_euicc2_info(euicc_info, es10b_res);
+	rc = dec_get_euicc_info2(euicc_info, es10b_res);
+
 	if (rc < 0)
 		goto error;
 
