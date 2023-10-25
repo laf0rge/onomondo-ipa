@@ -69,7 +69,7 @@ void testme_get_euicc_info(struct ipa_context *ctx)
 
 /* A testcase to try out the ES10b function GetEuiccInfo, see also TC_es10b_get_euicc_info */
 void testme_get_euicc_challenge(struct ipa_context *ctx) {
-	uint8_t euicc_challenge[IPA_ES10B_EUICC_CHALLENGE_LEN];
+	uint8_t euicc_challenge[IPA_LEN_EUICC_CHALLENGE];
 	int rc;
 	rc = ipa_es10b_get_euicc_challenge(ctx, euicc_challenge);
 

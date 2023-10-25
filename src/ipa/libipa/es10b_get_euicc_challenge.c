@@ -12,6 +12,7 @@
 #include <onomondo/ipa/scard.h>
 #include <onomondo/ipa/log.h>
 #include "context.h"
+#include "length.h"
 #include "utils.h"
 #include "euicc.h"
 #include "es10b.h"
@@ -51,7 +52,7 @@ static int dec_get_euicc2_challenge(uint8_t *euicc_challenge, struct ipa_buf *es
 	asn_fprint(stderr, &asn_DEF_GetEuiccChallengeResponse, asn);
 #endif
 
-	COPY_ASN_BUF(euicc_challenge, IPA_ES10B_EUICC_CHALLENGE_LEN, &asn->euiccChallenge);
+	COPY_ASN_BUF(euicc_challenge, IPA_LEN_EUICC_CHALLENGE, &asn->euiccChallenge);
 	ASN_STRUCT_FREE(asn_DEF_GetEuiccChallengeResponse, asn);
 
 	return 0;
