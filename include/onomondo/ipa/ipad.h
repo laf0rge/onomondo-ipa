@@ -6,7 +6,7 @@
 
 struct ipa_context;
 
-/* Context for one softsim instance. */
+/* IPA Configuration */
 struct ipa_config {
 	char default_smdp_addr[IPA_LEN_FQDN];
 	char eim_addr[IPA_LEN_FQDN];
