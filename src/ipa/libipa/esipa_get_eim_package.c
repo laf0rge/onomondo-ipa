@@ -41,8 +41,8 @@ static struct ipa_eim_package *dec_profile_dwnld_trig_req(ProfileDownloadTrigger
 	struct ProfileDownloadData *pdd;
 
 	if (!pdtr->profileDownloadData) {
-		IPA_LOGP(SIPA, LERROR,
-			 "profile download trigger request did not contain any profile download data.\n");
+		IPA_LOGP_ESIPA("GetEimPackage.ProfileDownloadTriggerRequest", LERROR,
+			 "request did not contain any profile download data.\n");
 		return NULL;
 	}
 	pdd = pdtr->profileDownloadData;
@@ -51,7 +51,7 @@ static struct ipa_eim_package *dec_profile_dwnld_trig_req(ProfileDownloadTrigger
 	case ProfileDownloadData_PR_activationCode:
 		if (pdd->choice.activationCode.size >
 		    sizeof(eim_package->u.ac.code)) {
-			IPA_LOGP(SIPA, LERROR,
+			IPA_LOGP_ESIPA("GetEimPackage.ProfileDownloadTriggerRequest", LERROR,
 				 "no space for over-long activation code!\n");
 			goto error;
 		}
@@ -71,7 +71,8 @@ static struct ipa_eim_package *dec_profile_dwnld_trig_req(ProfileDownloadTrigger
 		assert(NULL);
 		break;
 	default:
-		IPA_LOGP(SIPA, LERROR, "Profile download data is empty!\n");
+		IPA_LOGP_ESIPA("GetEimPackage.ProfileDownloadTriggerRequest", LERROR,
+			       "Profile download data is empty!\n");
 		break;
 	}
 
@@ -86,7 +87,7 @@ static struct ipa_eim_package *dec_get_eim_package_req(struct ipa_buf *msg_to_ip
 	struct ipa_eim_package *eim_package = NULL;
 
 	if (msg_to_ipa_encoded->len == 0) {
-		IPA_LOGP(SIPA, LERROR, "eIM response contained no data!\n");
+		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "eIM response contained no data!\n");
 		return NULL;
 	}
 
@@ -95,8 +96,7 @@ static struct ipa_eim_package *dec_get_eim_package_req(struct ipa_buf *msg_to_ip
 			msg_to_ipa_encoded->len);
 
 	if (rc.code != RC_OK) {
-		IPA_LOGP(SIPA, LERROR,
-			 "cannot decode eIM response! (invalid asn1c)\n");
+		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "cannot decode eIM response!\n");
 		return NULL;
 	}
 
@@ -106,7 +106,7 @@ static struct ipa_eim_package *dec_get_eim_package_req(struct ipa_buf *msg_to_ip
 
 	if (msg_to_ipa->present !=
 	    EsipaMessageFromEimToIpa_PR_getEimPackageResponse) {
-		IPA_LOGP(SIPA, LERROR, "eIM response is not an eIM package\n");
+		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "eIM response is not an eIM package\n");
 		goto error;
 	}
 
@@ -133,7 +133,7 @@ static struct ipa_eim_package *dec_get_eim_package_req(struct ipa_buf *msg_to_ip
 		eim_package->type = IPA_EIM_PACKAGE_ERR;
 		break;
 	default:
-		IPA_LOGP(SIPA, LERROR, "eIM package is empty!\n");
+		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "eIM package is empty!\n");
 		break;
 	}
 
@@ -149,15 +149,15 @@ struct ipa_eim_package *ipa_esipa_get_eim_package(struct ipa_context *ctx, uint8
 	struct ipa_buf *esipa_res;
 	struct ipa_eim_package *eim_package = NULL;
 	int rc;
-	
-	IPA_LOGP(SIPA, LINFO, "Requesting eIM package for eID:%s...\n",
+
+	IPA_LOGP_ESIPA("GetEimPackage", LINFO, "Requesting eIM package for eID:%s...\n",
 		 ipa_hexdump(eid, IPA_LEN_EID));
 
 	esipa_req = enc_get_eim_package_req(eid);
 	esipa_res = ipa_buf_alloc(IPA_LIMIT_HTTP_REQ);
 	rc = ipa_http_req(ctx->http_ctx, esipa_res, esipa_req, ipa_esipa_get_eim_url(ctx));
 	if (rc < 0) {
-		IPA_LOGP(SIPA, LERROR, "eIM package request failed!\n");
+		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "eIM package request failed!\n");
 		goto error;
 	}
 
