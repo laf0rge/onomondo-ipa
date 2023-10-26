@@ -17,6 +17,7 @@ enum log_subsys {
 	SIPA,
 	SES10B,
 	SEUICC,
+	SESIPA,
 	_NUM_LOG_SUBSYS
 };
 

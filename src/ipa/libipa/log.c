@@ -14,6 +14,7 @@ static uint32_t subsys_lvl[_NUM_LOG_SUBSYS] = {
 	[SIPA] = LDEBUG,
 	[SES10B] = LDEBUG,
 	[SEUICC] = LDEBUG,
+	[SESIPA] = LDEBUG,
 };
 
 static const char *subsys_str[_NUM_LOG_SUBSYS] = {
@@ -23,6 +24,7 @@ static const char *subsys_str[_NUM_LOG_SUBSYS] = {
 	[SIPA] = "IPA",
 	[SES10B] = "ES10b",
 	[SEUICC] = "eUICC",
+	[SESIPA] = "ESIPA",
 };
 
 static const char *level_str[_NUM_LOG_LEVEL] = {
