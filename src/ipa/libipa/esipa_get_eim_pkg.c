@@ -16,13 +16,14 @@ static struct ipa_buf *enc_get_eim_pkg_req(uint8_t *eid_value)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim;
 	asn_enc_rval_t rc;
-	struct ipa_buf *buf_encoded = ipa_buf_alloc(1024);
+	struct ipa_buf *buf_encoded;
 
 	memset(&msg_to_eim, 0, sizeof(msg_to_eim));
 	msg_to_eim.present = EsipaMessageFromIpaToEim_PR_getEimPackageRequest;
 	msg_to_eim.choice.getEimPackageRequest.eidValue.buf = eid_value;
 	msg_to_eim.choice.getEimPackageRequest.eidValue.size = IPA_LEN_EID;
 
+	buf_encoded = ipa_buf_alloc(1024);
 	assert(buf_encoded);
 	rc = der_encode(&asn_DEF_EsipaMessageFromIpaToEim, &msg_to_eim,
 			ipa_asn1c_consume_bytes_cb, buf_encoded);
