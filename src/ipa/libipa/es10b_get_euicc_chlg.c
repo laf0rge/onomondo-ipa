@@ -21,7 +21,7 @@
 #include "GetEuiccChallengeResponse.h"
 #include "Octet16.h"
 
-static struct ipa_buf *enc_get_euicc1_challenge(void)
+static struct ipa_buf *enc_get_euicc_chlg(void)
 {
 	struct GetEuiccChallengeRequest asn = { 0 };
 	asn_enc_rval_t rc;
@@ -38,7 +38,7 @@ static struct ipa_buf *enc_get_euicc1_challenge(void)
 	return buf_encoded;
 }
 
-static int dec_get_euicc2_challenge(uint8_t *euicc_challenge, struct ipa_buf *es10b_res)
+static int dec_get_euicc_chlg(uint8_t *euicc_chlg, struct ipa_buf *es10b_res)
 {
 	asn_dec_rval_t rc;
 	struct GetEuiccChallengeResponse *asn = NULL;
@@ -52,19 +52,19 @@ static int dec_get_euicc2_challenge(uint8_t *euicc_challenge, struct ipa_buf *es
 	asn_fprint(stderr, &asn_DEF_GetEuiccChallengeResponse, asn);
 #endif
 
-	COPY_ASN_BUF(euicc_challenge, IPA_LEN_EUICC_CHALLENGE, &asn->euiccChallenge);
+	COPY_ASN_BUF(euicc_chlg, IPA_LEN_EUICC_CHLG, &asn->euiccChallenge);
 	ASN_STRUCT_FREE(asn_DEF_GetEuiccChallengeResponse, asn);
 
 	return 0;
 }
 
-int ipa_es10b_get_euicc_challenge(struct ipa_context *ctx, uint8_t *euicc_challenge)
+int ipa_es10b_get_euicc_chlg(struct ipa_context *ctx, uint8_t *euicc_chlg)
 {
 	struct ipa_buf *es10b_req = NULL;
 	struct ipa_buf *es10b_res = NULL;
 	int rc = -EINVAL;
 
-	es10b_req = enc_get_euicc1_challenge();
+	es10b_req = enc_get_euicc_chlg();
 	if (!es10b_req) {
 		IPA_LOGP_ES10B("GetEuiccChallengeRequest", LERROR, "unable to encode ES10b request\n");
 		goto error;
@@ -76,7 +76,7 @@ int ipa_es10b_get_euicc_challenge(struct ipa_context *ctx, uint8_t *euicc_challe
 		goto error;
 	}
 
-	rc = dec_get_euicc2_challenge(euicc_challenge, es10b_res);
+	rc = dec_get_euicc_chlg(euicc_chlg, es10b_res);
 	if (rc < 0)
 		goto error;
 

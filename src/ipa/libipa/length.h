@@ -4,4 +4,4 @@
 
 #define IPA_LEN_AC 1024		/* bytes */
 #define IPA_LEN_EID 16		/* bytes */
-#define IPA_LEN_EUICC_CHALLENGE 16
+#define IPA_LEN_EUICC_CHLG 16

@@ -67,30 +67,30 @@ void testme_get_euicc_info(struct ipa_context *ctx)
 	ipa_es10b_free_euicc_info(euicc_info);
 }
 
-/* A testcase to try out the ES10b function GetEuiccInfo, see also TC_es10b_get_euicc_info */
-void testme_get_euicc_challenge(struct ipa_context *ctx) {
-	uint8_t euicc_challenge[IPA_LEN_EUICC_CHALLENGE];
+/* A testcase to try out the ES10b function GetEuiccInfo, see also TC_es10b_get_euicc_chlg */
+void testme_get_euicc_chlg(struct ipa_context *ctx) {
+	uint8_t euicc_chlg[IPA_LEN_EUICC_CHLG];
 	int rc;
-	rc = ipa_es10b_get_euicc_challenge(ctx, euicc_challenge);
+	rc = ipa_es10b_get_euicc_chlg(ctx, euicc_chlg);
 
 	printf("============> GOT EUICC CHALLENGE: %s (rc=%d)\n",
-	       ipa_hexdump(euicc_challenge, sizeof(euicc_challenge)), rc);
+	       ipa_hexdump(euicc_chlg, sizeof(euicc_chlg)), rc);
 }
 
-/* A testcase to try out the ESipa function GetEimPackage, see also TC_esipa_get_eim_package */
-void testme_get_eim_package(struct ipa_context *ctx) {
-	struct ipa_eim_package *eim_package;
-	eim_package = ipa_esipa_get_eim_package(ctx, (uint8_t*)"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F");
-	ipa_dump_eim_package(eim_package, 0, SIPA, LINFO);
-	ipa_free_eim_package(eim_package);
+/* A testcase to try out the ESipa function GetEimPackage, see also TC_esipa_get_eim_pkg */
+void testme_get_eim_pkg(struct ipa_context *ctx) {
+	struct ipa_eim_pkg *eim_pkg;
+	eim_pkg = ipa_esipa_get_eim_pkg(ctx, (uint8_t*)"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F");
+	ipa_dump_eim_pkg(eim_pkg, 0, SIPA, LINFO);
+	ipa_free_eim_pkg(eim_pkg);
 }
 
 void ipa_poll(struct ipa_context *ctx)
 {
 //	testme_es10x(ctx);
 //	testme_get_euicc_info(ctx);
-//	testme_get_euicc_challenge(ctx);
-	testme_get_eim_package(ctx);
+	testme_get_euicc_chlg(ctx);
+//	testme_get_eim_pkg(ctx);
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)
