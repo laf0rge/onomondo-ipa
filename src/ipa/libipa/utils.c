@@ -52,6 +52,7 @@ int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv)
 	struct ipa_buf *buf_encoded = priv;
 
 	assert(priv);
+	assert(buffer);
 
 	/* Check whether we still have enough space to store the encoding
 	 * results. */
