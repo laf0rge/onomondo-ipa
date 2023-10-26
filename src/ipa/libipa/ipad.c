@@ -7,11 +7,11 @@
 #include <onomondo/ipa/log.h>
 #include <onomondo/ipa/ipad.h>
 #include <onomondo/ipa/utils.h>
-#include "esipa_get_eim_package.h"
+#include "esipa_get_eim_pkg.h"
 #include "context.h"
 #include "euicc.h"
 #include "es10b_get_euicc_info.h"
-#include "es10b_get_euicc_challenge.h"
+#include "es10b_get_euicc_chlg.h"
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 {

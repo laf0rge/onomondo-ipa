@@ -16,7 +16,7 @@
 #include "utils.h"
 #include "euicc.h"
 #include "es10b.h"
-#include "es10b_get_euicc_challenge.h"
+#include "es10b_get_euicc_chlg.h"
 #include "GetEuiccChallengeRequest.h"
 #include "GetEuiccChallengeResponse.h"
 #include "Octet16.h"

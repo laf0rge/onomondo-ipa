@@ -6,7 +6,7 @@
 #include "length.h"
 #include "context.h"
 #include "esipa.h"
-#include "esipa_get_eim_package.h"
+#include "esipa_get_eim_pkg.h"
 #include <EsipaMessageFromIpaToEim.h>
 #include <EsipaMessageFromEimToIpa.h>
 #include <GetEimPackageRequest.h>
