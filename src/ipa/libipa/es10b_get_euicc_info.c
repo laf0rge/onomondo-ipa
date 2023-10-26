@@ -103,7 +103,7 @@ struct ipa_es10b_euicc_info *get_euicc_info1(struct ipa_context *ctx)
 error:
 	IPA_FREE(es10b_req);
 	IPA_FREE(es10b_res);
-	ipa_es10b_free_euicc_info(euicc_info);
+	ipa_es10b_get_euicc_info_free(euicc_info);
 	return NULL;
 }
 
@@ -224,7 +224,7 @@ struct ipa_es10b_euicc_info *get_euicc_info2(struct ipa_context *ctx)
 error:
 	IPA_FREE(es10b_req);
 	IPA_FREE(es10b_res);
-	ipa_es10b_free_euicc_info(euicc_info);
+	ipa_es10b_get_euicc_info_free(euicc_info);
 	return NULL;
 }
 
@@ -242,8 +242,8 @@ struct ipa_es10b_euicc_info *ipa_es10b_get_euicc_info(struct ipa_context *ctx, b
 
 /*! Dump eUICC info.
  *  \param[in] euicc_info pointer to struct that holds the eUICC info. */
-void ipa_es10b_dump_euicc_info(struct ipa_es10b_euicc_info *euicc_info,
-			       uint8_t indent, enum log_subsys log_subsys, enum log_level log_level)
+void ipa_es10b_get_euicc_info_dump(struct ipa_es10b_euicc_info *euicc_info,
+				   uint8_t indent, enum log_subsys log_subsys, enum log_level log_level)
 {
 	char indent_str[256];
 	int i;
@@ -337,7 +337,7 @@ void ipa_es10b_dump_euicc_info(struct ipa_es10b_euicc_info *euicc_info,
 
 /*! Free eUICC info.
  *  \param[inout] euicc_info pointer to struct that holds the eUICC info. */
-void ipa_es10b_free_euicc_info(struct ipa_es10b_euicc_info *euicc_info)
+void ipa_es10b_get_euicc_info_free(struct ipa_es10b_euicc_info *euicc_info)
 {
 	int i;
 

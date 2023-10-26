@@ -169,8 +169,8 @@ error:
 	return eim_pkg;
 }
 
-void ipa_dump_eim_pkg(struct ipa_eim_pkg *eim_pkg, uint8_t indent,
-			  enum log_subsys log_subsys, enum log_level log_level)
+void ipa_esipa_get_eim_pkg_dump(struct ipa_eim_pkg *eim_pkg, uint8_t indent,
+				enum log_subsys log_subsys, enum log_level log_level)
 {
 	char indent_str[256];
 
@@ -201,7 +201,7 @@ void ipa_dump_eim_pkg(struct ipa_eim_pkg *eim_pkg, uint8_t indent,
 
 }
 
-void ipa_free_eim_pkg(struct ipa_eim_pkg *eim_pkg)
+void ipa_esipa_get_eim_pkg_free(struct ipa_eim_pkg *eim_pkg)
 {
 	if (!eim_pkg)
 		return;

@@ -59,12 +59,12 @@ void testme_get_euicc_info(struct ipa_context *ctx)
 {
 	struct ipa_es10b_euicc_info *euicc_info;
 	euicc_info = ipa_es10b_get_euicc_info(ctx, false);
-	ipa_es10b_dump_euicc_info(euicc_info, 0, SES10B, LINFO);
-	ipa_es10b_free_euicc_info(euicc_info);
+	ipa_es10b_get_euicc_info_dump(euicc_info, 0, SES10B, LINFO);
+	ipa_es10b_get_euicc_info_free(euicc_info);
 
 	euicc_info = ipa_es10b_get_euicc_info(ctx, true);
-	ipa_es10b_dump_euicc_info(euicc_info, 0, SES10B, LINFO);
-	ipa_es10b_free_euicc_info(euicc_info);
+	ipa_es10b_get_euicc_info_dump(euicc_info, 0, SES10B, LINFO);
+	ipa_es10b_get_euicc_info_free(euicc_info);
 }
 
 /* A testcase to try out the ES10b function GetEuiccInfo, see also TC_es10b_get_euicc_chlg */
@@ -81,8 +81,8 @@ void testme_get_euicc_chlg(struct ipa_context *ctx) {
 void testme_get_eim_pkg(struct ipa_context *ctx) {
 	struct ipa_eim_pkg *eim_pkg;
 	eim_pkg = ipa_esipa_get_eim_pkg(ctx, (uint8_t*)"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F");
-	ipa_dump_eim_pkg(eim_pkg, 0, SIPA, LINFO);
-	ipa_free_eim_pkg(eim_pkg);
+	ipa_esipa_get_eim_pkg_dump(eim_pkg, 0, SIPA, LINFO);
+	ipa_esipa_get_eim_pkg_free(eim_pkg);
 }
 
 void ipa_poll(struct ipa_context *ctx)
