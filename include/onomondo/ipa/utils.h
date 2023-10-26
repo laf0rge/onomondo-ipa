@@ -73,6 +73,18 @@ static inline struct ipa_buf *ipa_buf_copy(const struct ipa_buf *buf)
 	return buf_dup;
 }
 
+/*! Allocate a new ipa_buf and copy from user provided memory.
+ *  \param[in] in user provided memory to copy.
+ *  \param[in] len amount of bytes to copy from user provided memory.
+ *  \returns pointer to newly allocated ss_buf object. */
+static inline struct ipa_buf *ipa_buf_alloc_and_cpy(const uint8_t *in, size_t len)
+{
+	struct ipa_buf *buf = ipa_buf_alloc(len);
+	memcpy(buf->data, in, len);
+	buf->len = len;
+	return buf;
+}
+
 /*! Free an ipa_buf object.
  *  \param[in] pointer to ipa_buf object to free. */
 static inline void ipa_buf_free(struct ipa_buf *buf)
