@@ -42,6 +42,7 @@ static int dec_get_euicc_chlg(uint8_t *euicc_chlg, struct ipa_buf *es10b_res)
 {
 	asn_dec_rval_t rc;
 	struct GetEuiccChallengeResponse *asn = NULL;
+	uint8_t euicc_chlg_buf[IPA_LEN_EUICC_CHLG];
 
 	rc = ber_decode(0, &asn_DEF_GetEuiccChallengeResponse, (void **)&asn, es10b_res->data, es10b_res->len);
 	if (rc.code != RC_OK) {
@@ -52,7 +53,8 @@ static int dec_get_euicc_chlg(uint8_t *euicc_chlg, struct ipa_buf *es10b_res)
 	asn_fprint(stderr, &asn_DEF_GetEuiccChallengeResponse, asn);
 #endif
 
-	IPA_COPY_ASN_BUF(euicc_chlg, IPA_LEN_EUICC_CHLG, &asn->euiccChallenge);
+	IPA_COPY_ASN_BUF(euicc_chlg_buf, &asn->euiccChallenge);
+	memcpy(euicc_chlg, euicc_chlg_buf, sizeof(euicc_chlg_buf));
 	ASN_STRUCT_FREE(asn_DEF_GetEuiccChallengeResponse, asn);
 
 	return 0;

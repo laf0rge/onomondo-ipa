@@ -47,13 +47,14 @@ static int dec_get_euicc_info1(struct ipa_es10b_euicc_info *euicc_info, struct i
 	rc = ber_decode(0, &asn_DEF_EUICCInfo1, (void **)&asn, es10b_res->data, es10b_res->len);
 	if (rc.code != RC_OK) {
 		IPA_LOGP_ES10B("GetEuiccInfo1Request", LERROR, "cannot decode eUICC response! (invalid asn1c)\n");
+		ASN_STRUCT_FREE(asn_DEF_EUICCInfo1, asn);
 		return -EINVAL;
 	}
 #ifdef IPA_DEBUG_ASN1
 	asn_fprint(stderr, &asn_DEF_EUICCInfo1, asn);
 #endif
 
-	IPA_COPY_ASN_BUF(euicc_info->svn, sizeof(euicc_info->svn), &asn->svn);
+	IPA_COPY_ASN_BUF(euicc_info->svn, &asn->svn);
 
 	for (i = 0; i < asn->euiccCiPKIdListForVerification.list.count; i++) {
 		euicc_info->ci_pkid_verf[i] = IPA_BUF_FROM_ASN(asn->euiccCiPKIdListForVerification.list.array[i]);
@@ -116,13 +117,14 @@ static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, struct i
 	rc = ber_decode(0, &asn_DEF_EUICCInfo2, (void **)&asn, es10b_res->data, es10b_res->len);
 	if (rc.code != RC_OK) {
 		IPA_LOGP_ES10B("GetEuiccInfo2Request", LERROR, "cannot decode eUICC response! (invalid asn1c)\n");
+		ASN_STRUCT_FREE(asn_DEF_EUICCInfo2, asn);
 		return -EINVAL;
 	}
 #ifdef IPA_DEBUG_ASN1
 	asn_fprint(stderr, &asn_DEF_EUICCInfo2, asn);
 #endif
 
-	IPA_COPY_ASN_BUF(euicc_info->svn, sizeof(euicc_info->svn), &asn->svn);
+	IPA_COPY_ASN_BUF(euicc_info->svn, &asn->svn);
 
 	for (i = 0; i < asn->euiccCiPKIdListForVerification.list.count; i++) {
 		euicc_info->ci_pkid_verf[i] = IPA_BUF_FROM_ASN(asn->euiccCiPKIdListForVerification.list.array[i]);
@@ -134,17 +136,17 @@ static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, struct i
 		euicc_info->ci_pkid_sign_count = i + 1;
 	}
 
-	IPA_COPY_ASN_BUF(euicc_info->profile_version, sizeof(euicc_info->profile_version), &asn->profileVersion);
-	IPA_COPY_ASN_BUF(euicc_info->firmware_version, sizeof(euicc_info->firmware_version), &asn->euiccFirmwareVer);
+	IPA_COPY_ASN_BUF(euicc_info->profile_version, &asn->profileVersion);
+	IPA_COPY_ASN_BUF(euicc_info->firmware_version, &asn->euiccFirmwareVer);
 	if (asn->ts102241Version) {
-		IPA_COPY_ASN_BUF(euicc_info->ts_102241_version, sizeof(euicc_info->firmware_version), asn->ts102241Version);
+		IPA_COPY_ASN_BUF(euicc_info->ts_102241_version, asn->ts102241Version);
 		euicc_info->ts_102241_version_present = true;
 	}
 	if (asn->globalplatformVersion) {
-		IPA_COPY_ASN_BUF(euicc_info->gp_version, sizeof(euicc_info->firmware_version), asn->globalplatformVersion);
+		IPA_COPY_ASN_BUF(euicc_info->gp_version, asn->globalplatformVersion);
 		euicc_info->gp_version_present = true;
 	}
-	IPA_COPY_ASN_BUF(euicc_info->pp_version, sizeof(euicc_info->firmware_version), &asn->ppVersion);
+	IPA_COPY_ASN_BUF(euicc_info->pp_version, &asn->ppVersion);
 
 	euicc_info->ext_card_resource = IPA_BUF_FROM_ASN(&asn->extCardResource);
 	euicc_info->uicc_capability = IPA_BUF_FROM_ASN(&asn->uiccCapability);
