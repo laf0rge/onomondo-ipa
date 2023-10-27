@@ -16,6 +16,8 @@
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 {
 	struct ipa_context *ctx;
+	int rc;
+
 	ctx = IPA_ALLOC(struct ipa_context);
 	assert(cfg);
 	memset(ctx, 0, sizeof(*ctx));
@@ -27,6 +29,10 @@ struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 
 	ctx->scard_ctx = ipa_scard_init(cfg->reader_num);
 	if (!ctx->scard_ctx)
+		goto error;
+
+	rc = ipa_euicc_init_es10x(ctx);
+	if (rc < 0)
 		goto error;
 
 	return ctx;

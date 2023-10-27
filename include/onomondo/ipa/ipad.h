@@ -14,6 +14,7 @@ struct ipa_config {
 
 	/* ID number of the cardreader that interfaces the eUICC */
 	unsigned int reader_num;
+	uint8_t euicc_channel;
 };
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg);

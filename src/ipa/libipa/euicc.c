@@ -11,6 +11,7 @@
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/scard.h>
 #include <onomondo/ipa/log.h>
+#include <onomondo/ipa/ipad.h>
 #include "context.h"
 
 #define STORE_DATA_CLA 0x80
@@ -20,6 +21,12 @@
 
 #define GET_RESPONSE_CLA 0x00
 #define GET_RESPONSE_INS 0xC0
+
+#define SELECT_CLA 0x00
+#define SELECT_INS 0xA4
+
+#define MANAGE_CHANNEL_CLA 0x00
+#define MANAGE_CHANNEL_INS 0x70
 
 #define MAX_BLOCKSIZE_TX 255
 #define MAX_BLOCKSIZE_RX 255
@@ -105,6 +112,7 @@ static int send_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	struct res_apdu res_apdu = { 0 };
 	struct ipa_buf *buf_req;
 	struct ipa_buf *buf_res;
+	uint8_t channel = ctx->cfg->euicc_channel;
 
 	buf_res = ipa_buf_alloc(MAX_BLOCKSIZE_TX + 2);
 	assert(buf_res);
@@ -113,7 +121,7 @@ static int send_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 
 	/* fill in request APDU for STORE DATA
 	 * (see also GSMA SGP.22, section 5.7.2) */
-	req_apdu.cla = STORE_DATA_CLA;
+	req_apdu.cla = STORE_DATA_CLA | channel;
 	req_apdu.ins = STORE_DATA_INS;
 	if (len_req > MAX_BLOCKSIZE_TX)
 		req_apdu.p1 = STORE_DATA_P1_MORE_BLOCKS;
@@ -167,6 +175,10 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	struct res_apdu res_apdu = { 0 };
 	struct ipa_buf *buf_req;
 	struct ipa_buf *buf_res;
+	uint8_t channel = ctx->cfg->euicc_channel;
+
+	/* We only support channel 0-3 */
+	assert(channel <= 3);
 
 	buf_res = ipa_buf_alloc(MAX_BLOCKSIZE_RX + 2);
 	assert(buf_res);
@@ -181,7 +193,7 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 
 	/* fill in request APDU for GET RESPONSE
 	 * (see also ISO/IEC 7816-4, 7.6.1) */
-	req_apdu.cla = GET_RESPONSE_CLA;
+	req_apdu.cla = GET_RESPONSE_CLA | channel;
 	req_apdu.ins = GET_RESPONSE_INS;
 	req_apdu.p1 = 0x00;
 	req_apdu.p2 = 0x00;
@@ -339,4 +351,128 @@ struct ipa_buf *ipa_euicc_transceive_es10x(struct ipa_context *ctx,
 	}
 
 	return es10x_res;
+}
+
+static int select_isd_r(struct ipa_context *ctx)
+{
+	const uint8_t aid_isd_r[] =
+	    { 0xA0, 0x00, 0x00, 0x05, 0x59, 0x10, 0x10, 0xFF, 0xFF, 0xFF, 0xFF, 0x89, 0x00, 0x00, 0x01, 0x00 };
+
+	int rc;
+	struct req_apdu req_apdu = { 0 };
+	struct res_apdu res_apdu = { 0 };
+	struct ipa_buf *buf_req = NULL;
+	struct ipa_buf *buf_res = NULL;
+	uint8_t channel = ctx->cfg->euicc_channel;
+
+	/* We only support channel 0-3 */
+	assert(channel <= 3);
+
+	buf_res = ipa_buf_alloc(MAX_BLOCKSIZE_RX + 2);
+	assert(buf_res);
+
+	/* SELECT ADF.ISD-R */
+	req_apdu.cla = SELECT_CLA | channel;
+	req_apdu.ins = SELECT_INS;
+	req_apdu.p1 = 0x04;
+	req_apdu.p2 = 0x04;
+	req_apdu.lc = 16;
+	req_apdu.le = 0;
+	memcpy(req_apdu.data, aid_isd_r, sizeof(aid_isd_r));
+	buf_req = format_req_apdu(&req_apdu);
+
+	rc = ipa_scard_transceive(ctx->scard_ctx, buf_res, buf_req);
+	if (rc < 0) {
+		IPA_LOGP(SEUICC, LERROR, "unable select ISD-R due to communication error\n");
+		rc = -EIO;
+		goto exit;
+	}
+
+	rc = parse_res_apdu(&res_apdu, buf_res);
+	if (rc < 0) {
+		IPA_LOGP(SEUICC, LERROR, "invalid response while selecting ISD-R\n");
+		rc = -EINVAL;
+		goto exit;
+	}
+
+	if ((res_apdu.sw & 0xFF00) != 0x6100) {
+		IPA_LOGP(SEUICC, LERROR, "failed to select ISD-R, sw=%04x\n", res_apdu.sw);
+		rc = -EINVAL;
+		goto exit;
+	}
+
+	IPA_LOGP(SEUICC, LINFO, "ISD-R selected\n");
+exit:
+	IPA_FREE(buf_req);
+	IPA_FREE(buf_res);
+	return rc;
+
+}
+
+static int open_channel(struct ipa_context *ctx)
+{
+	int rc;
+	struct req_apdu req_apdu = { 0 };
+	struct res_apdu res_apdu = { 0 };
+	struct ipa_buf *buf_req = NULL;
+	struct ipa_buf *buf_res = NULL;
+	uint8_t channel = ctx->cfg->euicc_channel;
+
+	/* We only support channel 0-3 */
+	assert(channel <= 3);
+
+	if (channel == 0) {
+		IPA_LOGP(SEUICC, LINFO, "using basic logical channel %u\n", channel);
+		return 0;
+	}
+
+	buf_res = ipa_buf_alloc(MAX_BLOCKSIZE_RX + 2);
+	assert(buf_res);
+
+	/* OPEN CHANNEL */
+	req_apdu.cla = MANAGE_CHANNEL_CLA;
+	req_apdu.ins = MANAGE_CHANNEL_INS;
+	req_apdu.p1 = 0x00;
+	req_apdu.p2 = channel;
+	req_apdu.lc = 0;
+	req_apdu.le = 0;
+	buf_req = format_req_apdu(&req_apdu);
+
+	rc = ipa_scard_transceive(ctx->scard_ctx, buf_res, buf_req);
+	if (rc < 0) {
+		IPA_LOGP(SEUICC, LERROR, "unable open logical channel %u due to communication error\n", channel);
+		rc = -EIO;
+		goto exit;
+	}
+
+	rc = parse_res_apdu(&res_apdu, buf_res);
+	if (rc < 0) {
+		IPA_LOGP(SEUICC, LERROR, "invalid response while opening logical channel %u\n", channel);
+		rc = -EINVAL;
+		goto exit;
+	}
+
+	if ((res_apdu.sw) != 0x9000) {
+		IPA_LOGP(SEUICC, LERROR, "failed to open logical channel %u, sw=%04x\n", channel, res_apdu.sw);
+		rc = -EINVAL;
+		goto exit;
+	}
+
+	IPA_LOGP(SEUICC, LINFO, "logical channel %u opened\n", channel);
+exit:
+	IPA_FREE(buf_req);
+	IPA_FREE(buf_res);
+	return rc;
+
+}
+
+int ipa_euicc_init_es10x(struct ipa_context *ctx)
+{
+	int rc;
+	rc = open_channel(ctx);
+	if (rc < 0)
+		return rc;
+
+	rc = select_isd_r(ctx);
+	return rc;
 }

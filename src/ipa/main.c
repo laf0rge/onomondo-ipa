@@ -37,6 +37,7 @@ int main(void)
 	strcpy(cfg.eim_addr, "127.0.0.1:4430");
 	cfg.eim_use_ssl = true;
 	cfg.reader_num = 0;
+	cfg.euicc_channel = 2;
 	ctx = ipa_new_ctx(&cfg);
 	if (!ctx) {
 		IPA_LOGP(LERROR, LINFO, "no context, initialization failed!\n");
