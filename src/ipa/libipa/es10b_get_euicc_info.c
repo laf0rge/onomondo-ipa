@@ -53,7 +53,7 @@ static int dec_get_euicc_info1(struct ipa_es10b_euicc_info *euicc_info, struct i
 	asn_fprint(stderr, &asn_DEF_EUICCInfo1, asn);
 #endif
 
-	COPY_ASN_BUF(euicc_info->svn, sizeof(euicc_info->svn), &asn->svn);
+	IPA_COPY_ASN_BUF(euicc_info->svn, sizeof(euicc_info->svn), &asn->svn);
 
 	for (i = 0; i < asn->euiccCiPKIdListForVerification.list.count; i++) {
 		euicc_info->ci_pkid_verf[i] = IPA_BUF_FROM_ASN(asn->euiccCiPKIdListForVerification.list.array[i]);
@@ -122,7 +122,7 @@ static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, struct i
 	asn_fprint(stderr, &asn_DEF_EUICCInfo2, asn);
 #endif
 
-	COPY_ASN_BUF(euicc_info->svn, sizeof(euicc_info->svn), &asn->svn);
+	IPA_COPY_ASN_BUF(euicc_info->svn, sizeof(euicc_info->svn), &asn->svn);
 
 	for (i = 0; i < asn->euiccCiPKIdListForVerification.list.count; i++) {
 		euicc_info->ci_pkid_verf[i] = IPA_BUF_FROM_ASN(asn->euiccCiPKIdListForVerification.list.array[i]);
@@ -134,17 +134,17 @@ static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, struct i
 		euicc_info->ci_pkid_sign_count = i + 1;
 	}
 
-	COPY_ASN_BUF(euicc_info->profile_version, sizeof(euicc_info->profile_version), &asn->profileVersion);
-	COPY_ASN_BUF(euicc_info->firmware_version, sizeof(euicc_info->firmware_version), &asn->euiccFirmwareVer);
+	IPA_COPY_ASN_BUF(euicc_info->profile_version, sizeof(euicc_info->profile_version), &asn->profileVersion);
+	IPA_COPY_ASN_BUF(euicc_info->firmware_version, sizeof(euicc_info->firmware_version), &asn->euiccFirmwareVer);
 	if (asn->ts102241Version) {
-		COPY_ASN_BUF(euicc_info->ts_102241_version, sizeof(euicc_info->firmware_version), asn->ts102241Version);
+		IPA_COPY_ASN_BUF(euicc_info->ts_102241_version, sizeof(euicc_info->firmware_version), asn->ts102241Version);
 		euicc_info->ts_102241_version_present = true;
 	}
 	if (asn->globalplatformVersion) {
-		COPY_ASN_BUF(euicc_info->gp_version, sizeof(euicc_info->firmware_version), asn->globalplatformVersion);
+		IPA_COPY_ASN_BUF(euicc_info->gp_version, sizeof(euicc_info->firmware_version), asn->globalplatformVersion);
 		euicc_info->gp_version_present = true;
 	}
-	COPY_ASN_BUF(euicc_info->pp_version, sizeof(euicc_info->firmware_version), &asn->ppVersion);
+	IPA_COPY_ASN_BUF(euicc_info->pp_version, sizeof(euicc_info->firmware_version), &asn->ppVersion);
 
 	euicc_info->ext_card_resource = IPA_BUF_FROM_ASN(&asn->extCardResource);
 	euicc_info->uicc_capability = IPA_BUF_FROM_ASN(&asn->uiccCapability);
@@ -160,11 +160,11 @@ static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, struct i
 		euicc_info->forb_profile_policy_rules_present = true;
 	}
 
-	euicc_info->sas_acreditation_number = STR_FROM_ASN(&asn->sasAcreditationNumber);
+	euicc_info->sas_acreditation_number = IPA_STR_FROM_ASN(&asn->sasAcreditationNumber);
 
 	if (asn->certificationDataObject) {
-		euicc_info->cert_platform_label = STR_FROM_ASN(&asn->certificationDataObject->platformLabel);
-		euicc_info->cert_discovery_base_url = STR_FROM_ASN(&asn->certificationDataObject->discoveryBaseURL);
+		euicc_info->cert_platform_label = IPA_STR_FROM_ASN(&asn->certificationDataObject->platformLabel);
+		euicc_info->cert_discovery_base_url = IPA_STR_FROM_ASN(&asn->certificationDataObject->discoveryBaseURL);
 		euicc_info->cert_data_present = true;
 	}
 

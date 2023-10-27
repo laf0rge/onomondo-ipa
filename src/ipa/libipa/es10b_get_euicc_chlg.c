@@ -52,7 +52,7 @@ static int dec_get_euicc_chlg(uint8_t *euicc_chlg, struct ipa_buf *es10b_res)
 	asn_fprint(stderr, &asn_DEF_GetEuiccChallengeResponse, asn);
 #endif
 
-	COPY_ASN_BUF(euicc_chlg, IPA_LEN_EUICC_CHLG, &asn->euiccChallenge);
+	IPA_COPY_ASN_BUF(euicc_chlg, IPA_LEN_EUICC_CHLG, &asn->euiccChallenge);
 	ASN_STRUCT_FREE(asn_DEF_GetEuiccChallengeResponse, asn);
 
 	return 0;

@@ -21,7 +21,7 @@ __ipa_buf; })
 /* \! Copy an ASN.1 string object into a dynamically allocated char array.
  *  \param[in] asn1_obj pointer to asn1c generated string object to read from.
  *  \returns null terminated char array with contents of asn1_obj. */
-#define STR_FROM_ASN(asn1_obj) ({ \
+#define IPA_STR_FROM_ASN(asn1_obj) ({ \
 assert(asn1_obj); \
 char *__str; \
 __str = IPA_ALLOC_N((asn1_obj)->size + 1);	\
@@ -33,7 +33,7 @@ __str; })
 /* \! Copy an ASN.1 string object into a pre-allocated buffer.
  *  \param[in] asn1_obj pointer to asn1c generated string object to read from.
  *  \returns 0 on success, -ENOMEM on failure. */
-#define COPY_ASN_BUF(dest_buf, dest_buf_len, asn1_obj) ({ \
+#define IPA_COPY_ASN_BUF(dest_buf, dest_buf_len, asn1_obj) ({ \
 int __rc = -ENOMEM; \
 memset(dest_buf, 0, dest_buf_len); \
 if (dest_buf_len >= (asn1_obj)->size) {			\
