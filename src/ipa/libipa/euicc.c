@@ -110,8 +110,8 @@ static int send_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	int rc;
 	struct req_apdu req_apdu = { 0 };
 	struct res_apdu res_apdu = { 0 };
-	struct ipa_buf *buf_req;
-	struct ipa_buf *buf_res;
+	struct ipa_buf *buf_req = NULL;
+	struct ipa_buf *buf_res = NULL;
 	uint8_t channel = ctx->cfg->euicc_channel;
 
 	buf_res = ipa_buf_alloc(MAX_BLOCKSIZE_TX + 2);
@@ -173,8 +173,8 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	int rc;
 	struct req_apdu req_apdu = { 0 };
 	struct res_apdu res_apdu = { 0 };
-	struct ipa_buf *buf_req;
-	struct ipa_buf *buf_res;
+	struct ipa_buf *buf_req = NULL;
+	struct ipa_buf *buf_res = NULL;
 	uint8_t channel = ctx->cfg->euicc_channel;
 
 	/* We only support channel 0-3 */
