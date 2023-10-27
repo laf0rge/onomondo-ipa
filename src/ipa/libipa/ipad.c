@@ -7,6 +7,7 @@
 #include <onomondo/ipa/log.h>
 #include <onomondo/ipa/ipad.h>
 #include <onomondo/ipa/utils.h>
+#include "esipa_init_auth.h"
 #include "esipa_get_eim_pkg.h"
 #include "context.h"
 #include "euicc.h"
@@ -92,12 +93,63 @@ void testme_get_eim_pkg(struct ipa_context *ctx)
 	ipa_esipa_get_eim_pkg_free(eim_pkg);
 }
 
+/* A testcase to try out the ESipa function InitiateAuthentication, see also TC_esipa_init_auth */
+void testme_init_auth(struct ipa_context *ctx)
+{
+	struct ipa_init_auth_req init_auth_req;
+	struct ipa_init_auth_res *init_auth_res;
+	unsigned int i;
+	uint8_t euicc_challenge[IPA_LEN_EUICC_CHLG] =
+	    { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
+	struct ipa_es10b_euicc_info euicc_info;
+
+	init_auth_req.euicc_challenge = euicc_challenge;
+
+	init_auth_req.smdp_addr_present = true;
+	init_auth_req.smdp_addr = "www.example.net";
+
+	memset(&euicc_info, 0, sizeof(euicc_info));
+	euicc_info.svn[0] = 0xAA;
+	euicc_info.svn[1] = 0xBB;
+	euicc_info.svn[2] = 0xCC;
+
+	euicc_info.ci_pkid_verf[euicc_info.ci_pkid_verf_count] = ipa_buf_alloc_and_cpy((uint8_t *) "123", 3);
+	euicc_info.ci_pkid_verf_count++;
+	euicc_info.ci_pkid_verf[euicc_info.ci_pkid_verf_count] = ipa_buf_alloc_and_cpy((uint8_t *) "456", 3);
+	euicc_info.ci_pkid_verf_count++;
+	euicc_info.ci_pkid_verf[euicc_info.ci_pkid_verf_count] = ipa_buf_alloc_and_cpy((uint8_t *) "789", 3);
+	euicc_info.ci_pkid_verf_count++;
+
+	euicc_info.ci_pkid_sign[euicc_info.ci_pkid_sign_count] = ipa_buf_alloc_and_cpy((uint8_t *) "ABC", 3);
+	euicc_info.ci_pkid_sign_count++;
+	euicc_info.ci_pkid_sign[euicc_info.ci_pkid_sign_count] = ipa_buf_alloc_and_cpy((uint8_t *) "DEF", 3);
+	euicc_info.ci_pkid_sign_count++;
+	euicc_info.ci_pkid_sign[euicc_info.ci_pkid_sign_count] = ipa_buf_alloc_and_cpy((uint8_t *) "GHI", 3);
+	euicc_info.ci_pkid_sign_count++;
+
+	init_auth_req.euicc_info_present = true;
+	init_auth_req.euicc_info = &euicc_info;
+
+	init_auth_res = ipa_esipa_init_auth(ctx, &init_auth_req);
+
+	for (i = 0; i < euicc_info.ci_pkid_verf_count; i++) {
+		IPA_FREE(euicc_info.ci_pkid_verf[i]);
+	}
+	for (i = 0; i < euicc_info.ci_pkid_sign_count; i++) {
+		IPA_FREE(euicc_info.ci_pkid_sign[i]);
+	}
+
+	ipa_esipa_init_auth_dump_res(init_auth_res, 0, SIPA, LINFO);
+	ipa_esipa_init_auth_free_res(init_auth_res);
+}
+
 void ipa_poll(struct ipa_context *ctx)
 {
-//	testme_es10x(ctx);
-//	testme_get_euicc_info(ctx);
-	testme_get_euicc_chlg(ctx);
-//	testme_get_eim_pkg(ctx);
+//      testme_es10x(ctx);
+//      testme_get_euicc_info(ctx);
+//      testme_get_euicc_chlg(ctx);
+//      testme_get_eim_pkg(ctx);
+	testme_init_auth(ctx);
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)
