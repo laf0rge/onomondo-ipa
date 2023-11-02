@@ -6,7 +6,9 @@
 /* \! Callback function to be passed to asn1c decoder function. */
 int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv);
 
-/* \! Copy an ASN.1 string object into a dynamically allocated IPA_BUF.
+/* \! Copy an ASN.1 string object into a dynamically allocated IPA_BUF. This macro is used in situations where the ASN.1
+ *    specification defines a string type with arbitrary length. Then the target buffer where the data is copied to will
+ *    be implemented as a pointer of type uint8_t.
  *  \param[in] asn1_obj pointer to asn1c generated string object to read from.
  *  \returns dynamically allocated IPA_BUF with contents of asn1_obj. */
 #define IPA_BUF_FROM_ASN(asn1_obj) ({ \
@@ -18,7 +20,9 @@ memcpy(__ipa_buf->data, (asn1_obj)->buf, (asn1_obj)->size);	\
 __ipa_buf->len = (asn1_obj)->size;				\
 __ipa_buf; })
 
-/* \! Copy an ASN.1 string object into a dynamically allocated char array.
+/* \! Copy an ASN.1 string object into a dynamically allocated char array. This macro is used in situations where the
+ *    ASN.1 specification defines a printable string of an arbitrary length. Then the target buffer where the data is
+ *    copied to will be implemented as a pointer of type char.
  *  \param[in] asn1_obj pointer to asn1c generated string object to read from.
  *  \returns null terminated char array with contents of asn1_obj. */
 #define IPA_STR_FROM_ASN(asn1_obj) ({ \
@@ -30,13 +34,10 @@ memcpy(__str, (asn1_obj)->buf, (asn1_obj)->size);	\
 __str[(asn1_obj)->size] = '\0';				\
 __str; })
 
-/* \! Copy an ASN.1 string object into a statically allocated buffer.
- *    This macro is used in situations where the ASN.1 specification defines
- *    a fixed length string type. Then the target buffer will be implemented
- *    as a fixed length statically allocated buffer. (To check the buffer
- *    sizes, this macro uses sizeof(dest_buf) and the size member of the
- *    ASN.1 object. The target buffer must be bigger or equal in size as
- *    the size of the ASN.1 string.)
+/* \! Copy an ASN.1 string object into a statically allocated buffer. This macro is used in situations where the ASN.1
+ *    specification defines a fixed length string type. Then the target buffer will be implemented as a fixed length
+ *    statically allocated buffer. (To check the buffer sizes, this macro uses sizeof(dest_buf) and the size member of
+ *    the ASN.1 object. The target buffer must be bigger or equal in size as the size of the ASN.1 string.)
  *  \param[out] dest_buf destination buffer where the data is copied to.
  *  \param[in] asn1_obj pointer to asn1c generated string object to read from.
  *  \returns 0 on success, -ENOMEM on failure. */
