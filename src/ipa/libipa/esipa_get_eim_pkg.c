@@ -98,7 +98,7 @@ static struct ipa_eim_pkg *dec_get_eim_pkg_req(struct ipa_buf *msg_to_ipa_encode
 
 	if (rc.code != RC_OK) {
 		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "cannot decode eIM response!\n");
-		return NULL;
+		goto error;
 	}
 
 #ifdef IPA_DEBUG_ASN1
