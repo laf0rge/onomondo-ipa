@@ -47,6 +47,7 @@ static int dec_get_euicc_chlg(uint8_t *euicc_chlg, struct ipa_buf *es10b_res)
 	rc = ber_decode(0, &asn_DEF_GetEuiccChallengeResponse, (void **)&asn, es10b_res->data, es10b_res->len);
 	if (rc.code != RC_OK) {
 		IPA_LOGP_ES10B("GetEuiccChallengeResponse", LERROR, "cannot decode eUICC response! (invalid asn1c)\n");
+		ASN_STRUCT_FREE(asn_DEF_GetEuiccChallengeResponse, asn);
 		return -EINVAL;
 	}
 #ifdef IPA_DEBUG_ASN1
