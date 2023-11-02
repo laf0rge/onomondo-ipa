@@ -9,6 +9,9 @@
 #define PREFIX_HTTPS "https://"
 #define SUFFIX "/gsma/rsp2/asn1"
 
+/*! Read the configured eIM URL (FQDN).
+ *  \param[in] ctx pointer to ipa_context.
+ *  \returns pointer to eIM URL (statically allocated, do not free). */
 char *ipa_esipa_get_eim_url(struct ipa_context *ctx)
 {
 	static char eim_url[IPA_ESIPA_URL_MAXLEN];
