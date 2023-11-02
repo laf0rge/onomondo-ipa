@@ -102,7 +102,7 @@ static struct ipa_eim_pkg *dec_get_eim_pkg_req(struct ipa_buf *msg_to_ipa_encode
 	}
 
 #ifdef IPA_DEBUG_ASN1
-	asn_fprint(stdout, &asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
+	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa, 0, SESIPA, LINFO);
 #endif
 
 	if (msg_to_ipa->present !=

@@ -1,10 +1,14 @@
 #pragma once
 
 #include <onomondo/ipa/utils.h>
+#include <onomondo/ipa/log.h>
 #include <stddef.h>
+struct asn_TYPE_descriptor_s;
 
 /* \! Callback function to be passed to asn1c decoder function. */
 int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv);
+void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_ptr, uint8_t indent, enum log_subsys log_subsys,
+		    enum log_level log_level);
 
 /* \! Copy an ASN.1 string object into a dynamically allocated IPA_BUF. This macro is used in situations where the ASN.1
  *    specification defines a string type with arbitrary length. Then the target buffer where the data is copied to will

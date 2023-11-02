@@ -51,7 +51,7 @@ static int dec_get_euicc_chlg(uint8_t *euicc_chlg, struct ipa_buf *es10b_res)
 		return -EINVAL;
 	}
 #ifdef IPA_DEBUG_ASN1
-	asn_fprint(stderr, &asn_DEF_GetEuiccChallengeResponse, asn);
+	ipa_asn1c_dump(&asn_DEF_GetEuiccChallengeResponse, asn, 0, SESIPA, LINFO);
 #endif
 
 	IPA_COPY_ASN_BUF(euicc_chlg_buf, &asn->euiccChallenge);

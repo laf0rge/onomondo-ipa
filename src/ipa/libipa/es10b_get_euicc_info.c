@@ -51,7 +51,7 @@ static int dec_get_euicc_info1(struct ipa_es10b_euicc_info *euicc_info, struct i
 		return -EINVAL;
 	}
 #ifdef IPA_DEBUG_ASN1
-	asn_fprint(stderr, &asn_DEF_EUICCInfo1, asn);
+	ipa_asn1c_dump(&asn_DEF_EUICCInfo1, asn, 0, SESIPA, LINFO);
 #endif
 
 	IPA_COPY_ASN_BUF(euicc_info->svn, &asn->svn);
@@ -121,7 +121,7 @@ static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, struct i
 		return -EINVAL;
 	}
 #ifdef IPA_DEBUG_ASN1
-	asn_fprint(stderr, &asn_DEF_EUICCInfo2, asn);
+	ipa_asn1c_dump(&asn_DEF_EUICCInfo2, asn, 0, SESIPA, LINFO);
 #endif
 
 	IPA_COPY_ASN_BUF(euicc_info->svn, &asn->svn);
