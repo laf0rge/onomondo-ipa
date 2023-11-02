@@ -49,3 +49,58 @@ memcpy(dest_buf, (asn1_obj)->buf, (asn1_obj)->size);	\
 __rc = 0; \
 } \
 __rc; })
+
+/* \! Assign a pointer to a buffer and a length to an ASN.1 string object This macro is used to fill an empty ASN.1
+ *    structure that is used for encoding later. The data is not copied, only pointers are assigned.
+ *    \param[out] asn1_obj pointer to asn1c generated string object to equip.
+ *    \param[in] buf_ptr pointer to buffer with data.
+ *    \param[in] buf_len length of the data. */
+#define IPA_ASSIGN_BUF_TO_ASN(asn1_obj, buf_ptr, buf_len) ({ \
+	asn1_obj.buf = buf_ptr; \
+	asn1_obj.size = buf_len; \
+})
+
+/* \! Same as IPA_ASSIGN_BUF_TO_ASN, but for null terminated strings. Here the length is determined using strlen().
+ *    \param[out] asn1_obj pointer to asn1c generated string object to equip.
+ *    \param[in] buf_ptr pointer to buffer with null terminate string. */
+#define IPA_ASSIGN_STR_TO_ASN(asn1_obj, str_ptr) ({ \
+	asn1_obj.buf = (uint8_t*)str_ptr; \
+	asn1_obj.size = strlen(str_ptr); \
+})
+
+/* \! Assign a the buf pointer and len from an ipa_buf to an to an ASN.1 string object. This macro is used to fill
+ *    an empty ASN.1 structure that is used for encoding later. The data is not copied, only pointers are assigned.
+ *    \param[out] asn1_obj pointer to asn1c generated string object to equip.
+ *    \param[in] ipa_buf_ptr pointer to ipa_buf with data. */
+#define IPA_ASSIGN_IPA_BUF_TO_ASN(asn1_obj, ipa_buf_ptr) ({ \
+	asn1_obj.buf = (ipa_buf_ptr)->data; \
+	asn1_obj.size = (ipa_buf_ptr)->len; \
+})
+
+/* \! Copy the contents of an ipa_buf to an ASN.1 string object. The target buffer in the ASN.1 string object is
+ *    allocated by this macro. The data is actually copied, so the source ipa_buf can be freed when copying is done.
+ *    This macro is used in situations where lists have to be populated with ASN.1 string objects (SEQUENCE OF). In
+ *    those cases, the caller is expected to allocate the ASN.1 string object and equip its buff and size member using
+ *    this macro.
+ *    \param[out] asn1_obj pointer to asn1c generated string object to equip.
+ *    \param[in] ipa_buf pointer to ipa_buf with data. */
+#define IPA_COPY_IPA_BUF_TO_ASN(asn1_obj, ipa_buf) ({ \
+	(asn1_obj)->buf = IPA_ALLOC_N(ipa_buf->len); \
+	assert((asn1_obj)->buf); \
+	memcpy((asn1_obj)->buf, ipa_buf->data, ipa_buf->len); \
+	(asn1_obj->size) = (ipa_buf->len); \
+})
+
+/* \! Free an allocated SEQUENCE OF ASN.1 string objects. This macro is used to get rid of a list of ASN.1 string
+ *    objects that the caller has allocated before. The macro loops through that list, frees the buffers and ASN.1
+ *    string objects and eventually the list pointer array also. This macro must not be used on ASN.1 structs that
+ *    the decoder has allocated.
+ *    \param[inout] asn1_list_obj pointer to the ASN.1 list object to be freed. */
+#define IPA_FREE_ASN_SEQUENCE_OF_STRINGS(asn1_list_obj) ({ \
+	int __i; \
+	for (__i = 0; __i < asn1_list_obj.list.count; __i++) { \
+		IPA_FREE(asn1_list_obj.list.array[__i]->buf); \
+		IPA_FREE(asn1_list_obj.list.array[__i]); \
+	} \
+	IPA_FREE(asn1_list_obj.list.array); \
+})
