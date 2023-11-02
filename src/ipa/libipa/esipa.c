@@ -2,8 +2,10 @@
 #include <string.h>
 #include <assert.h>
 #include <onomondo/ipa/ipad.h>
+#include <onomondo/ipa/log.h>
 #include "esipa.h"
 #include "context.h"
+#include "utils.h"
 
 #define PREFIX_HTTP "http://"
 #define PREFIX_HTTPS "https://"
@@ -37,4 +39,66 @@ char *ipa_esipa_get_eim_url(struct ipa_context *ctx)
 	strcat(eim_url, SUFFIX);
 
 	return eim_url;
+}
+
+/*! Decode an ASN.1 encoded eIM to IPA message.
+ *  \param[in] msg_to_ipa_encoded pointer to ipa_buf that contains the encoded message.
+ *  \param[in] function_name name of the ESipa function (for log messages).
+ *  \param[in] epected_res_type type of the expected eIM response (for plausibility check).
+ *  \returns pointer newly allocated ASN.1 struct that contains the decoded message, NULL on error. */
+struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(struct ipa_buf *msg_to_ipa_encoded, char *function_name,
+							  enum EsipaMessageFromEimToIpa_PR epected_res_type)
+{
+	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
+	asn_dec_rval_t rc;
+
+	if (msg_to_ipa_encoded->len == 0) {
+		IPA_LOGP_ESIPA(function_name, LERROR, "eIM response contained no data!\n");
+		return NULL;
+	}
+
+	rc = ber_decode(0, &asn_DEF_EsipaMessageFromEimToIpa,
+			(void **)&msg_to_ipa, msg_to_ipa_encoded->data, msg_to_ipa_encoded->len);
+
+	if (rc.code != RC_OK) {
+		IPA_LOGP_ESIPA(function_name, LERROR, "cannot decode eIM response!\n");
+		ASN_STRUCT_FREE(asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
+		return NULL;
+	}
+#ifdef IPA_DEBUG_ASN1
+	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa, 0, SESIPA, LINFO);
+#endif
+
+	if (msg_to_ipa->present != epected_res_type) {
+		IPA_LOGP_ESIPA(function_name, LERROR, "unexpected eIM response\n");
+		return NULL;
+	}
+
+	return msg_to_ipa;
+}
+
+/*! Encode an ASN.1 struct that contains an IPA to eIM message.
+ *  \param[in] msg_to_eim pointer to ASN.1 struct that contains the IPA to eIM message.
+ *  \param[in] function_name name of the ESipa function (for log messages).
+ *  \returns pointer newly allocated ipa_buf that contains the encoded message, NULL on error. */
+struct ipa_buf *ipa_esipa_msg_to_eim_enc(struct EsipaMessageFromIpaToEim *msg_to_eim, char *function_name)
+{
+	struct ipa_buf *buf_encoded;
+	asn_enc_rval_t rc;
+
+#ifdef IPA_DEBUG_ASN1
+	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromIpaToEim, &msg_to_eim, 0, SESIPA, LINFO);
+#endif
+
+	buf_encoded = ipa_buf_alloc(IPA_ESIPA_ASN_ENCODER_BUF_SIZE);
+	assert(buf_encoded);
+
+	rc = der_encode(&asn_DEF_EsipaMessageFromIpaToEim, msg_to_eim, ipa_asn1c_consume_bytes_cb, buf_encoded);
+	if (rc.encoded <= 0) {
+		IPA_LOGP_ESIPA(function_name, LERROR, "cannot encode eIM request!\n");
+		IPA_FREE(buf_encoded);
+		return NULL;
+	}
+
+	return buf_encoded;
 }

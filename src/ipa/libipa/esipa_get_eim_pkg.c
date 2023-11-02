@@ -15,24 +15,13 @@
 static struct ipa_buf *enc_get_eim_pkg_req(uint8_t *eid_value)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim;
-	asn_enc_rval_t rc;
-	struct ipa_buf *buf_encoded;
 
 	memset(&msg_to_eim, 0, sizeof(msg_to_eim));
 	msg_to_eim.present = EsipaMessageFromIpaToEim_PR_getEimPackageRequest;
 	msg_to_eim.choice.getEimPackageRequest.eidValue.buf = eid_value;
 	msg_to_eim.choice.getEimPackageRequest.eidValue.size = IPA_LEN_EID;
 
-	buf_encoded = ipa_buf_alloc(1024);
-	assert(buf_encoded);
-	rc = der_encode(&asn_DEF_EsipaMessageFromIpaToEim, &msg_to_eim, ipa_asn1c_consume_bytes_cb, buf_encoded);
-
-	if (rc.encoded <= 0) {
-		IPA_FREE(buf_encoded);
-		return NULL;
-	}
-
-	return buf_encoded;
+        return ipa_esipa_msg_to_eim_enc(&msg_to_eim, "GetEimPackage");
 }
 
 static struct ipa_eim_pkg *dec_profile_dwnld_trig_req(ProfileDownloadTriggerRequest_t * pdtr)
@@ -81,32 +70,13 @@ error:
 static struct ipa_eim_pkg *dec_get_eim_pkg_req(struct ipa_buf *msg_to_ipa_encoded)
 {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
-	asn_dec_rval_t rc;
 	struct ipa_eim_pkg *eim_pkg = NULL;
 
-	if (msg_to_ipa_encoded->len == 0) {
-		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "eIM response contained no data!\n");
+	msg_to_ipa =
+	    ipa_esipa_msg_to_ipa_dec(msg_to_ipa_encoded, "GetEimPackage",
+				     EsipaMessageFromEimToIpa_PR_getEimPackageResponse);
+	if (!msg_to_ipa)
 		return NULL;
-	}
-
-	rc = ber_decode(0, &asn_DEF_EsipaMessageFromEimToIpa,
-			(void **)&msg_to_ipa, msg_to_ipa_encoded->data,
-			msg_to_ipa_encoded->len);
-
-	if (rc.code != RC_OK) {
-		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "cannot decode eIM response!\n");
-		goto error;
-	}
-
-#ifdef IPA_DEBUG_ASN1
-	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa, 0, SESIPA, LINFO);
-#endif
-
-	if (msg_to_ipa->present !=
-	    EsipaMessageFromEimToIpa_PR_getEimPackageResponse) {
-		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "unexpected eIM response\n");
-		goto error;
-	}
 
 	switch (msg_to_ipa->choice.getEimPackageResponse.present) {
 	case GetEimPackageResponse_PR_euiccPackageRequest:
@@ -133,7 +103,6 @@ static struct ipa_eim_pkg *dec_get_eim_pkg_req(struct ipa_buf *msg_to_ipa_encode
 		break;
 	}
 
-error:
 	ASN_STRUCT_FREE(asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
 	return eim_pkg;
 }

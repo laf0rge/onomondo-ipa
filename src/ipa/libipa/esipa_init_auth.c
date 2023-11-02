@@ -17,7 +17,6 @@
 static struct ipa_buf *enc_init_auth_req(struct ipa_init_auth_req *init_auth_req)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim = { 0 };
-	asn_enc_rval_t rc;
 	struct ipa_buf *buf_encoded;
 
 	UTF8String_t smdp_address = { 0 };
@@ -51,24 +50,13 @@ static struct ipa_buf *enc_init_auth_req(struct ipa_init_auth_req *init_auth_req
 		ASN_SEQUENCE_ADD(&euicc_info_1.euiccCiPKIdListForSigning.list, key_id_item);
 	}
 
-#ifdef IPA_DEBUG_ASN1
-	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromIpaToEim, &msg_to_eim, 0, SESIPA, LINFO);
-#endif
-
 	/* Encode */
-	buf_encoded = ipa_buf_alloc(1024);
-	assert(buf_encoded);
-	rc = der_encode(&asn_DEF_EsipaMessageFromIpaToEim, &msg_to_eim, ipa_asn1c_consume_bytes_cb, buf_encoded);
+	buf_encoded = ipa_esipa_msg_to_eim_enc(&msg_to_eim, "InitiateAuthentication");
 
 	/* We have added dynamically allocated items to an ASN list object (see above), we must now ensure that those
 	 * items are properly freed. */
 	IPA_FREE_ASN_SEQUENCE_OF_STRINGS(euicc_info_1.euiccCiPKIdListForVerification);
 	IPA_FREE_ASN_SEQUENCE_OF_STRINGS(euicc_info_1.euiccCiPKIdListForSigning);
-
-	if (rc.encoded <= 0) {
-		IPA_FREE(buf_encoded);
-		return NULL;
-	}
 
 	return buf_encoded;
 }
@@ -76,30 +64,13 @@ static struct ipa_buf *enc_init_auth_req(struct ipa_init_auth_req *init_auth_req
 static struct ipa_init_auth_res *dec_init_auth_res(struct ipa_buf *msg_to_ipa_encoded)
 {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
-	asn_dec_rval_t rc;
 	struct ipa_init_auth_res *init_auth_res = NULL;
 
-	if (msg_to_ipa_encoded->len == 0) {
-		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR, "eIM response contained no data!\n");
+	msg_to_ipa =
+	    ipa_esipa_msg_to_ipa_dec(msg_to_ipa_encoded, "InitiateAuthentication",
+				     EsipaMessageFromEimToIpa_PR_initiateAuthenticationResponseEsipa);
+	if (!msg_to_ipa)
 		return NULL;
-	}
-
-	rc = ber_decode(0, &asn_DEF_EsipaMessageFromEimToIpa,
-			(void **)&msg_to_ipa, msg_to_ipa_encoded->data, msg_to_ipa_encoded->len);
-
-	if (rc.code != RC_OK) {
-		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR, "cannot decode eIM response!\n");
-		goto error;
-	}
-
-#ifdef IPA_DEBUG_ASN1
-	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa, 0, SESIPA, LINFO);
-#endif
-
-	if (msg_to_ipa->present != EsipaMessageFromEimToIpa_PR_initiateAuthenticationResponseEsipa) {
-		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "unexpected eIM response\n");
-		goto error;
-	}
 
 	init_auth_res = IPA_ALLOC(struct ipa_init_auth_res);
 	assert(init_auth_res);
@@ -118,7 +89,6 @@ static struct ipa_init_auth_res *dec_init_auth_res(struct ipa_buf *msg_to_ipa_en
 		break;
 	}
 
-error:
 	return init_auth_res;
 }
 
