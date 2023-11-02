@@ -53,8 +53,7 @@ void testme_es10x(struct ipa_context *ctx)
 
 	res = ipa_euicc_transceive_es10x(ctx, req);
 
-	printf("============> GOT DATA: %s (%zu bytes)\n",
-	       ipa_hexdump(res->data, res->len), res->len);
+	printf("============> GOT DATA: %s (%zu bytes)\n", ipa_hexdump(res->data, res->len), res->len);
 
 	IPA_FREE(req);
 	IPA_FREE(res);
@@ -74,19 +73,21 @@ void testme_get_euicc_info(struct ipa_context *ctx)
 }
 
 /* A testcase to try out the ES10b function GetEuiccInfo, see also TC_es10b_get_euicc_chlg */
-void testme_get_euicc_chlg(struct ipa_context *ctx) {
+void testme_get_euicc_chlg(struct ipa_context *ctx)
+{
 	uint8_t euicc_chlg[IPA_LEN_EUICC_CHLG];
 	int rc;
 	rc = ipa_es10b_get_euicc_chlg(ctx, euicc_chlg);
 
-	printf("============> GOT EUICC CHALLENGE: %s (rc=%d)\n",
-	       ipa_hexdump(euicc_chlg, sizeof(euicc_chlg)), rc);
+	printf("============> GOT EUICC CHALLENGE: %s (rc=%d)\n", ipa_hexdump(euicc_chlg, sizeof(euicc_chlg)), rc);
 }
 
 /* A testcase to try out the ESipa function GetEimPackage, see also TC_esipa_get_eim_pkg */
-void testme_get_eim_pkg(struct ipa_context *ctx) {
+void testme_get_eim_pkg(struct ipa_context *ctx)
+{
 	struct ipa_eim_pkg *eim_pkg;
-	eim_pkg = ipa_esipa_get_eim_pkg(ctx, (uint8_t*)"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F");
+	eim_pkg =
+	    ipa_esipa_get_eim_pkg(ctx, (uint8_t *) "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F");
 	ipa_esipa_get_eim_pkg_dump(eim_pkg, 0, SIPA, LINFO);
 	ipa_esipa_get_eim_pkg_free(eim_pkg);
 }
