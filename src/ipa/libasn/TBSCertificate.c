@@ -49,14 +49,14 @@ asn_TYPE_member_t asn_MBR_TBSCertificate_1[] = {
 		0, 0, /* No default value */
 		"serialNumber"
 		},
-	{ ATF_NOFLAGS, 0, offsetof(struct TBSCertificate, signature),
+	{ ATF_NOFLAGS, 0, offsetof(struct TBSCertificate, xsignature),
 		(ASN_TAG_CLASS_UNIVERSAL | (16 << 2)),
 		0,
 		&asn_DEF_AlgorithmIdentifier,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */
-		"signature"
+		"xsignature"
 		},
 	{ ATF_NOFLAGS, 0, offsetof(struct TBSCertificate, issuer),
 		-1 /* Ambiguous tag (CHOICE?) */,
@@ -128,7 +128,7 @@ static const ber_tlv_tag_t asn_DEF_TBSCertificate_tags_1[] = {
 };
 static const asn_TYPE_tag2member_t asn_MAP_TBSCertificate_tag2el_1[] = {
     { (ASN_TAG_CLASS_UNIVERSAL | (2 << 2)), 1, 0, 0 }, /* serialNumber */
-    { (ASN_TAG_CLASS_UNIVERSAL | (16 << 2)), 2, 0, 4 }, /* signature */
+    { (ASN_TAG_CLASS_UNIVERSAL | (16 << 2)), 2, 0, 4 }, /* xsignature */
     { (ASN_TAG_CLASS_UNIVERSAL | (16 << 2)), 3, -1, 3 }, /* rdnSequence */
     { (ASN_TAG_CLASS_UNIVERSAL | (16 << 2)), 4, -2, 2 }, /* validity */
     { (ASN_TAG_CLASS_UNIVERSAL | (16 << 2)), 5, -3, 1 }, /* rdnSequence */

@@ -26,21 +26,21 @@ asn_TYPE_member_t asn_MBR_Certificate_1[] = {
 		0, 0, /* No default value */
 		"signatureAlgorithm"
 		},
-	{ ATF_NOFLAGS, 0, offsetof(struct Certificate, signature),
+	{ ATF_NOFLAGS, 0, offsetof(struct Certificate, xsignature),
 		(ASN_TAG_CLASS_UNIVERSAL | (3 << 2)),
 		0,
 		&asn_DEF_BIT_STRING,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */
-		"signature"
+		"xsignature"
 		},
 };
 static const ber_tlv_tag_t asn_DEF_Certificate_tags_1[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
 static const asn_TYPE_tag2member_t asn_MAP_Certificate_tag2el_1[] = {
-    { (ASN_TAG_CLASS_UNIVERSAL | (3 << 2)), 2, 0, 0 }, /* signature */
+    { (ASN_TAG_CLASS_UNIVERSAL | (3 << 2)), 2, 0, 0 }, /* xsignature */
     { (ASN_TAG_CLASS_UNIVERSAL | (16 << 2)), 0, 0, 1 }, /* tbsCertificate */
     { (ASN_TAG_CLASS_UNIVERSAL | (16 << 2)), 1, -1, 0 } /* signatureAlgorithm */
 };

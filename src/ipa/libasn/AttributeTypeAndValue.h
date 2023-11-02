@@ -22,8 +22,8 @@ extern "C" {
 
 /* AttributeTypeAndValue */
 typedef struct AttributeTypeAndValue {
-	AttributeType_t	 type;
-	AttributeValue_t	 value;
+	AttributeType_t	 xtype;
+	AttributeValue_t	 xvalue;
 	
 	/* Context for parsing across buffer boundaries */
 	asn_struct_ctx_t _asn_ctx;

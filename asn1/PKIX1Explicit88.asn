@@ -65,8 +65,8 @@ AttributeType           ::=  OBJECT IDENTIFIER
 AttributeValue          ::=  ANY
 
 AttributeTypeAndValue           ::=     SEQUENCE {
-        type    AttributeType,
-        value   AttributeValue }
+        xtype    AttributeType,
+        xvalue   AttributeValue }
 
 -- suggested naming attributes: Definition of the following
 --   information object set may be augmented to meet local
@@ -239,12 +239,12 @@ DirectoryString ::= CHOICE {
 Certificate  ::=  SEQUENCE  {
      tbsCertificate       TBSCertificate,
      signatureAlgorithm   AlgorithmIdentifier,
-     signature            BIT STRING  }
+     xsignature            BIT STRING  }
 
 TBSCertificate  ::=  SEQUENCE  {
      version         [0]  Version DEFAULT v1,
      serialNumber         CertificateSerialNumber,
-     signature            AlgorithmIdentifier,
+     xsignature         AlgorithmIdentifier,
      issuer               Name,
      validity             Validity,
      subject              Name,

@@ -25,7 +25,7 @@ extern "C" {
 typedef struct Certificate {
 	TBSCertificate_t	 tbsCertificate;
 	AlgorithmIdentifier_t	 signatureAlgorithm;
-	BIT_STRING_t	 signature;
+	BIT_STRING_t	 xsignature;
 	
 	/* Context for parsing across buffer boundaries */
 	asn_struct_ctx_t _asn_ctx;

@@ -32,7 +32,7 @@ struct Extensions;
 typedef struct TBSCertificate {
 	Version_t	 version	/* DEFAULT 0 */;
 	CertificateSerialNumber_t	 serialNumber;
-	AlgorithmIdentifier_t	 signature;
+	AlgorithmIdentifier_t	 xsignature;
 	Name_t	 issuer;
 	Validity_t	 validity;
 	Name_t	 subject;
