@@ -107,7 +107,7 @@ static struct ipa_eim_pkg *dec_get_eim_pkg_req(struct ipa_buf *msg_to_ipa_encode
 
 	if (msg_to_ipa->present !=
 	    EsipaMessageFromEimToIpa_PR_getEimPackageResponse) {
-		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "eIM response is not an eIM package\n");
+		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "unexpected eIM response\n");
 		goto error;
 	}
 
@@ -145,13 +145,12 @@ error:
 
 struct ipa_eim_pkg *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, uint8_t *eid)
 {
-
 	struct ipa_buf *esipa_req;
 	struct ipa_buf *esipa_res;
 	struct ipa_eim_pkg *eim_pkg = NULL;
 	int rc;
 
-	IPA_LOGP_ESIPA("GetEimPackage", LINFO, "Requesting eIM package for eID:%s...\n",
+	IPA_LOGP_ESIPA("GetEimPackage", LINFO, "Requesting eIM package for eID: %s\n",
 		 ipa_hexdump(eid, IPA_LEN_EID));
 
 	esipa_req = enc_get_eim_pkg_req(eid);
