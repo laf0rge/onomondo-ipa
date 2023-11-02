@@ -48,6 +48,11 @@ char *ipa_hexdump(const uint8_t *data, size_t len)
 	return out[idx];
 }
 
+/*! Generate a hexdump string from the input data.
+ *  \param[in] buffer pointer to chunk with encoded data.
+ *  \param[in] size length of encoded data chunk.
+ *  \param[out] priv pointer to caller provided ipa_buf that is used to store the encoded data.
+ *  \returns 0 on success, -ENOMEM on error. */
 int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv)
 {
 	struct ipa_buf *buf_encoded = priv;
