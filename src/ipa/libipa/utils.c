@@ -63,6 +63,8 @@ int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv)
 	/* Check whether we still have enough space to store the encoding
 	 * results. */
 	if (buf_encoded->data_len < buf_encoded->len + size) {
+		/* TODO: Maybe work with realloc here?, then we could have small initial buffer sizes and
+		 * automatically allocate more memory if needed? */
 		IPA_LOGP(SIPA, LERROR,
 			 "ASN.1 decode failed due to small buffer size (have: %zu bytes, required: %zu bytes\n",
 			 buf_encoded->data_len, buf_encoded->len + size);
