@@ -92,19 +92,12 @@ void testme_get_eim_pkg(struct ipa_context *ctx)
 	ipa_esipa_get_eim_pkg_free(eim_pkg);
 }
 
-/* A testcase to try out the Common Mutual Authentication Procedure, see also TC_cmn_mtl_auth_proc */
-void testme_cmn_mtl_auth_proc(struct ipa_context *ctx)
-{
-	ipa_cmn_mtl_auth_proc(ctx);
-}
-
 void ipa_poll(struct ipa_context *ctx)
 {
 //      testme_es10x(ctx);
 //      testme_get_euicc_info(ctx);
 //      testme_get_euicc_chlg(ctx);
 //      testme_get_eim_pkg(ctx);
-//	testme_cmn_mtl_auth_proc(ctx);
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)

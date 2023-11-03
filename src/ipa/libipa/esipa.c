@@ -52,6 +52,8 @@ struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(struct ipa_buf *msg_to
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
 	asn_dec_rval_t rc;
 
+	assert(msg_to_ipa_encoded);
+
 	if (msg_to_ipa_encoded->len == 0) {
 		IPA_LOGP_ESIPA(function_name, LERROR, "eIM response contained no data!\n");
 		return NULL;
@@ -65,8 +67,10 @@ struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(struct ipa_buf *msg_to
 		ASN_STRUCT_FREE(asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
 		return NULL;
 	}
+
 #ifdef IPA_DEBUG_ASN1
-	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa, 0, SESIPA, LINFO);
+	IPA_LOGP_ESIPA(function_name, LDEBUG, "ESipa message received from eIM:\n");
+	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa, 1, SESIPA, LDEBUG);
 #endif
 
 	if (msg_to_ipa->present != epected_res_type) {
@@ -86,8 +90,12 @@ struct ipa_buf *ipa_esipa_msg_to_eim_enc(struct EsipaMessageFromIpaToEim *msg_to
 	struct ipa_buf *buf_encoded;
 	asn_enc_rval_t rc;
 
+	assert(msg_to_eim);
+	assert(msg_to_eim != EsipaMessageFromIpaToEim_PR_NOTHING);
+
 #ifdef IPA_DEBUG_ASN1
-	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromIpaToEim, &msg_to_eim, 0, SESIPA, LINFO);
+	IPA_LOGP_ESIPA(function_name, LDEBUG, "ESipa message that will be sent to eIM:\n");
+	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromIpaToEim, msg_to_eim, 1, SESIPA, LDEBUG);
 #endif
 
 	buf_encoded = ipa_buf_alloc(IPA_ESIPA_ASN_ENCODER_BUF_SIZE);
