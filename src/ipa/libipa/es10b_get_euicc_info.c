@@ -21,38 +21,14 @@
 #include <EUICCInfo1.h>
 #include <EUICCInfo2.h>
 
-static struct ipa_buf *enc_get_euicc_info1(void)
-{
-	struct GetEuiccInfo1Request asn = { 0 };
-	asn_enc_rval_t rc;
-	struct ipa_buf *buf_encoded = ipa_buf_alloc(32);
-
-	assert(buf_encoded);
-	rc = der_encode(&asn_DEF_GetEuiccInfo1Request, &asn, ipa_asn1c_consume_bytes_cb, buf_encoded);
-
-	if (rc.encoded <= 0) {
-		IPA_FREE(buf_encoded);
-		return NULL;
-	}
-
-	return buf_encoded;
-}
-
 static int dec_get_euicc_info1(struct ipa_es10b_euicc_info *euicc_info, struct ipa_buf *es10b_res)
 {
-	asn_dec_rval_t rc;
 	struct EUICCInfo1 *asn = NULL;
 	int i;
 
-	rc = ber_decode(0, &asn_DEF_EUICCInfo1, (void **)&asn, es10b_res->data, es10b_res->len);
-	if (rc.code != RC_OK) {
-		IPA_LOGP_ES10B("GetEuiccInfo1Request", LERROR, "cannot decode eUICC response! (invalid asn1c)\n");
-		ASN_STRUCT_FREE(asn_DEF_EUICCInfo1, asn);
+	asn = ipa_es10b_res_dec(&asn_DEF_EUICCInfo1, es10b_res, "GetEuiccInfo1Request");
+	if (!asn)
 		return -EINVAL;
-	}
-#ifdef IPA_DEBUG_ASN1
-	ipa_asn1c_dump(&asn_DEF_EUICCInfo1, asn, 0, SESIPA, LINFO);
-#endif
 
 	IPA_COPY_ASN_BUF(euicc_info->svn, &asn->svn);
 
@@ -75,13 +51,14 @@ struct ipa_es10b_euicc_info *get_euicc_info1(struct ipa_context *ctx)
 	struct ipa_buf *es10b_req = NULL;
 	struct ipa_buf *es10b_res = NULL;
 	struct ipa_es10b_euicc_info *euicc_info;
+	struct GetEuiccInfo1Request get_euicc_info1_req = { 0 };
 	int rc;
 
 	euicc_info = IPA_ALLOC(struct ipa_es10b_euicc_info);
 	memset(euicc_info, 0, sizeof(*euicc_info));
 
 	/* Request minimal set of the eUICC information */
-	es10b_req = enc_get_euicc_info1();
+	es10b_req = ipa_es10b_req_enc(&asn_DEF_GetEuiccInfo1Request, &get_euicc_info1_req, "GetEuiccInfo1Request");
 	if (!es10b_req) {
 		IPA_LOGP_ES10B("GetEuiccInfo1Request", LERROR, "unable to encode ES10b request\n");
 		goto error;
@@ -110,19 +87,12 @@ error:
 
 static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, struct ipa_buf *es10b_res)
 {
-	asn_dec_rval_t rc;
 	struct EUICCInfo2 *asn = NULL;
 	int i;
 
-	rc = ber_decode(0, &asn_DEF_EUICCInfo2, (void **)&asn, es10b_res->data, es10b_res->len);
-	if (rc.code != RC_OK) {
-		IPA_LOGP_ES10B("GetEuiccInfo2Request", LERROR, "cannot decode eUICC response! (invalid asn1c)\n");
-		ASN_STRUCT_FREE(asn_DEF_EUICCInfo2, asn);
+	asn = ipa_es10b_res_dec(&asn_DEF_EUICCInfo2, es10b_res, "GetEuiccInfo2Request");
+	if (!asn)
 		return -EINVAL;
-	}
-#ifdef IPA_DEBUG_ASN1
-	ipa_asn1c_dump(&asn_DEF_EUICCInfo2, asn, 0, SESIPA, LINFO);
-#endif
 
 	IPA_COPY_ASN_BUF(euicc_info->svn, &asn->svn);
 
@@ -174,28 +144,12 @@ static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, struct i
 	return 0;
 }
 
-static struct ipa_buf *enc_get_euicc_info2(void)
-{
-	struct GetEuiccInfo2Request asn = { 0 };
-	asn_enc_rval_t rc;
-	struct ipa_buf *buf_encoded = ipa_buf_alloc(32);
-
-	assert(buf_encoded);
-	rc = der_encode(&asn_DEF_GetEuiccInfo2Request, &asn, ipa_asn1c_consume_bytes_cb, buf_encoded);
-
-	if (rc.encoded <= 0) {
-		IPA_FREE(buf_encoded);
-		return NULL;
-	}
-
-	return buf_encoded;
-}
-
 struct ipa_es10b_euicc_info *get_euicc_info2(struct ipa_context *ctx)
 {
 	struct ipa_buf *es10b_req = NULL;
 	struct ipa_buf *es10b_res = NULL;
 	struct ipa_es10b_euicc_info *euicc_info;
+	struct GetEuiccInfo1Request get_euicc_info2_req = { 0 };
 	int rc;
 
 	euicc_info = IPA_ALLOC(struct ipa_es10b_euicc_info);
@@ -203,7 +157,7 @@ struct ipa_es10b_euicc_info *get_euicc_info2(struct ipa_context *ctx)
 	euicc_info->full = true;
 
 	/* Request full set of the eUICC information */
-	es10b_req = enc_get_euicc_info2();
+	es10b_req = ipa_es10b_req_enc(&asn_DEF_GetEuiccInfo2Request, &get_euicc_info2_req, "GetEuiccInfo2Request");
 	if (!es10b_req) {
 		IPA_LOGP_ES10B("GetEuiccInfo2Request", LERROR, "unable to encode ES10b request\n");
 		goto error;

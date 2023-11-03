@@ -20,6 +20,7 @@ libipa_a_SOURCES = \
 	esipa.c \
 	esipa_get_eim_pkg.c \
 	esipa_init_auth.c \
+	es10b.c \
 	es10b_get_euicc_chlg.c \
 	es10b_get_euicc_info.c \
 	euicc.c \

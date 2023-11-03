@@ -21,38 +21,14 @@
 #include "GetEuiccChallengeResponse.h"
 #include "Octet16.h"
 
-static struct ipa_buf *enc_get_euicc_chlg(void)
-{
-	struct GetEuiccChallengeRequest asn = { 0 };
-	asn_enc_rval_t rc;
-	struct ipa_buf *buf_encoded = ipa_buf_alloc(32);
-
-	assert(buf_encoded);
-	rc = der_encode(&asn_DEF_GetEuiccChallengeRequest, &asn, ipa_asn1c_consume_bytes_cb, buf_encoded);
-
-	if (rc.encoded <= 0) {
-		IPA_FREE(buf_encoded);
-		return NULL;
-	}
-
-	return buf_encoded;
-}
-
 static int dec_get_euicc_chlg(uint8_t *euicc_chlg, struct ipa_buf *es10b_res)
 {
-	asn_dec_rval_t rc;
 	struct GetEuiccChallengeResponse *asn = NULL;
 	uint8_t euicc_chlg_buf[IPA_LEN_EUICC_CHLG];
 
-	rc = ber_decode(0, &asn_DEF_GetEuiccChallengeResponse, (void **)&asn, es10b_res->data, es10b_res->len);
-	if (rc.code != RC_OK) {
-		IPA_LOGP_ES10B("GetEuiccChallengeResponse", LERROR, "cannot decode eUICC response! (invalid asn1c)\n");
-		ASN_STRUCT_FREE(asn_DEF_GetEuiccChallengeResponse, asn);
+	asn = ipa_es10b_res_dec(&asn_DEF_GetEuiccChallengeResponse, es10b_res, "GetEuiccChallengeResponse");
+	if (!asn)
 		return -EINVAL;
-	}
-#ifdef IPA_DEBUG_ASN1
-	ipa_asn1c_dump(&asn_DEF_GetEuiccChallengeResponse, asn, 0, SESIPA, LINFO);
-#endif
 
 	IPA_COPY_ASN_BUF(euicc_chlg_buf, &asn->euiccChallenge);
 	memcpy(euicc_chlg, euicc_chlg_buf, sizeof(euicc_chlg_buf));
@@ -65,9 +41,11 @@ int ipa_es10b_get_euicc_chlg(struct ipa_context *ctx, uint8_t *euicc_chlg)
 {
 	struct ipa_buf *es10b_req = NULL;
 	struct ipa_buf *es10b_res = NULL;
+	struct GetEuiccChallengeRequest get_euicc_chlg_req = { 0 };
 	int rc = -EINVAL;
 
-	es10b_req = enc_get_euicc_chlg();
+	es10b_req =
+	    ipa_es10b_req_enc(&asn_DEF_GetEuiccChallengeRequest, &get_euicc_chlg_req, "GetEuiccChallengeRequest");
 	if (!es10b_req) {
 		IPA_LOGP_ES10B("GetEuiccChallengeRequest", LERROR, "unable to encode ES10b request\n");
 		goto error;
