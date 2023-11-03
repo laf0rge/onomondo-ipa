@@ -8,7 +8,6 @@
 #include "context.h"
 #include "esipa.h"
 #include "esipa_init_auth.h"
-#include "es10b_get_euicc_info.h"
 #include <EsipaMessageFromIpaToEim.h>
 #include <EsipaMessageFromEimToIpa.h>
 #include <InitiateAuthenticationRequestEsipa.h>
@@ -17,12 +16,7 @@
 static struct ipa_buf *enc_init_auth_req(struct ipa_init_auth_req *init_auth_req)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim = { 0 };
-	struct ipa_buf *buf_encoded;
-
 	UTF8String_t smdp_address = { 0 };
-	EUICCInfo1_t euicc_info_1 = { 0 };
-	SubjectKeyIdentifier_t *key_id_item;
-	int i;
 
 	msg_to_eim.present = EsipaMessageFromIpaToEim_PR_initiateAuthenticationRequestEsipa;
 
@@ -31,34 +25,16 @@ static struct ipa_buf *enc_init_auth_req(struct ipa_init_auth_req *init_auth_req
 			      init_auth_req->euicc_challenge, IPA_LEN_EUICC_CHLG);
 
 	/* add SMDP addr */
-	if (init_auth_req->smdp_addr_present) {
+	if (init_auth_req->smdp_addr) {
 		msg_to_eim.choice.initiateAuthenticationRequestEsipa.smdpAddress = &smdp_address;
 		IPA_ASSIGN_STR_TO_ASN(smdp_address, init_auth_req->smdp_addr);
 	}
 
 	/* eUICC info */
-	msg_to_eim.choice.initiateAuthenticationRequestEsipa.euiccInfo1 = &euicc_info_1;
-	IPA_ASSIGN_BUF_TO_ASN(euicc_info_1.svn, init_auth_req->euicc_info->svn, sizeof(init_auth_req->euicc_info->svn));
-	for (i = 0; i < init_auth_req->euicc_info->ci_pkid_verf_count; i++) {
-		key_id_item = IPA_ALLOC(SubjectKeyIdentifier_t);
-		IPA_COPY_IPA_BUF_TO_ASN(key_id_item, init_auth_req->euicc_info->ci_pkid_verf[i]);
-		ASN_SEQUENCE_ADD(&euicc_info_1.euiccCiPKIdListForVerification.list, key_id_item);
-	}
-	for (i = 0; i < init_auth_req->euicc_info->ci_pkid_sign_count; i++) {
-		key_id_item = IPA_ALLOC(SubjectKeyIdentifier_t);
-		IPA_COPY_IPA_BUF_TO_ASN(key_id_item, init_auth_req->euicc_info->ci_pkid_sign[i]);
-		ASN_SEQUENCE_ADD(&euicc_info_1.euiccCiPKIdListForSigning.list, key_id_item);
-	}
+	msg_to_eim.choice.initiateAuthenticationRequestEsipa.euiccInfo1 = init_auth_req->euicc_info_1;
 
 	/* Encode */
-	buf_encoded = ipa_esipa_msg_to_eim_enc(&msg_to_eim, "InitiateAuthentication");
-
-	/* We have added dynamically allocated items to an ASN list object (see above), we must now ensure that those
-	 * items are properly freed. */
-	IPA_FREE_ASN_SEQUENCE_OF_STRINGS(euicc_info_1.euiccCiPKIdListForVerification);
-	IPA_FREE_ASN_SEQUENCE_OF_STRINGS(euicc_info_1.euiccCiPKIdListForSigning);
-
-	return buf_encoded;
+        return ipa_esipa_msg_to_eim_enc(&msg_to_eim, "InitiateAuthentication");
 }
 
 static struct ipa_init_auth_res *dec_init_auth_res(struct ipa_buf *msg_to_ipa_encoded)
@@ -106,11 +82,14 @@ struct ipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, struct ip
 	esipa_res = ipa_buf_alloc(IPA_LIMIT_HTTP_REQ);
 	rc = ipa_http_req(ctx->http_ctx, esipa_res, esipa_req, ipa_esipa_get_eim_url(ctx));
 	if (rc < 0) {
-		IPA_LOGP(SIPA, LERROR, "eIM package request failed!\n");
+		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR, "eIM package request failed!\n");
 		goto error;
 	}
 
 	init_auth_res = dec_init_auth_res(esipa_res);
+
+	if (!init_auth_res->init_auth_ok)
+		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR, "function failed with error code %ld!\n", init_auth_res->init_auth_err);
 
 error:
 	IPA_FREE(esipa_req);

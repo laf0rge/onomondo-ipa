@@ -4,22 +4,13 @@
 
 struct ipa_init_auth_req {
 	uint8_t *euicc_challenge;
-
-	bool smdp_addr_present;
 	char *smdp_addr;
-
-	bool euicc_info_present;
-	struct ipa_es10b_euicc_info *euicc_info;
+	struct EUICCInfo1 *euicc_info_1;
 };
 
 struct ipa_init_auth_res {
-	/* Pointer to root of the decoded struct */
 	struct EsipaMessageFromEimToIpa *msg_to_ipa;
-
-	/* Pointer to initiate authentication result (null on error) */
 	struct InitiateAuthenticationOkEsipa *init_auth_ok;
-
-	/* Error code (in case init_auth_ok is null) */
 	long init_auth_err;
 };
 
