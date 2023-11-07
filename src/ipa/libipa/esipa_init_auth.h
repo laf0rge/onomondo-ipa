@@ -14,8 +14,7 @@ struct ipa_esipa_init_auth_res {
 	long init_auth_err;
 };
 
-struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx,
-						    struct ipa_esipa_init_auth_req *init_auth_req);
-void ipa_esipa_init_auth_res_dump(struct ipa_esipa_init_auth_res *init_auth_res, uint8_t indent,
+struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, struct ipa_esipa_init_auth_req *req);
+void ipa_esipa_init_auth_res_dump(struct ipa_esipa_init_auth_res *res, uint8_t indent,
 				  enum log_subsys log_subsys, enum log_level log_level);
-void ipa_esipa_init_auth_res_free(struct ipa_esipa_init_auth_res *init_auth_res);
+void ipa_esipa_init_auth_res_free(struct ipa_esipa_init_auth_res *res);
