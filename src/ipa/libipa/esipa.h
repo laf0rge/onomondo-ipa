@@ -14,3 +14,14 @@ char *ipa_esipa_get_eim_url(struct ipa_context *ctx);
 struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(struct ipa_buf *msg_to_ipa_encoded, char *function_name,
 							  enum EsipaMessageFromEimToIpa_PR epected_res_type);
 struct ipa_buf *ipa_esipa_msg_to_eim_enc(struct EsipaMessageFromIpaToEim *msg_to_eim, char *function_name);
+
+/*! A helper macro to free the basic contents of an ESIPA response. This macro is intended to be used from within the
+ *  concrete implementation of an ESIPA function. It only frees the common contents and the struct itsself. In case
+ *  there are other additional fields, the caller must free those first before calling this macro.
+ *  \param[in] res pointer struct that holds the ESIPA response. */
+#define IPA_ESIPA_RES_FREE(res) ({ \
+	if (!(res)) \
+		return; \
+	ASN_STRUCT_FREE(asn_DEF_EsipaMessageFromEimToIpa, (res)->msg_to_ipa); \
+	IPA_FREE((res)); \
+})

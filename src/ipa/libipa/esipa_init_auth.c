@@ -120,9 +120,5 @@ void ipa_esipa_init_auth_res_dump(struct ipa_init_auth_res *init_auth_res, uint8
 
 void ipa_esipa_init_auth_res_free(struct ipa_init_auth_res *init_auth_res)
 {
-	if (!init_auth_res)
-		return;
-
-	ASN_STRUCT_FREE(asn_DEF_EsipaMessageFromEimToIpa, init_auth_res->msg_to_ipa);
-	IPA_FREE(init_auth_res);
+	IPA_ESIPA_RES_FREE(init_auth_res);
 }
