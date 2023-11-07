@@ -13,7 +13,7 @@
 #include <InitiateAuthenticationRequestEsipa.h>
 #include <InitiateAuthenticationResponseEsipa.h>
 
-static struct ipa_buf *enc_init_auth_req(struct ipa_init_auth_req *init_auth_req)
+static struct ipa_buf *enc_init_auth_req(struct ipa_esipa_init_auth_req *init_auth_req)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim = { 0 };
 	UTF8String_t smdp_address = { 0 };
@@ -34,13 +34,13 @@ static struct ipa_buf *enc_init_auth_req(struct ipa_init_auth_req *init_auth_req
 	msg_to_eim.choice.initiateAuthenticationRequestEsipa.euiccInfo1 = init_auth_req->euicc_info_1;
 
 	/* Encode */
-        return ipa_esipa_msg_to_eim_enc(&msg_to_eim, "InitiateAuthentication");
+	return ipa_esipa_msg_to_eim_enc(&msg_to_eim, "InitiateAuthentication");
 }
 
-static struct ipa_init_auth_res *dec_init_auth_res(struct ipa_buf *msg_to_ipa_encoded)
+static struct ipa_esipa_init_auth_res *dec_init_auth_res(struct ipa_buf *msg_to_ipa_encoded)
 {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
-	struct ipa_init_auth_res *init_auth_res = NULL;
+	struct ipa_esipa_init_auth_res *init_auth_res = NULL;
 
 	msg_to_ipa =
 	    ipa_esipa_msg_to_ipa_dec(msg_to_ipa_encoded, "InitiateAuthentication",
@@ -48,7 +48,7 @@ static struct ipa_init_auth_res *dec_init_auth_res(struct ipa_buf *msg_to_ipa_en
 	if (!msg_to_ipa)
 		return NULL;
 
-	init_auth_res = IPA_ALLOC(struct ipa_init_auth_res);
+	init_auth_res = IPA_ALLOC(struct ipa_esipa_init_auth_res);
 	assert(init_auth_res);
 	memset(init_auth_res, 0, sizeof(*init_auth_res));
 	init_auth_res->msg_to_ipa = msg_to_ipa;
@@ -68,11 +68,12 @@ static struct ipa_init_auth_res *dec_init_auth_res(struct ipa_buf *msg_to_ipa_en
 	return init_auth_res;
 }
 
-struct ipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, struct ipa_init_auth_req *init_auth_req)
+struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx,
+						    struct ipa_esipa_init_auth_req *init_auth_req)
 {
 	struct ipa_buf *esipa_req;
 	struct ipa_buf *esipa_res;
-	struct ipa_init_auth_res *init_auth_res = NULL;
+	struct ipa_esipa_init_auth_res *init_auth_res = NULL;
 	int rc;
 
 	IPA_LOGP_ESIPA("InitiateAuthentication", LINFO, "Requesting authentication with eUICC challenge: %s\n",
@@ -89,7 +90,8 @@ struct ipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, struct ip
 	init_auth_res = dec_init_auth_res(esipa_res);
 
 	if (!init_auth_res->init_auth_ok)
-		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR, "function failed with error code %ld!\n", init_auth_res->init_auth_err);
+		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR, "function failed with error code %ld!\n",
+			       init_auth_res->init_auth_err);
 
 error:
 	IPA_FREE(esipa_req);
@@ -97,7 +99,7 @@ error:
 	return init_auth_res;
 }
 
-void ipa_esipa_init_auth_res_dump(struct ipa_init_auth_res *init_auth_res, uint8_t indent,
+void ipa_esipa_init_auth_res_dump(struct ipa_esipa_init_auth_res *init_auth_res, uint8_t indent,
 				  enum log_subsys log_subsys, enum log_level log_level)
 {
 	char indent_str[256];
@@ -118,7 +120,7 @@ void ipa_esipa_init_auth_res_dump(struct ipa_init_auth_res *init_auth_res, uint8
 		IPA_LOGP(log_subsys, log_level, "%s init_auth_err = %ld \n", indent_str, init_auth_res->init_auth_err);
 }
 
-void ipa_esipa_init_auth_res_free(struct ipa_init_auth_res *init_auth_res)
+void ipa_esipa_init_auth_res_free(struct ipa_esipa_init_auth_res *init_auth_res)
 {
 	IPA_ESIPA_RES_FREE(init_auth_res);
 }
