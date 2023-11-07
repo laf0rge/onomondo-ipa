@@ -8,30 +8,30 @@
 #include "AttributeTypeAndValue.h"
 
 asn_TYPE_member_t asn_MBR_AttributeTypeAndValue_1[] = {
-	{ ATF_NOFLAGS, 0, offsetof(struct AttributeTypeAndValue, xtype),
+	{ ATF_NOFLAGS, 0, offsetof(struct AttributeTypeAndValue, type),
 		(ASN_TAG_CLASS_UNIVERSAL | (6 << 2)),
 		0,
 		&asn_DEF_AttributeType,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */
-		"xtype"
+		"type"
 		},
-	{ ATF_ANY_TYPE | ATF_NOFLAGS, 0, offsetof(struct AttributeTypeAndValue, xvalue),
+	{ ATF_ANY_TYPE | ATF_NOFLAGS, 0, offsetof(struct AttributeTypeAndValue, value),
 		-1 /* Ambiguous tag (ANY?) */,
 		0,
 		&asn_DEF_AttributeValue,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */
-		"xvalue"
+		"value"
 		},
 };
 static const ber_tlv_tag_t asn_DEF_AttributeTypeAndValue_tags_1[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
 static const asn_TYPE_tag2member_t asn_MAP_AttributeTypeAndValue_tag2el_1[] = {
-    { (ASN_TAG_CLASS_UNIVERSAL | (6 << 2)), 0, 0, 0 } /* xtype */
+    { (ASN_TAG_CLASS_UNIVERSAL | (6 << 2)), 0, 0, 0 } /* type */
 };
 asn_SEQUENCE_specifics_t asn_SPC_AttributeTypeAndValue_specs_1 = {
 	sizeof(struct AttributeTypeAndValue),
