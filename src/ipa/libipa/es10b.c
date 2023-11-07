@@ -59,7 +59,7 @@ struct ipa_buf *ipa_es10b_req_enc(const struct asn_TYPE_descriptor_s *td, const 
 #endif
 
 	assert(es10b_req_encoded);
-	rc = der_encode(td, &es10b_req_decoded, ipa_asn1c_consume_bytes_cb, es10b_req_encoded);
+	rc = der_encode(td, es10b_req_decoded, ipa_asn1c_consume_bytes_cb, es10b_req_encoded);
 
 	if (rc.encoded <= 0) {
 		IPA_LOGP_ES10B(function_name, LERROR, "cannot encode eUICC request!\n");
