@@ -3,9 +3,11 @@
 #include <assert.h>
 #include <onomondo/ipa/ipad.h>
 #include <onomondo/ipa/log.h>
+#include <onomondo/ipa/http.h>
 #include "esipa.h"
 #include "context.h"
 #include "utils.h"
+#include "length.h"
 
 #define PREFIX_HTTP "http://"
 #define PREFIX_HTTPS "https://"
@@ -67,7 +69,6 @@ struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(struct ipa_buf *msg_to
 		ASN_STRUCT_FREE(asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
 		return NULL;
 	}
-
 #ifdef IPA_DEBUG_ASN1
 	IPA_LOGP_ESIPA(function_name, LDEBUG, "ESipa message received from eIM:\n");
 	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa, 1, SESIPA, LDEBUG);
@@ -109,4 +110,35 @@ struct ipa_buf *ipa_esipa_msg_to_eim_enc(struct EsipaMessageFromIpaToEim *msg_to
 	}
 
 	return buf_encoded;
+}
+
+/*! Perform a request towards the eIM.
+ *  \param[in] ctx pointer to ipa_context.
+ *  \param[in] esipa_req ipa_buf with encoded request data
+ *  \param[in] function_name name of the ESipa function (for log messages).
+ *  \returns pointer newly allocated ipa_buf that contains the encoded response from the eIM, NULL on error. */
+struct ipa_buf *ipa_esipa_req(struct ipa_context *ctx, const struct ipa_buf *esipa_req, const char *function_name)
+{
+	struct ipa_buf *esipa_res;
+	int rc;
+
+	if (!esipa_req) {
+		IPA_LOGP_ESIPA(function_name, LERROR, "eIM request failed due to missing encoded request data!\n");
+		return NULL;
+	}
+
+	esipa_res = ipa_buf_alloc(IPA_LIMIT_HTTP_REQ);
+	assert(esipa_res);
+
+	rc = ipa_http_req(ctx->http_ctx, esipa_res, esipa_req, ipa_esipa_get_eim_url(ctx));
+	if (rc < 0) {
+		IPA_LOGP_ESIPA(function_name, LERROR, "eIM request failed!\n");
+		goto error;
+	}
+
+	return esipa_res;
+error:
+
+	IPA_FREE(esipa_res);
+	return NULL;
 }

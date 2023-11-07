@@ -112,17 +112,13 @@ struct ipa_esipa_eim_pkg *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, uint8_t
 	struct ipa_buf *esipa_req;
 	struct ipa_buf *esipa_res;
 	struct ipa_esipa_eim_pkg *eim_pkg = NULL;
-	int rc;
 
 	IPA_LOGP_ESIPA("GetEimPackage", LINFO, "Requesting eIM package for eID: %s\n", ipa_hexdump(eid, IPA_LEN_EID));
 
 	esipa_req = enc_get_eim_pkg_req(eid);
-	esipa_res = ipa_buf_alloc(IPA_LIMIT_HTTP_REQ);
-	rc = ipa_http_req(ctx->http_ctx, esipa_res, esipa_req, ipa_esipa_get_eim_url(ctx));
-	if (rc < 0) {
-		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "eIM package request failed!\n");
+	esipa_res = ipa_esipa_req(ctx, esipa_req, "InitiateAuthentication");
+	if (!esipa_res)
 		goto error;
-	}
 
 	eim_pkg = dec_get_eim_pkg_req(esipa_res);
 

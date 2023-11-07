@@ -73,18 +73,14 @@ struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, str
 	struct ipa_buf *esipa_req;
 	struct ipa_buf *esipa_res;
 	struct ipa_esipa_init_auth_res *res = NULL;
-	int rc;
 
 	IPA_LOGP_ESIPA("InitiateAuthentication", LINFO, "Requesting authentication with eUICC challenge: %s\n",
 		       ipa_hexdump(req->euicc_challenge, IPA_LEN_EUICC_CHLG));
 
 	esipa_req = enc_init_auth_req(req);
-	esipa_res = ipa_buf_alloc(IPA_LIMIT_HTTP_REQ);
-	rc = ipa_http_req(ctx->http_ctx, esipa_res, esipa_req, ipa_esipa_get_eim_url(ctx));
-	if (rc < 0) {
-		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR, "eIM package request failed!\n");
+	esipa_res = ipa_esipa_req(ctx, esipa_req, "InitiateAuthentication");
+	if (!esipa_res)
 		goto error;
-	}
 
 	res = dec_init_auth_res(esipa_res);
 
