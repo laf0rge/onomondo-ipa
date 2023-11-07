@@ -88,7 +88,6 @@ void testme_get_eim_pkg(struct ipa_context *ctx)
 	struct ipa_esipa_eim_pkg *eim_pkg;
 	eim_pkg =
 	    ipa_esipa_get_eim_pkg(ctx, (uint8_t *) "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F");
-	ipa_esipa_get_eim_pkg_dump(eim_pkg, 0, SIPA, LINFO);
 	ipa_esipa_get_eim_pkg_free(eim_pkg);
 }
 

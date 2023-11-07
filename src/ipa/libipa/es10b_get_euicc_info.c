@@ -135,31 +135,6 @@ struct ipa_es10b_euicc_info *ipa_es10b_get_euicc_info(struct ipa_context *ctx, b
 		return get_euicc_info1(ctx);
 }
 
-/*! Dump eUICC info.
- *  \param[in] euicc_info pointer to struct that holds the eUICC info. */
-void ipa_es10b_get_euicc_info_dump(struct ipa_es10b_euicc_info *euicc_info,
-				   uint8_t indent, enum log_subsys log_subsys, enum log_level log_level)
-{
-	char indent_str[256];
-
-	memset(indent_str, ' ', indent);
-	indent_str[indent] = '\0';
-
-	IPA_LOGP(log_subsys, log_level, "%seUICC info: \n", indent_str);
-
-	if (!euicc_info || (!euicc_info->euicc_info_1 && !euicc_info->euicc_info_2)) {
-		IPA_LOGP(log_subsys, log_level, "%s (none)\n", indent_str);
-		return;
-	}
-
-	if (euicc_info->euicc_info_1) {
-		ipa_asn1c_dump(&asn_DEF_EUICCInfo1, euicc_info->euicc_info_1, indent + 1, log_subsys, log_level);
-	}
-	if (euicc_info->euicc_info_2) {
-		ipa_asn1c_dump(&asn_DEF_EUICCInfo1, euicc_info->euicc_info_1, indent + 1, log_subsys, log_level);
-	}
-}
-
 /*! Free eUICC info.
  *  \param[inout] euicc_info pointer to struct that holds the eUICC info. */
 void ipa_es10b_get_euicc_info_free(struct ipa_es10b_euicc_info *euicc_info)

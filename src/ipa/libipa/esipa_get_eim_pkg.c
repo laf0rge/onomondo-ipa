@@ -132,35 +132,6 @@ error:
 	return eim_pkg;
 }
 
-void ipa_esipa_get_eim_pkg_dump(struct ipa_esipa_eim_pkg *eim_pkg, uint8_t indent,
-				enum log_subsys log_subsys, enum log_level log_level)
-{
-	char indent_str[256];
-
-	memset(indent_str, ' ', indent);
-	indent_str[indent] = '\0';
-
-	IPA_LOGP(log_subsys, log_level, "%seIM package: \n", indent_str);
-
-	if (!eim_pkg) {
-		IPA_LOGP(log_subsys, log_level, "%s (none)\n", indent_str);
-		return;
-	}
-
-	switch (eim_pkg->type) {
-	case IPA_ESIPA_EIM_PKG_AC:
-		IPA_LOGP(log_subsys, log_level, "%s activation-code: \"%s\"\n", indent_str, eim_pkg->u.ac.code);
-		break;
-	case IPA_ESIPA_EIM_PKG_ERR:
-		IPA_LOGP(log_subsys, log_level, "%s error-code: \"%d\"\n", indent_str, eim_pkg->u.error);
-		break;
-	default:
-		IPA_LOGP(log_subsys, log_level, "%s (unknown eIM package type)\n", indent_str);
-		break;
-	}
-
-}
-
 void ipa_esipa_get_eim_pkg_free(struct ipa_esipa_eim_pkg *eim_pkg)
 {
 	if (!eim_pkg)

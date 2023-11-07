@@ -27,6 +27,4 @@ struct ipa_esipa_eim_pkg {
 };
 
 struct ipa_esipa_eim_pkg *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, uint8_t *eid);
-void ipa_esipa_get_eim_pkg_dump(struct ipa_esipa_eim_pkg *eim_pkg, uint8_t indent,
-				enum log_subsys log_subsys, enum log_level log_level);
 void ipa_esipa_get_eim_pkg_free(struct ipa_esipa_eim_pkg *eim_pkg);

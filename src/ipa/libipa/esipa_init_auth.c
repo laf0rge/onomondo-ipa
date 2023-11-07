@@ -98,27 +98,6 @@ error:
 	return res;
 }
 
-void ipa_esipa_init_auth_res_dump(struct ipa_esipa_init_auth_res *res, uint8_t indent,
-				  enum log_subsys log_subsys, enum log_level log_level)
-{
-	char indent_str[256];
-
-	memset(indent_str, ' ', indent);
-	indent_str[indent] = '\0';
-
-	IPA_LOGP(log_subsys, log_level, "%seIM initiate authentication response: \n", indent_str);
-
-	if (!res) {
-		IPA_LOGP(log_subsys, log_level, "%s (none)\n", indent_str);
-		return;
-	}
-	if (res->init_auth_ok)
-		ipa_asn1c_dump(&asn_DEF_InitiateAuthenticationOkEsipa, res->init_auth_ok, indent + 1,
-			       log_subsys, log_level);
-	else
-		IPA_LOGP(log_subsys, log_level, "%s init_auth_err = %ld \n", indent_str, res->init_auth_err);
-}
-
 void ipa_esipa_init_auth_res_free(struct ipa_esipa_init_auth_res *res)
 {
 	IPA_ESIPA_RES_FREE(res);
