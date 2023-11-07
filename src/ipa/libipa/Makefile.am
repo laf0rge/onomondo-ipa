@@ -21,6 +21,7 @@ libipa_a_SOURCES = \
 	esipa_get_eim_pkg.c \
 	esipa_init_auth.c \
 	es10b.c \
+	es10b_auth_serv.c \
 	es10b_get_euicc_chlg.c \
 	es10b_get_euicc_info.c \
 	euicc.c \
@@ -36,6 +37,7 @@ noinst_HEADERS = \
 	esipa_get_eim_pkg.h \
 	esipa_init_auth.h \
 	es10b.h \
+	es10b_auth_serv.h \
 	es10b_get_euicc_chlg.h \
 	es10b_get_euicc_info.h \
 	euicc.h \
