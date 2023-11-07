@@ -97,7 +97,7 @@ error:
 	return init_auth_res;
 }
 
-void ipa_esipa_init_auth_dump_res(struct ipa_init_auth_res *init_auth_res, uint8_t indent,
+void ipa_esipa_init_auth_res_dump(struct ipa_init_auth_res *init_auth_res, uint8_t indent,
 				  enum log_subsys log_subsys, enum log_level log_level)
 {
 	char indent_str[256];
@@ -118,7 +118,7 @@ void ipa_esipa_init_auth_dump_res(struct ipa_init_auth_res *init_auth_res, uint8
 		IPA_LOGP(log_subsys, log_level, "%s init_auth_err = %ld \n", indent_str, init_auth_res->init_auth_err);
 }
 
-void ipa_esipa_init_auth_free_res(struct ipa_init_auth_res *init_auth_res)
+void ipa_esipa_init_auth_res_free(struct ipa_init_auth_res *init_auth_res)
 {
 	if (!init_auth_res)
 		return;
