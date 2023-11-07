@@ -19,7 +19,7 @@
 #include <AuthenticateServerRequest.h>
 #include <AuthenticateServerResponse.h>
 
-static int dec_auth_serv_res(struct ipa_es10b_auth_serv_res *auth_serv_res, struct ipa_buf *es10b_res)
+static int dec_auth_serv_res(struct ipa_es10b_auth_serv_res *res, struct ipa_buf *es10b_res)
 {
 	struct AuthenticateServerResponse *asn = NULL;
 
@@ -27,7 +27,7 @@ static int dec_auth_serv_res(struct ipa_es10b_auth_serv_res *auth_serv_res, stru
 	if (!asn)
 		return -EINVAL;
 
-	auth_serv_res->res = asn;
+	res->res = asn;
 	return 0;
 }
 
@@ -35,18 +35,17 @@ static int dec_auth_serv_res(struct ipa_es10b_auth_serv_res *auth_serv_res, stru
  *  \param[in] ctx pointer to IPA context.
  *  \param[in] auth_serv_req pointer to struct that holds the request.
  *  \returns struct with parsed AuthenticateServer reponse info on success, NULL on failure. */
-struct ipa_es10b_auth_serv_res *ipa_es10b_auth_serv(struct ipa_context *ctx,
-						    const struct ipa_es10b_auth_serv_req *auth_serv_req)
+struct ipa_es10b_auth_serv_res *ipa_es10b_auth_serv(struct ipa_context *ctx, const struct ipa_es10b_auth_serv_req *req)
 {
 	struct ipa_buf *es10b_req = NULL;
 	struct ipa_buf *es10b_res = NULL;
-	struct ipa_es10b_auth_serv_res *auth_serv_res;
+	struct ipa_es10b_auth_serv_res *res;
 	int rc;
 
-	auth_serv_res = IPA_ALLOC(struct ipa_es10b_auth_serv_res);
-	memset(auth_serv_res, 0, sizeof(*auth_serv_res));
+	res = IPA_ALLOC(struct ipa_es10b_auth_serv_res);
+	memset(res, 0, sizeof(*res));
 
-	es10b_req = ipa_es10b_req_enc(&asn_DEF_AuthenticateServerRequest, &auth_serv_req->req, "AuthenticateServer");
+	es10b_req = ipa_es10b_req_enc(&asn_DEF_AuthenticateServerRequest, &req->req, "AuthenticateServer");
 	if (!es10b_req) {
 		IPA_LOGP_ES10B("AuthenticateServer", LERROR, "unable to encode ES10b request\n");
 		goto error;
@@ -58,28 +57,28 @@ struct ipa_es10b_auth_serv_res *ipa_es10b_auth_serv(struct ipa_context *ctx,
 		goto error;
 	}
 
-	rc = dec_auth_serv_res(auth_serv_res, es10b_res);
+	rc = dec_auth_serv_res(res, es10b_res);
 
 	if (rc < 0)
 		goto error;
 
 	IPA_FREE(es10b_req);
 	IPA_FREE(es10b_res);
-	return auth_serv_res;
+	return res;
 error:
 	IPA_FREE(es10b_req);
 	IPA_FREE(es10b_res);
-	ipa_es10b_auth_serv_res_free(auth_serv_res);
+	ipa_es10b_auth_serv_res_free(res);
 	return NULL;
 }
 
 /*! Free AuthenticateServer response.
  *  \param[inout] euicc_info pointer to struct that holds the AuthenticateServer response. */
-void ipa_es10b_auth_serv_res_free(struct ipa_es10b_auth_serv_res *auth_serv_res)
+void ipa_es10b_auth_serv_res_free(struct ipa_es10b_auth_serv_res *res)
 {
-	if (!auth_serv_res)
+	if (!res)
 		return;
 
-	ASN_STRUCT_FREE(asn_DEF_AuthenticateServerResponse, auth_serv_res->res);
-	IPA_FREE(auth_serv_res);
+	ASN_STRUCT_FREE(asn_DEF_AuthenticateServerResponse, res->res);
+	IPA_FREE(res);
 }

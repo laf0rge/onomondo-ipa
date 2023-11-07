@@ -14,6 +14,5 @@ struct ipa_es10b_auth_serv_res {
 	struct AuthenticateServerResponse *res;
 };
 
-struct ipa_es10b_auth_serv_res *ipa_es10b_auth_serv(struct ipa_context *ctx,
-						    const struct ipa_es10b_auth_serv_req *auth_serv_req);
-void ipa_es10b_auth_serv_res_free(struct ipa_es10b_auth_serv_res *auth_serv_res);
+struct ipa_es10b_auth_serv_res *ipa_es10b_auth_serv(struct ipa_context *ctx, const struct ipa_es10b_auth_serv_req *req);
+void ipa_es10b_auth_serv_res_free(struct ipa_es10b_auth_serv_res *res);
