@@ -40,7 +40,7 @@ static struct ipa_buf *enc_init_auth_req(struct ipa_esipa_init_auth_req *req)
 static struct ipa_esipa_init_auth_res *dec_init_auth_res(struct ipa_buf *msg_to_ipa_encoded)
 {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
-	struct ipa_esipa_init_auth_res *init_auth_res = NULL;
+	struct ipa_esipa_init_auth_res *res = NULL;
 
 	msg_to_ipa =
 	    ipa_esipa_msg_to_ipa_dec(msg_to_ipa_encoded, "InitiateAuthentication",
@@ -48,22 +48,27 @@ static struct ipa_esipa_init_auth_res *dec_init_auth_res(struct ipa_buf *msg_to_
 	if (!msg_to_ipa)
 		return NULL;
 
-	init_auth_res = IPA_ALLOC_ZERO(struct ipa_esipa_init_auth_res);
-	init_auth_res->msg_to_ipa = msg_to_ipa;
+	res = IPA_ALLOC_ZERO(struct ipa_esipa_init_auth_res);
+	res->msg_to_ipa = msg_to_ipa;
 
 	switch (msg_to_ipa->choice.initiateAuthenticationResponseEsipa.present) {
 	case InitiateAuthenticationResponseEsipa_PR_initiateAuthenticationOkEsipa:
-		init_auth_res->init_auth_ok =
+		res->init_auth_ok =
 		    &msg_to_ipa->choice.initiateAuthenticationResponseEsipa.choice.initiateAuthenticationOkEsipa;
 		break;
 	case InitiateAuthenticationResponseEsipa_PR_initiateAuthenticationErrorEsipa:
-	default:
-		init_auth_res->init_auth_err =
+		res->init_auth_err =
 		    msg_to_ipa->choice.initiateAuthenticationResponseEsipa.choice.initiateAuthenticationErrorEsipa;
+		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR, "function failed with error code %ld!\n",
+			       res->init_auth_err);
+		break;
+	default:
+		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR, "unexpected response content!\n");
+		res->init_auth_err = -1;
 		break;
 	}
 
-	return init_auth_res;
+	return res;
 }
 
 struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, struct ipa_esipa_init_auth_req *req)
@@ -82,9 +87,25 @@ struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, str
 
 	res = dec_init_auth_res(esipa_res);
 
-	if (!res->init_auth_ok)
-		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR, "function failed with error code %ld!\n",
-			       res->init_auth_err);
+	/* Make sure that the signed serverAddress matches the SMDP address we have sent in the request. */
+	if (!IPA_ASN_STR_CMP_BUF
+	    (&res->init_auth_ok->serverSigned1.serverAddress, req->smdp_addr, strlen(req->smdp_addr))) {
+		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR,
+			       "eIM responded with unexpected serverAddress in serverSigned1 (expected: %s)\n",
+			       req->smdp_addr);
+		res->init_auth_err = -1;
+		goto error;
+	}
+
+	/* Make sure the euiccChallenge matches the euiccChallenge we have sent in the request. */
+	if (!IPA_ASN_STR_CMP_BUF
+	    (&res->init_auth_ok->serverSigned1.euiccChallenge, req->euicc_challenge, IPA_LEN_EUICC_CHLG)) {
+		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR,
+			       "eIM responded with unexpected euiccChallenge in serverSigned1 (expected: %s)\n",
+			       req->euicc_challenge);
+		res->init_auth_err = -1;
+		goto error;
+	}
 
 error:
 	IPA_FREE(esipa_req);
