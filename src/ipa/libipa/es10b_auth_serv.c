@@ -39,11 +39,8 @@ struct ipa_es10b_auth_serv_res *ipa_es10b_auth_serv(struct ipa_context *ctx, con
 {
 	struct ipa_buf *es10b_req = NULL;
 	struct ipa_buf *es10b_res = NULL;
-	struct ipa_es10b_auth_serv_res *res;
+	struct ipa_es10b_auth_serv_res *res = IPA_ALLOC_ZERO(struct ipa_es10b_auth_serv_res);
 	int rc;
-
-	res = IPA_ALLOC(struct ipa_es10b_auth_serv_res);
-	memset(res, 0, sizeof(*res));
 
 	es10b_req = ipa_es10b_req_enc(&asn_DEF_AuthenticateServerRequest, &req->req, "AuthenticateServer");
 	if (!es10b_req) {

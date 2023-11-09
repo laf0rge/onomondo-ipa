@@ -37,12 +37,9 @@ struct ipa_es10b_euicc_info *get_euicc_info1(struct ipa_context *ctx)
 {
 	struct ipa_buf *es10b_req = NULL;
 	struct ipa_buf *es10b_res = NULL;
-	struct ipa_es10b_euicc_info *euicc_info;
+	struct ipa_es10b_euicc_info *euicc_info = IPA_ALLOC_ZERO(struct ipa_es10b_euicc_info);
 	struct GetEuiccInfo1Request get_euicc_info1_req = { 0 };
 	int rc;
-
-	euicc_info = IPA_ALLOC(struct ipa_es10b_euicc_info);
-	memset(euicc_info, 0, sizeof(*euicc_info));
 
 	/* Request minimal set of the eUICC information */
 	es10b_req = ipa_es10b_req_enc(&asn_DEF_GetEuiccInfo1Request, &get_euicc_info1_req, "GetEuiccInfo1Request");
@@ -88,12 +85,9 @@ struct ipa_es10b_euicc_info *get_euicc_info2(struct ipa_context *ctx)
 {
 	struct ipa_buf *es10b_req = NULL;
 	struct ipa_buf *es10b_res = NULL;
-	struct ipa_es10b_euicc_info *euicc_info;
+	struct ipa_es10b_euicc_info *euicc_info = IPA_ALLOC_ZERO(struct ipa_es10b_euicc_info);
 	struct GetEuiccInfo1Request get_euicc_info2_req = { 0 };
 	int rc;
-
-	euicc_info = IPA_ALLOC(struct ipa_es10b_euicc_info);
-	memset(euicc_info, 0, sizeof(*euicc_info));
 
 	/* Request full set of the eUICC information */
 	es10b_req = ipa_es10b_req_enc(&asn_DEF_GetEuiccInfo2Request, &get_euicc_info2_req, "GetEuiccInfo2Request");

@@ -46,9 +46,7 @@ struct ipa_activation_code *ipa_activation_code_parse(char *ac)
 	if (memcmp("1$", ac, 2) != 0)
 		return NULL;
 
-	ac_decoded = IPA_ALLOC(struct ipa_activation_code);
-	assert(ac_decoded);
-	memset(ac_decoded, 0, sizeof(*ac_decoded));
+	ac_decoded = IPA_ALLOC_ZERO(struct ipa_activation_code);
 
 	item = ac;
 	while (1) {
@@ -62,7 +60,7 @@ struct ipa_activation_code *ipa_activation_code_parse(char *ac)
 		else
 			item_len = item_end - item;
 
-		item_buf = IPA_ALLOC_N(item_len + 1);
+		item_buf = IPA_ALLOC_N_ZERO(item_len + 1);
 		memcpy(item_buf, item + 1, item_len - 1);
 		item_buf[item_len - 1] = '\0';
 

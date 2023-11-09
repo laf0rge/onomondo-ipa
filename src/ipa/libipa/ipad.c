@@ -18,9 +18,7 @@ struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 	struct ipa_context *ctx;
 	int rc;
 
-	ctx = IPA_ALLOC(struct ipa_context);
-	assert(cfg);
-	memset(ctx, 0, sizeof(*ctx));
+	ctx = IPA_ALLOC_ZERO(struct ipa_context);
 	ctx->cfg = cfg;
 
 	ctx->http_ctx = ipa_http_init();

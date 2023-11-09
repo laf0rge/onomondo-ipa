@@ -7,6 +7,28 @@
 
 #define IPA_ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
+/* \! Allocate memory for an object, ensure that the allocation was successful and that the memory is initialized.
+ *  \param[in] obj description of the object to allocated (struct).
+ *  \returns dynamically allocated memory of the object size. */
+#define IPA_ALLOC_ZERO(obj) ({ \
+	obj *__ptr; \
+	__ptr = IPA_ALLOC(obj); \
+	assert(__ptr); \
+	memset(__ptr, 0, sizeof(*__ptr)); \
+	__ptr; \
+})
+
+/* \! Allocate N bytes of memory, ensure that the allocation was successful and that the memory is initialized.
+ *  \param[in] n number of bytes to allocate.
+ *  \returns N bytes of dynamically allocated memory. */
+#define IPA_ALLOC_N_ZERO(n) ({ \
+	void *__ptr; \
+	__ptr = IPA_ALLOC_N(n); \
+	assert(__ptr); \
+	memset(__ptr, 0, n); \
+	__ptr; \
+})
+
 char *ipa_hexdump(const uint8_t *data, size_t len);
 
 struct ipa_buf {

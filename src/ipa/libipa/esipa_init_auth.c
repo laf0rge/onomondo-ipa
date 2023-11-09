@@ -48,9 +48,7 @@ static struct ipa_esipa_init_auth_res *dec_init_auth_res(struct ipa_buf *msg_to_
 	if (!msg_to_ipa)
 		return NULL;
 
-	init_auth_res = IPA_ALLOC(struct ipa_esipa_init_auth_res);
-	assert(init_auth_res);
-	memset(init_auth_res, 0, sizeof(*init_auth_res));
+	init_auth_res = IPA_ALLOC_ZERO(struct ipa_esipa_init_auth_res);
 	init_auth_res->msg_to_ipa = msg_to_ipa;
 
 	switch (msg_to_ipa->choice.initiateAuthenticationResponseEsipa.present) {

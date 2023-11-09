@@ -43,8 +43,7 @@ static struct ipa_esipa_eim_pkg *dec_profile_dwnld_trig_req(ProfileDownloadTrigg
 				       "no space for over-long activation code!\n");
 			goto error;
 		}
-		eim_pkg = IPA_ALLOC(struct ipa_esipa_eim_pkg);
-		assert(eim_pkg);
+		eim_pkg = IPA_ALLOC_ZERO(struct ipa_esipa_eim_pkg);
 		memcpy(eim_pkg->u.ac.code, pdd->choice.activationCode.buf, pdd->choice.activationCode.size);
 		eim_pkg->u.ac.code[pdd->choice.activationCode.size] = '\0';
 		eim_pkg->type = IPA_ESIPA_EIM_PKG_AC;
@@ -93,8 +92,7 @@ static struct ipa_esipa_eim_pkg *dec_get_eim_pkg_req(struct ipa_buf *msg_to_ipa_
 					       profileDownloadTriggerRequest);
 		break;
 	case GetEimPackageResponse_PR_eimPackageError:
-		eim_pkg = IPA_ALLOC(struct ipa_esipa_eim_pkg);
-		assert(eim_pkg);
+		eim_pkg = IPA_ALLOC_ZERO(struct ipa_esipa_eim_pkg);
 		eim_pkg->u.error = msg_to_ipa->choice.getEimPackageResponse.choice.eimPackageError;
 		eim_pkg->type = IPA_ESIPA_EIM_PKG_ERR;
 		break;

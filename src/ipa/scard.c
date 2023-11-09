@@ -45,9 +45,7 @@ void *ipa_scard_init(unsigned int reader_num)
 	unsigned int num_readers;
 	char *reader_name;
 
-	ctx = IPA_ALLOC(struct scard_ctx);
-	assert(ctx);
-	memset(ctx, 0, sizeof(*ctx));
+	ctx = IPA_ALLOC_ZERO(struct scard_ctx);
 	ctx->reader_num = reader_num;
 
 	/* Initialize reader */
