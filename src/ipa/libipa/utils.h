@@ -9,6 +9,37 @@ int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv);
 void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_ptr, uint8_t indent,
 		    enum log_subsys log_subsys, enum log_level log_level);
 
+/* \! Compare an ASN.1 string object to another ASN.1 string object.
+ *  \param[in] asn1_obj1 pointer to first asn1c generated string object to compare.
+ *  \param[in] asn1_obj2 pointer to second asn1c generated string object to compare.
+ *  \returns true on match, false on mismatch. */
+#define IPA_ASN_STR_CMP(asn1_obj1, asn1_obj2) ({ \
+	bool __rc = true; \
+	if (!(asn1_obj1) || !(asn1_obj2)) \
+		__rc = false; \
+	else if ((asn1_obj1)->size != (asn1_obj2)->size) \
+		__rc = false; \
+	else if (memcmp((asn1_obj1)->buf, (asn1_obj2)->buf, (asn1_obj1)->size)) \
+		__rc = false; \
+	__rc; \
+})
+
+/* \! Compare an ASN.1 string object to buffer.
+ *  \param[in] asn1_obj pointer to asn1c generated string object to compare.
+ *  \param[in] buf_ptr pointer to buffer with data to compare against.
+ *  \param[in] buf_len length of the data.
+ *  \returns true on match, false on mismatch. */
+#define IPA_ASN_STR_CMP_BUF(asn1_obj, buf_ptr, buf_len) ({ \
+	bool __rc = true; \
+	if (!(asn1_obj) || !(buf_ptr)) \
+		__rc = false; \
+	else if ((asn1_obj)->size != buf_len) \
+		__rc = false; \
+	else if (memcmp((asn1_obj)->buf, buf_ptr, (asn1_obj)->size)) \
+		__rc = false; \
+	__rc; \
+})
+
 /* \! Copy an ASN.1 string object into a dynamically allocated IPA_BUF. This macro is used in situations where the ASN.1
  *    specification defines a string type with arbitrary length. Then the target buffer where the data is copied to will
  *    be implemented as a pointer of type uint8_t.
