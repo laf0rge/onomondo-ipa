@@ -15,9 +15,9 @@
 #include "utils.h"
 #include "euicc.h"
 #include "es10b.h"
-#include "es10b_auth_serv.h"
 #include <AuthenticateServerRequest.h>
 #include <AuthenticateServerResponse.h>
+#include "es10b_auth_serv.h"
 
 static int dec_auth_serv_res(struct ipa_es10b_auth_serv_res *res, struct ipa_buf *es10b_res)
 {
@@ -26,6 +26,19 @@ static int dec_auth_serv_res(struct ipa_es10b_auth_serv_res *res, struct ipa_buf
 	asn = ipa_es10b_res_dec(&asn_DEF_AuthenticateServerResponse, es10b_res, "AuthenticateServer");
 	if (!asn)
 		return -EINVAL;
+
+	switch(asn->present) {
+	case AuthenticateServerResponse_PR_authenticateResponseOk:
+		res->auth_serv_ok = &asn->choice.authenticateResponseOk;
+		break;
+	case AuthenticateServerResponse_PR_authenticateResponseError:
+		res->auth_serv_err = asn->choice.authenticateResponseError.authenticateErrorCode;
+		IPA_LOGP_ES10B("AuthenticateServer", LERROR, "function failed with error code %ld!\n", res->auth_serv_err);
+		break;
+	default:
+		IPA_LOGP_ES10B("AuthenticateServer", LERROR, "unexpected response content!\n");
+		res->auth_serv_err  = -1;
+	}
 
 	res->res = asn;
 	return 0;
@@ -55,7 +68,6 @@ struct ipa_es10b_auth_serv_res *ipa_es10b_auth_serv(struct ipa_context *ctx, con
 	}
 
 	rc = dec_auth_serv_res(res, es10b_res);
-
 	if (rc < 0)
 		goto error;
 
