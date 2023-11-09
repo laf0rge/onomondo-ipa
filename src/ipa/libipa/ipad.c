@@ -10,8 +10,7 @@
 #include "esipa_get_eim_pkg.h"
 #include "context.h"
 #include "euicc.h"
-#include "es10b_get_euicc_info.h"
-#include "es10b_get_euicc_chlg.h"
+#include "cmn_mtl_auth_proc.h"
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 {
@@ -57,29 +56,6 @@ void testme_es10x(struct ipa_context *ctx)
 	IPA_FREE(res);
 }
 
-/* A testcase to try out the ES10b function GetEuiccInfo, see also TC_es10b_get_euicc_info */
-void testme_get_euicc_info(struct ipa_context *ctx)
-{
-	struct ipa_es10b_euicc_info *euicc_info;
-	euicc_info = ipa_es10b_get_euicc_info(ctx, false);
-	ipa_es10b_get_euicc_info_dump(euicc_info, 0, SES10B, LINFO);
-	ipa_es10b_get_euicc_info_free(euicc_info);
-
-	euicc_info = ipa_es10b_get_euicc_info(ctx, true);
-	ipa_es10b_get_euicc_info_dump(euicc_info, 0, SES10B, LINFO);
-	ipa_es10b_get_euicc_info_free(euicc_info);
-}
-
-/* A testcase to try out the ES10b function GetEuiccInfo, see also TC_es10b_get_euicc_chlg */
-void testme_get_euicc_chlg(struct ipa_context *ctx)
-{
-	uint8_t euicc_chlg[IPA_LEN_EUICC_CHLG];
-	int rc;
-	rc = ipa_es10b_get_euicc_chlg(ctx, euicc_chlg);
-
-	printf("============> GOT EUICC CHALLENGE: %s (rc=%d)\n", ipa_hexdump(euicc_chlg, sizeof(euicc_chlg)), rc);
-}
-
 /* A testcase to try out the ESipa function GetEimPackage, see also TC_esipa_get_eim_pkg */
 void testme_get_eim_pkg(struct ipa_context *ctx)
 {
@@ -89,12 +65,25 @@ void testme_get_eim_pkg(struct ipa_context *ctx)
 	ipa_esipa_get_eim_pkg_free(eim_pkg);
 }
 
+/* A testcase to try out the Common Mutual Authentication Procedure, see also TC_cmn_mtl_auth_proc */
+void testme_cmn_mtl_auth_proc(struct ipa_context *ctx)
+{
+	uint8_t tac[4] = { 0x12, 0x34, 0x56, 0x78 };	/* TODO: Make this a parameter */
+	int rc;
+	struct ipa_buf *allowed_ca = ipa_buf_alloc_data(3, (uint8_t *) "\xAA\xBB\xCC");
+
+	rc = ipa_cmn_mtl_auth_proc(ctx, tac, allowed_ca, "www.example.net");
+	if (rc < 0)
+		printf("============> FAILURE!\n");
+
+	IPA_FREE(allowed_ca);
+}
+
 void ipa_poll(struct ipa_context *ctx)
 {
 //      testme_es10x(ctx);
-//      testme_get_euicc_info(ctx);
-//      testme_get_euicc_chlg(ctx);
 //      testme_get_eim_pkg(ctx);
+	testme_cmn_mtl_auth_proc(ctx);
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)

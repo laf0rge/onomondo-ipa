@@ -17,6 +17,7 @@ noinst_LIBRARIES = libipa.a
 
 libipa_a_SOURCES = \
 	activation_code.c \
+	cmn_mtl_auth_proc.c \
 	esipa.c \
 	esipa_get_eim_pkg.c \
 	esipa_auth_clnt.c \
@@ -33,6 +34,7 @@ libipa_a_SOURCES = \
 
 noinst_HEADERS = \
 	activation_code.h \
+	cmn_mtl_auth_proc.h \
 	context.h \
 	esipa.h \
 	esipa_get_eim_pkg.h \
