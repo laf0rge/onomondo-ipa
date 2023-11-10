@@ -18,7 +18,7 @@ static struct ipa_buf *enc_get_eim_pkg_req(const uint8_t *eid_value)
 
 	memset(&msg_to_eim, 0, sizeof(msg_to_eim));
 	msg_to_eim.present = EsipaMessageFromIpaToEim_PR_getEimPackageRequest;
-	msg_to_eim.choice.getEimPackageRequest.eidValue.buf = (uint8_t*)eid_value;
+	msg_to_eim.choice.getEimPackageRequest.eidValue.buf = (uint8_t *) eid_value;
 	msg_to_eim.choice.getEimPackageRequest.eidValue.size = IPA_LEN_EID;
 
 	return ipa_esipa_msg_to_eim_enc(&msg_to_eim, "GetEimPackage");
@@ -88,8 +88,8 @@ static struct ipa_esipa_eim_pkg *dec_get_eim_pkg_req(const struct ipa_buf *msg_t
 		break;
 	case GetEimPackageResponse_PR_profileDownloadTriggerRequest:
 		eim_pkg =
-		    dec_profile_dwnld_trig_req(&msg_to_ipa->choice.getEimPackageResponse.choice.
-					       profileDownloadTriggerRequest);
+		    dec_profile_dwnld_trig_req(&msg_to_ipa->choice.getEimPackageResponse.
+					       choice.profileDownloadTriggerRequest);
 		break;
 	case GetEimPackageResponse_PR_eimPackageError:
 		eim_pkg = IPA_ALLOC_ZERO(struct ipa_esipa_eim_pkg);
