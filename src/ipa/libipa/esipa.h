@@ -11,9 +11,10 @@ struct ipa_buf;
 #define IPA_ESIPA_ASN_ENCODER_BUF_SIZE 5120
 
 char *ipa_esipa_get_eim_url(struct ipa_context *ctx);
-struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(struct ipa_buf *msg_to_ipa_encoded, char *function_name,
+struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(const struct ipa_buf *msg_to_ipa_encoded,
+							  const char *function_name,
 							  enum EsipaMessageFromEimToIpa_PR epected_res_type);
-struct ipa_buf *ipa_esipa_msg_to_eim_enc(struct EsipaMessageFromIpaToEim *msg_to_eim, char *function_name);
+struct ipa_buf *ipa_esipa_msg_to_eim_enc(const struct EsipaMessageFromIpaToEim *msg_to_eim, const char *function_name);
 struct ipa_buf *ipa_esipa_req(struct ipa_context *ctx, const struct ipa_buf *esipa_req, const char *function_name);
 
 /*! A helper macro to free the basic contents of an ESIPA response. This macro is intended to be used from within the

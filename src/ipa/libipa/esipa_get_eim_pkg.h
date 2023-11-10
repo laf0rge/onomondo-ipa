@@ -26,5 +26,5 @@ struct ipa_esipa_eim_pkg {
 	} u;
 };
 
-struct ipa_esipa_eim_pkg *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, uint8_t *eid);
+struct ipa_esipa_eim_pkg *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, const uint8_t *eid);
 void ipa_esipa_get_eim_pkg_free(struct ipa_esipa_eim_pkg *eim_pkg);

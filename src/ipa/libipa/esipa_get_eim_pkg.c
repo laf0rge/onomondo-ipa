@@ -12,13 +12,13 @@
 #include <GetEimPackageRequest.h>
 #include <ProfileDownloadTriggerRequest.h>
 
-static struct ipa_buf *enc_get_eim_pkg_req(uint8_t *eid_value)
+static struct ipa_buf *enc_get_eim_pkg_req(const uint8_t *eid_value)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim;
 
 	memset(&msg_to_eim, 0, sizeof(msg_to_eim));
 	msg_to_eim.present = EsipaMessageFromIpaToEim_PR_getEimPackageRequest;
-	msg_to_eim.choice.getEimPackageRequest.eidValue.buf = eid_value;
+	msg_to_eim.choice.getEimPackageRequest.eidValue.buf = (uint8_t*)eid_value;
 	msg_to_eim.choice.getEimPackageRequest.eidValue.size = IPA_LEN_EID;
 
 	return ipa_esipa_msg_to_eim_enc(&msg_to_eim, "GetEimPackage");
@@ -66,7 +66,7 @@ error:
 	return eim_pkg;
 }
 
-static struct ipa_esipa_eim_pkg *dec_get_eim_pkg_req(struct ipa_buf *msg_to_ipa_encoded)
+static struct ipa_esipa_eim_pkg *dec_get_eim_pkg_req(const struct ipa_buf *msg_to_ipa_encoded)
 {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
 	struct ipa_esipa_eim_pkg *eim_pkg = NULL;
@@ -105,7 +105,7 @@ static struct ipa_esipa_eim_pkg *dec_get_eim_pkg_req(struct ipa_buf *msg_to_ipa_
 	return eim_pkg;
 }
 
-struct ipa_esipa_eim_pkg *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, uint8_t *eid)
+struct ipa_esipa_eim_pkg *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, const uint8_t *eid)
 {
 	struct ipa_buf *esipa_req;
 	struct ipa_buf *esipa_res;

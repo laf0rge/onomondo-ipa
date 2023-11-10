@@ -48,7 +48,8 @@ char *ipa_esipa_get_eim_url(struct ipa_context *ctx)
  *  \param[in] function_name name of the ESipa function (for log messages).
  *  \param[in] epected_res_type type of the expected eIM response (for plausibility check).
  *  \returns pointer newly allocated ASN.1 struct that contains the decoded message, NULL on error. */
-struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(struct ipa_buf *msg_to_ipa_encoded, char *function_name,
+struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(const struct ipa_buf *msg_to_ipa_encoded,
+							  const char *function_name,
 							  enum EsipaMessageFromEimToIpa_PR epected_res_type)
 {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
@@ -86,7 +87,7 @@ struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(struct ipa_buf *msg_to
  *  \param[in] msg_to_eim pointer to ASN.1 struct that contains the IPA to eIM message.
  *  \param[in] function_name name of the ESipa function (for log messages).
  *  \returns pointer newly allocated ipa_buf that contains the encoded message, NULL on error. */
-struct ipa_buf *ipa_esipa_msg_to_eim_enc(struct EsipaMessageFromIpaToEim *msg_to_eim, char *function_name)
+struct ipa_buf *ipa_esipa_msg_to_eim_enc(const struct EsipaMessageFromIpaToEim *msg_to_eim, const char *function_name)
 {
 	struct ipa_buf *buf_encoded;
 	asn_enc_rval_t rc;

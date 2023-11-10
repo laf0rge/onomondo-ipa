@@ -14,5 +14,5 @@ struct ipa_esipa_init_auth_res {
 	long init_auth_err;
 };
 
-struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, struct ipa_esipa_init_auth_req *req);
+struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, const struct ipa_esipa_init_auth_req *req);
 void ipa_esipa_init_auth_res_free(struct ipa_esipa_init_auth_res *res);

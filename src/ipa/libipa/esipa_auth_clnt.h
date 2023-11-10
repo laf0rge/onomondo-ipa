@@ -14,5 +14,5 @@ struct ipa_esipa_auth_clnt_res {
 	long auth_clnt_err;
 };
 
-struct ipa_esipa_auth_clnt_res *ipa_esipa_auth_clnt(struct ipa_context *ctx, struct ipa_esipa_auth_clnt_req *req);
+struct ipa_esipa_auth_clnt_res *ipa_esipa_auth_clnt(struct ipa_context *ctx, const struct ipa_esipa_auth_clnt_req *req);
 void ipa_esipa_auth_clnt_res_free(struct ipa_esipa_auth_clnt_res *res);

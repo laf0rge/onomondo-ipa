@@ -13,7 +13,7 @@
 #include <AuthenticateClientRequestEsipa.h>
 #include <AuthenticateClientResponseEsipa.h>
 
-static struct ipa_buf *enc_auth_clnt_req(struct ipa_esipa_auth_clnt_req *req)
+static struct ipa_buf *enc_auth_clnt_req(const struct ipa_esipa_auth_clnt_req *req)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim = { 0 };
 
@@ -24,7 +24,7 @@ static struct ipa_buf *enc_auth_clnt_req(struct ipa_esipa_auth_clnt_req *req)
 	return ipa_esipa_msg_to_eim_enc(&msg_to_eim, "AuthenticateClient");
 }
 
-static struct ipa_esipa_auth_clnt_res *dec_auth_clnt_res(struct ipa_buf *msg_to_ipa_encoded)
+static struct ipa_esipa_auth_clnt_res *dec_auth_clnt_res(const struct ipa_buf *msg_to_ipa_encoded)
 {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
 	struct ipa_esipa_auth_clnt_res *res = NULL;
@@ -62,7 +62,7 @@ static struct ipa_esipa_auth_clnt_res *dec_auth_clnt_res(struct ipa_buf *msg_to_
 	return res;
 }
 
-struct ipa_esipa_auth_clnt_res *ipa_esipa_auth_clnt(struct ipa_context *ctx, struct ipa_esipa_auth_clnt_req *req)
+struct ipa_esipa_auth_clnt_res *ipa_esipa_auth_clnt(struct ipa_context *ctx, const struct ipa_esipa_auth_clnt_req *req)
 {
 	struct ipa_buf *esipa_req;
 	struct ipa_buf *esipa_res;

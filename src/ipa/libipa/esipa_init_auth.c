@@ -13,7 +13,7 @@
 #include <InitiateAuthenticationRequestEsipa.h>
 #include <InitiateAuthenticationResponseEsipa.h>
 
-static struct ipa_buf *enc_init_auth_req(struct ipa_esipa_init_auth_req *req)
+static struct ipa_buf *enc_init_auth_req(const struct ipa_esipa_init_auth_req *req)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim = { 0 };
 	UTF8String_t smdp_address = { 0 };
@@ -37,7 +37,7 @@ static struct ipa_buf *enc_init_auth_req(struct ipa_esipa_init_auth_req *req)
 	return ipa_esipa_msg_to_eim_enc(&msg_to_eim, "InitiateAuthentication");
 }
 
-static struct ipa_esipa_init_auth_res *dec_init_auth_res(struct ipa_buf *msg_to_ipa_encoded)
+static struct ipa_esipa_init_auth_res *dec_init_auth_res(const struct ipa_buf *msg_to_ipa_encoded)
 {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
 	struct ipa_esipa_init_auth_res *res = NULL;
@@ -71,7 +71,7 @@ static struct ipa_esipa_init_auth_res *dec_init_auth_res(struct ipa_buf *msg_to_
 	return res;
 }
 
-struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, struct ipa_esipa_init_auth_req *req)
+struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, const struct ipa_esipa_init_auth_req *req)
 {
 	struct ipa_buf *esipa_req;
 	struct ipa_buf *esipa_res;
