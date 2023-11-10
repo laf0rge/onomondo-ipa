@@ -73,6 +73,21 @@ static inline struct ipa_buf *ipa_buf_alloc(size_t len)
 	return buf;
 }
 
+/*! Allocate a new ipa_buf object and initialize it with data.
+ *  \param[in] len number of bytes to allocate inside ipa_buf.
+ *  \param[in] data to copy into the newly allocated ipa_buf.
+ *  \returns pointer to newly allocated ipa_buf object. */
+static inline struct ipa_buf *ipa_buf_alloc_data(size_t len, uint8_t *data)
+{
+	struct ipa_buf *buf = ipa_buf_alloc(len);
+	assert(buf);
+
+	buf->len = len;
+	memcpy(buf->data, data, len);
+
+	return buf;
+}
+
 /*! Duplicate (exact copy) from another ipa_buf object.
  *  \param[in] buf ipa_buf object to duplicate.
  *  \returns pointer to newly allocated ipa_buf object. */
