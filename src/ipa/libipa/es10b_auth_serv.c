@@ -85,9 +85,5 @@ error:
  *  \param[inout] res pointer to struct that holds the AuthenticateServer response. */
 void ipa_es10b_auth_serv_res_free(struct ipa_es10b_auth_serv_res *res)
 {
-	if (!res)
-		return;
-
-	ASN_STRUCT_FREE(asn_DEF_AuthenticateServerResponse, res->res);
-	IPA_FREE(res);
+	IPA_ES10B_RES_FREE(asn_DEF_AuthenticateServerResponse, res);
 }
