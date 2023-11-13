@@ -11,6 +11,7 @@
 #include "context.h"
 #include "euicc.h"
 #include "cmn_mtl_auth_proc.h"
+#include "cmn_cancel_sess_proc.h"
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 {
@@ -79,11 +80,25 @@ void testme_cmn_mtl_auth_proc(struct ipa_context *ctx)
 	IPA_FREE(allowed_ca);
 }
 
+/* A testcase to try out the Common Cancel Session Procedure, see also TC_cmn_cancel_sess_proc */
+void testme_cmn_cancel_sess_proc(struct ipa_context *ctx)
+{
+	int rc;
+	struct ipa_buf *transaction_id = ipa_buf_alloc_data(3, (uint8_t *) "\xAA\xBB\xCC");
+
+	rc = ipa_cmn_cancel_sess_proc(ctx, 5, transaction_id);
+	if (rc < 0)
+		printf("============> FAILURE!\n");
+
+	IPA_FREE(transaction_id);
+}
+
 void ipa_poll(struct ipa_context *ctx)
 {
 //      testme_es10x(ctx);
 //      testme_get_eim_pkg(ctx);
-	testme_cmn_mtl_auth_proc(ctx);
+//	testme_cmn_mtl_auth_proc(ctx);
+	testme_cmn_cancel_sess_proc(ctx);
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)

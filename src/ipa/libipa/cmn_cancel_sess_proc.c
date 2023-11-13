@@ -1,0 +1,62 @@
+/*
+ * Author: Philipp Maier
+ *
+ */
+
+#include <stdio.h>
+#include <assert.h>
+#include <string.h>
+#include <errno.h>
+#include <onomondo/ipa/mem.h>
+#include <onomondo/ipa/utils.h>
+#include <onomondo/ipa/log.h>
+#include <SGP32-CancelSessionResponse.h>
+#include <SGP32-CancelSessionOk.h>
+#include <CancelSessionResponseOk.h>
+#include "context.h"
+#include "utils.h"
+#include "cmn_cancel_sess_proc.h"
+#include "es10b_cancel_session.h"
+#include "esipa_cancel_session.h"
+
+int ipa_cmn_cancel_sess_proc(struct ipa_context *ctx, long reason, struct ipa_buf *transaction_id)
+{
+	struct ipa_es10b_cancel_session_req es10b_cancel_session_req = { 0 };
+	struct ipa_es10b_cancel_session_res *es10b_cancel_session_res = NULL;
+	struct ipa_esipa_cancel_session_req esipa_cancel_session_req = { 0 };
+	struct ipa_esipa_cancel_session_res *esipa_cancel_session_res = NULL;
+	int rc;
+
+	/* Cancel session on the eUICC side */
+	IPA_ASSIGN_IPA_BUF_TO_ASN(es10b_cancel_session_req.req.transactionId, transaction_id);
+	es10b_cancel_session_req.req.reason = reason;
+	es10b_cancel_session_res = ipa_es10b_cancel_session(ctx, &es10b_cancel_session_req);
+	if (!es10b_cancel_session_res) {
+		rc = -EINVAL;
+		goto error;
+	}
+
+	/* Cancel session on the eIM side */
+	esipa_cancel_session_req.transaction_id = &es10b_cancel_session_req.req.transactionId;
+	if (es10b_cancel_session_res->cancel_session_err)
+		esipa_cancel_session_req.cancel_session_err = es10b_cancel_session_res->cancel_session_err;
+	else
+		esipa_cancel_session_req.cancel_session_ok = es10b_cancel_session_res->cancel_session_ok;
+	esipa_cancel_session_res = ipa_esipa_cancel_session(ctx, &esipa_cancel_session_req);
+	if (!esipa_cancel_session_res) {
+		rc = -EINVAL;
+		goto error;
+	} else if (esipa_cancel_session_res->cancel_session_err) {
+		rc = esipa_cancel_session_res->cancel_session_err;
+		goto error;
+	} else if (!esipa_cancel_session_res->cancel_session_ok) {
+		rc = -EINVAL;
+		goto error;
+	}
+
+	rc = 0;
+error:
+	ipa_es10b_cancel_session_res_free(es10b_cancel_session_res);
+	ipa_esipa_cancel_session_res_free(esipa_cancel_session_res);
+	return rc;
+}
