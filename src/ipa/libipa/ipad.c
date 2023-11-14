@@ -71,7 +71,12 @@ void testme_cmn_mtl_auth_proc(struct ipa_context *ctx)
 {
 	uint8_t tac[4] = { 0x12, 0x34, 0x56, 0x78 };	/* TODO: Make this a parameter */
 	int rc;
-	struct ipa_buf *allowed_ca = ipa_buf_alloc_data(3, (uint8_t *) "\xAA\xBB\xCC");
+
+	/* Brainpool */
+//	struct ipa_buf *allowed_ca = ipa_buf_alloc_data(20, (uint8_t *) "\xC0\xBC\x70\xBA\x36\x92\x9D\x43\xB4\x67\xFF\x57\x57\x05\x30\xE5\x7A\xB8\xFC\xD8");
+
+	/* NIST */
+	struct ipa_buf *allowed_ca = ipa_buf_alloc_data(20, (uint8_t *) "\xF5\x41\x72\xBD\xF9\x8A\x95\xD6\x5C\xBE\xB8\x8A\x38\xA1\xC1\x1D\x80\x0A\x85\xC3");
 
 	rc = ipa_cmn_mtl_auth_proc(ctx, tac, allowed_ca, "www.example.net");
 	if (rc < 0)
@@ -97,8 +102,8 @@ void ipa_poll(struct ipa_context *ctx)
 {
 //      testme_es10x(ctx);
 //      testme_get_eim_pkg(ctx);
-//	testme_cmn_mtl_auth_proc(ctx);
-	testme_cmn_cancel_sess_proc(ctx);
+	testme_cmn_mtl_auth_proc(ctx);
+//	testme_cmn_cancel_sess_proc(ctx);
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)
