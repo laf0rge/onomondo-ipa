@@ -86,6 +86,8 @@ struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, con
 		goto error;
 
 	res = dec_init_auth_res(esipa_res);
+	if (!res)
+		goto error;
 
 	/* Make sure that the signed serverAddress matches the SMDP address we have sent in the request. */
 	if (!IPA_ASN_STR_CMP_BUF
