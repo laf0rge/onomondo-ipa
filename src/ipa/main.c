@@ -40,7 +40,7 @@ int main(void)
 	cfg.euicc_channel = 2;
 	ctx = ipa_new_ctx(&cfg);
 	if (!ctx) {
-		IPA_LOGP(LERROR, LINFO, "no context, initialization failed!\n");
+		IPA_LOGP(SMAIN, LERROR, "no context, initialization failed!\n");
 		return -EINVAL;
 	}
 
