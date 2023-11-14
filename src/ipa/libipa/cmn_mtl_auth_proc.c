@@ -33,19 +33,21 @@ static int restrict_euicc_info(struct ipa_es10b_euicc_info *euicc_info, const st
 	if (!allowed_ca)
 		return 0;
 
-	for (i = 0; i < asn->euiccCiPKIdListForVerification.list.count; i++) {
-		if (asn->euiccCiPKIdListForVerification.list.array[i]->size != allowed_ca->len
-		    || memcmp(asn->euiccCiPKIdListForVerification.list.array[i]->buf, allowed_ca->data,
+	for (i = asn->euiccCiPKIdListForVerification.list.count; i > 0; i--) {
+		if (asn->euiccCiPKIdListForVerification.list.array[i - 1]->size != allowed_ca->len
+		    || memcmp(asn->euiccCiPKIdListForVerification.list.array[i - 1]->buf, allowed_ca->data,
 			      allowed_ca->len)) {
-			IPA_FREE(asn->euiccCiPKIdListForVerification.list.array[i]->buf);
-			IPA_FREE(asn->euiccCiPKIdListForVerification.list.array[i]);
-			asn_sequence_del(&asn->euiccCiPKIdListForVerification, i, 0);
+			IPA_FREE(asn->euiccCiPKIdListForVerification.list.array[i - 1]->buf);
+			IPA_FREE(asn->euiccCiPKIdListForVerification.list.array[i - 1]);
+			asn_sequence_del(&asn->euiccCiPKIdListForVerification, i - 1, 0);
 		}
 	}
 
 	/* The resulting list must not be empty */
-	if (asn->euiccCiPKIdListForVerification.list.count == 0)
+	if (asn->euiccCiPKIdListForVerification.list.count == 0) {
+		IPA_LOGP(SMAIN, LERROR, "allowed CA not found in PKI list!\n");
 		return -EINVAL;
+	}
 
 	return 0;
 }
@@ -185,6 +187,9 @@ int ipa_cmn_mtl_auth_proc(struct ipa_context *ctx, const uint8_t *tac, const str
 		    SGP32_AuthenticateServerResponse_PR_authenticateResponseError;
 		auth_clnt_req.req.authenticateServerResponse.choice.authenticateResponseError.authenticateErrorCode =
 		    auth_serv_res->auth_serv_err;
+		auth_clnt_req.req.authenticateServerResponse.choice.authenticateResponseError.transactionId =
+		    init_auth_res->init_auth_ok->serverSigned1.transactionId;
+
 	} else if (auth_serv_res->auth_serv_ok) {
 		auth_clnt_req.req.authenticateServerResponse.present =
 		    SGP32_AuthenticateServerResponse_PR_authenticateResponseOk;
