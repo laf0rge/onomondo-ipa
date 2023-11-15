@@ -189,7 +189,6 @@ int ipa_cmn_mtl_auth_proc(struct ipa_context *ctx, const uint8_t *tac, const str
 		    auth_serv_res->auth_serv_err;
 		auth_clnt_req.req.authenticateServerResponse.choice.authenticateResponseError.transactionId =
 		    init_auth_res->init_auth_ok->serverSigned1.transactionId;
-
 	} else if (auth_serv_res->auth_serv_ok) {
 		auth_clnt_req.req.authenticateServerResponse.present =
 		    SGP32_AuthenticateServerResponse_PR_authenticateResponseOk;
