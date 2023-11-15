@@ -10,6 +10,9 @@
 #include "esipa_get_eim_pkg.h"
 #include "context.h"
 #include "euicc.h"
+#include <AuthenticateClientRequestEsipa.h>
+#include <AuthenticateClientResponseEsipa.h>
+#include "esipa_auth_clnt.h"
 #include "cmn_mtl_auth_proc.h"
 #include "cmn_cancel_sess_proc.h"
 
@@ -70,7 +73,7 @@ void testme_get_eim_pkg(struct ipa_context *ctx)
 void testme_cmn_mtl_auth_proc(struct ipa_context *ctx)
 {
 	uint8_t tac[4] = { 0x12, 0x34, 0x56, 0x78 };	/* TODO: Make this a parameter */
-	int rc;
+	struct ipa_esipa_auth_clnt_res *rc;
 
 	/* Brainpool */
 //	struct ipa_buf *allowed_ca = ipa_buf_alloc_data(20, (uint8_t *) "\xC0\xBC\x70\xBA\x36\x92\x9D\x43\xB4\x67\xFF\x57\x57\x05\x30\xE5\x7A\xB8\xFC\xD8");
@@ -79,9 +82,10 @@ void testme_cmn_mtl_auth_proc(struct ipa_context *ctx)
 	struct ipa_buf *allowed_ca = ipa_buf_alloc_data(20, (uint8_t *) "\xF5\x41\x72\xBD\xF9\x8A\x95\xD6\x5C\xBE\xB8\x8A\x38\xA1\xC1\x1D\x80\x0A\x85\xC3");
 
 	rc = ipa_cmn_mtl_auth_proc(ctx, tac, allowed_ca, "www.example.net");
-	if (rc < 0)
+	if (!rc)
 		printf("============> FAILURE!\n");
 
+	ipa_esipa_auth_clnt_res_free(rc);
 	IPA_FREE(allowed_ca);
 }
 

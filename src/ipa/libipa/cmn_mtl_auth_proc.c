@@ -113,8 +113,8 @@ static void gen_ctx_params_1(CtxParams1_t * ctx_params_1, const uint8_t *tac)
 	 * ctx_params_1->choice.ctxParamsForCommonAuthentication.deviceInfo.deviceCapabilities... = ?; */
 }
 
-int ipa_cmn_mtl_auth_proc(struct ipa_context *ctx, const uint8_t *tac, const struct ipa_buf *allowed_ca,
-			  const char *smdp_addr)
+struct ipa_esipa_auth_clnt_res *ipa_cmn_mtl_auth_proc(struct ipa_context *ctx, const uint8_t *tac,
+						      const struct ipa_buf *allowed_ca, const char *smdp_addr)
 {
 	struct ipa_es10b_euicc_info *euicc_info = NULL;
 	uint8_t euicc_challenge[IPA_LEN_SERV_CHLG];
@@ -128,45 +128,33 @@ int ipa_cmn_mtl_auth_proc(struct ipa_context *ctx, const uint8_t *tac, const str
 
 	/* Step #1 */
 	euicc_info = ipa_es10b_get_euicc_info(ctx, false);
-	if (!euicc_info) {
-		rc = -EINVAL;
+	if (!euicc_info)
 		goto error;
-	}
 	rc = restrict_euicc_info(euicc_info, allowed_ca);
-	if (rc < 0) {
-		rc = -EINVAL;
+	if (rc < 0)
 		goto error;
-	}
 
 	/* Step #2-#4 */
 	rc = ipa_es10b_get_euicc_chlg(ctx, euicc_challenge);
-	if (rc < 0) {
-		rc = -EINVAL;
+	if (rc < 0)
 		goto error;
-	}
 
 	/* Step #5-#9 */
 	init_auth_req.euicc_challenge = euicc_challenge;
 	init_auth_req.smdp_addr = (char *)smdp_addr;
 	init_auth_req.euicc_info_1 = euicc_info->euicc_info_1;
 	init_auth_res = ipa_esipa_init_auth(ctx, &init_auth_req);
-	if (!init_auth_res) {
-		rc = -EINVAL;
+	if (!init_auth_res)
 		goto error;
-	} else if (init_auth_res->init_auth_err) {
-		rc = init_auth_res->init_auth_err;
+	else if (init_auth_res->init_auth_err)
 		goto error;
-	} else if (!init_auth_res->init_auth_ok) {
-		rc = -EINVAL;
+	else if (!init_auth_res->init_auth_ok)
 		goto error;
-	}
 
 	/* Step #10 */
 	rc = check_certificate(allowed_ca, &init_auth_res->init_auth_ok->serverCertificate);
-	if (rc < 0) {
-		rc = -EINVAL;
+	if (rc < 0)
 		goto error;
-	}
 
 	/* Step #11-#14 */
 	auth_serv_req.req.serverSigned1 = init_auth_res->init_auth_ok->serverSigned1;
@@ -175,10 +163,8 @@ int ipa_cmn_mtl_auth_proc(struct ipa_context *ctx, const uint8_t *tac, const str
 	auth_serv_req.req.serverCertificate = init_auth_res->init_auth_ok->serverCertificate;
 	gen_ctx_params_1(&auth_serv_req.req.ctxParams1, tac);
 	auth_serv_res = ipa_es10b_auth_serv(ctx, &auth_serv_req);
-	if (!auth_serv_res) {
-		rc = -EINVAL;
+	if (!auth_serv_res)
 		goto error;
-	}
 
 	/* Step #15-#19 */
 	auth_clnt_req.req.transactionId = init_auth_res->init_auth_ok->serverSigned1.transactionId;
@@ -196,23 +182,21 @@ int ipa_cmn_mtl_auth_proc(struct ipa_context *ctx, const uint8_t *tac, const str
 		    *auth_serv_res->auth_serv_ok;
 	}
 	auth_clnt_res = ipa_esipa_auth_clnt(ctx, &auth_clnt_req);
-	if (!auth_clnt_res) {
-		rc = -EINVAL;
+	if (!auth_clnt_res)
 		goto error;
-	} else if (auth_clnt_res->auth_clnt_err) {
-		rc = auth_clnt_res->auth_clnt_err;
+	else if (auth_clnt_res->auth_clnt_err)
 		goto error;
-	} else if (!auth_clnt_res->auth_clnt_ok_dpe && !auth_clnt_res->auth_clnt_ok_dse) {
-		rc = -EINVAL;
+	else if (!auth_clnt_res->auth_clnt_ok_dpe && !auth_clnt_res->auth_clnt_ok_dse)
 		goto error;
-	}
 
-	rc = 0;
-
+	ipa_esipa_init_auth_res_free(init_auth_res);
+	ipa_es10b_get_euicc_info_free(euicc_info);
+	ipa_es10b_auth_serv_res_free(auth_serv_res);
+	return auth_clnt_res;
 error:
 	ipa_esipa_init_auth_res_free(init_auth_res);
 	ipa_es10b_get_euicc_info_free(euicc_info);
 	ipa_es10b_auth_serv_res_free(auth_serv_res);
 	ipa_esipa_auth_clnt_res_free(auth_clnt_res);
-	return rc;
+	return NULL;
 }
