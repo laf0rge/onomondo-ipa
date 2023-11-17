@@ -1,5 +1,6 @@
 /*
  * Author: Philipp Maier
+ * See also: GSMA SGP.22, section 3.0.2: Common Cancel Session Procedure
  *
  */
 
