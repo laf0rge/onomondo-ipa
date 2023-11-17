@@ -19,6 +19,7 @@ libipa_a_SOURCES = \
 	activation_code.c \
 	proc_cmn_cancel_sess.c \
 	proc_cmn_mtl_auth.c \
+	proc_direct_prfle_dwnld.c \
 	esipa.c \
 	esipa_cancel_session.c \
 	esipa_get_bnd_prfle_pkg.c \
@@ -33,6 +34,7 @@ libipa_a_SOURCES = \
 	es10b_prep_dwnld.c \
 	euicc.c \
 	ipad.c \
+	proc_prfle_dwnld.c \
 	utils.c \
 	log.c \
 	$(NULL)
@@ -41,6 +43,7 @@ noinst_HEADERS = \
 	activation_code.h \
 	proc_cmn_cancel_sess.h \
 	proc_cmn_mtl_auth.h \
+	proc_direct_prfle_dwnld.h \
 	context.h \
 	esipa.h \
 	esipa_cancel_session.h \
@@ -56,5 +59,6 @@ noinst_HEADERS = \
 	es10b_prep_dwnld.h \
 	euicc.h \
 	length.h \
+	proc_prfle_dwnld.h \
 	utils.h \
 	$(NULL)

@@ -1,3 +1,9 @@
+/*
+ * Author: Philipp Maier <pmaier@sysmocom.de> / sysmocom - s.f.m.c. GmbH
+ * See also: GSMA SGP.32, section 5.14.3: Function: (Esipa) AuthenticateClient
+ *
+ */
+
 #include <stdint.h>
 #include <errno.h>
 #include <onomondo/ipa/http.h>

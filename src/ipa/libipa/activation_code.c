@@ -1,5 +1,6 @@
 /*
- * Author: Philipp Maier
+ * Author: Philipp Maier <pmaier@sysmocom.de> / sysmocom - s.f.m.c. GmbH
+ * See also: GSMA SGP.22, 4.1: Activation Code
  *
  */
 

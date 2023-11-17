@@ -1,3 +1,8 @@
+/*
+ * Author: Philipp Maier <pmaier@sysmocom.de> / sysmocom - s.f.m.c. GmbH
+ *
+ */
+
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
