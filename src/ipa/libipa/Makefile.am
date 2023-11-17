@@ -21,6 +21,7 @@ libipa_a_SOURCES = \
 	proc_cmn_mtl_auth.c \
 	esipa.c \
 	esipa_cancel_session.c \
+	esipa_get_bnd_prfle_pkg.c \
 	esipa_get_eim_pkg.c \
 	esipa_auth_clnt.c \
 	esipa_init_auth.c \
@@ -43,6 +44,7 @@ noinst_HEADERS = \
 	context.h \
 	esipa.h \
 	esipa_cancel_session.h \
+	esipa_get_bnd_prfle_pkg.h \
 	esipa_get_eim_pkg.h \
 	esipa_auth_clnt.h \
 	esipa_init_auth.h \
