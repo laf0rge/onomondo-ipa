@@ -87,8 +87,8 @@ static struct ipa_esipa_eim_pkg *dec_get_eim_pkg_req(const struct ipa_buf *msg_t
 		break;
 	case GetEimPackageResponse_PR_profileDownloadTriggerRequest:
 		eim_pkg =
-		    dec_profile_dwnld_trig_req(&msg_to_ipa->choice.getEimPackageResponse.
-					       choice.profileDownloadTriggerRequest);
+		    dec_profile_dwnld_trig_req(&msg_to_ipa->choice.getEimPackageResponse.choice.
+					       profileDownloadTriggerRequest);
 		break;
 	case GetEimPackageResponse_PR_eimPackageError:
 		eim_pkg = IPA_ALLOC_ZERO(struct ipa_esipa_eim_pkg);
