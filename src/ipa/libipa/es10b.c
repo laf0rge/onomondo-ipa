@@ -28,7 +28,19 @@ void *ipa_es10b_res_dec(const struct asn_TYPE_descriptor_s *td, const struct ipa
 
 	rc = ber_decode(0, td, (void **)&es10b_res_decoded, es10b_res_encoded->data, es10b_res_encoded->len);
 	if (rc.code != RC_OK) {
-		IPA_LOGP_ES10B(function_name, LERROR, "cannot decode eUICC response! (invalid ASN.1 encoded data)\n");
+		if (rc.code == RC_FAIL) {
+			IPA_LOGP_ES10B(function_name, LERROR,
+				       "cannot decode eUICC response! (invalid ASN.1 encoded data)\n");
+		} else if (rc.code == RC_WMORE) {
+			IPA_LOGP_ES10B(function_name, LERROR,
+				       "cannot decode eUICC response! (message seems to be truncated)\n");
+		} else {
+			IPA_LOGP_ES10B(function_name, LERROR, "cannot decode eUICC response! (unknown cause)\n");
+		}
+
+		IPA_LOGP_ES10B(function_name, LDEBUG, "the following (incomplete) data was decoded:\n");
+		ipa_asn1c_dump(td, es10b_res_decoded, 1, SES10B, LERROR);
+
 		ASN_STRUCT_FREE(*td, es10b_res_decoded);
 		return NULL;
 	}

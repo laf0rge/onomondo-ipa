@@ -66,7 +66,19 @@ struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(const struct ipa_buf *
 			(void **)&msg_to_ipa, msg_to_ipa_encoded->data, msg_to_ipa_encoded->len);
 
 	if (rc.code != RC_OK) {
-		IPA_LOGP_ESIPA(function_name, LERROR, "cannot decode eIM response! (invalid ASN.1 encoded data)\n");
+		if (rc.code == RC_FAIL) {
+			IPA_LOGP_ESIPA(function_name, LERROR,
+				       "cannot decode eIM response! (invalid ASN.1 encoded data)\n");
+		} else if (rc.code == RC_WMORE) {
+			IPA_LOGP_ESIPA(function_name, LERROR,
+				       "cannot decode eIM response! (message seems to be truncated)\n");
+		} else {
+			IPA_LOGP_ESIPA(function_name, LERROR, "cannot decode eIM response! (unknown cause)\n");
+		}
+
+		IPA_LOGP_ESIPA(function_name, LDEBUG, "the following (incomplete) data was decoded:\n");
+		ipa_asn1c_dump(&asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa, 1, SESIPA, LERROR);
+
 		ASN_STRUCT_FREE(asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
 		return NULL;
 	}
