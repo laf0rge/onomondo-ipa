@@ -78,6 +78,9 @@ struct ipa_esipa_cancel_session_res *ipa_esipa_cancel_session(struct ipa_context
 	IPA_LOGP_ESIPA("CancelSession", LINFO, "Requesting cancellation of session\n");
 
 	esipa_req = enc_cancel_session_req(req);
+	if (!esipa_req)
+		goto error;
+
 	esipa_res = ipa_esipa_req(ctx, esipa_req, "CancelSession");
 	if (!esipa_res)
 		goto error;
