@@ -71,6 +71,9 @@ struct ipa_esipa_auth_clnt_res *ipa_esipa_auth_clnt(struct ipa_context *ctx, con
 	IPA_LOGP_ESIPA("AuthenticateClient", LINFO, "Requesting client authentication\n");
 
 	esipa_req = enc_auth_clnt_req(req);
+	if (!esipa_req)
+		goto error;
+
 	esipa_res = ipa_esipa_req(ctx, esipa_req, "AuthenticateClient");
 	if (!esipa_res)
 		goto error;
