@@ -79,6 +79,7 @@ void testme_proc_cmn_mtl_auth(struct ipa_context *ctx)
 {
 	uint8_t tac[4] = { 0x12, 0x34, 0x56, 0x78 };	/* TODO: Make this a parameter */
 	struct ipa_esipa_auth_clnt_res *rc;
+	struct ipa_proc_cmn_mtl_auth_pars cmn_mtl_auth_pars = { 0 };
 
 	/* Brainpool */
 //	struct ipa_buf *allowed_ca = ipa_buf_alloc_data(20, (uint8_t *) "\xC0\xBC\x70\xBA\x36\x92\x9D\x43\xB4\x67\xFF\x57\x57\x05\x30\xE5\x7A\xB8\xFC\xD8");
@@ -86,7 +87,10 @@ void testme_proc_cmn_mtl_auth(struct ipa_context *ctx)
 	/* NIST */
 	struct ipa_buf *allowed_ca = ipa_buf_alloc_data(20, (uint8_t *) "\xF5\x41\x72\xBD\xF9\x8A\x95\xD6\x5C\xBE\xB8\x8A\x38\xA1\xC1\x1D\x80\x0A\x85\xC3");
 
-	rc = ipa_proc_cmn_mtl_auth(ctx, tac, allowed_ca, "www.example.net");
+	cmn_mtl_auth_pars.tac = tac;
+	cmn_mtl_auth_pars.allowed_ca = allowed_ca;
+	cmn_mtl_auth_pars.smdp_addr = "www.example.net";
+	rc = ipa_proc_cmn_mtl_auth(ctx, &cmn_mtl_auth_pars);
 	if (!rc)
 		printf("============> FAILURE!\n");
 

@@ -114,8 +114,7 @@ static void gen_ctx_params_1(CtxParams1_t * ctx_params_1, const uint8_t *tac)
 	 * ctx_params_1->choice.ctxParamsForCommonAuthentication.deviceInfo.deviceCapabilities... = ?; */
 }
 
-struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx, const uint8_t *tac,
-						      const struct ipa_buf *allowed_ca, const char *smdp_addr)
+struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx, struct ipa_proc_cmn_mtl_auth_pars *pars)
 {
 	struct ipa_es10b_euicc_info *euicc_info = NULL;
 	uint8_t euicc_challenge[IPA_LEN_SERV_CHLG];
@@ -131,7 +130,7 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx, c
 	euicc_info = ipa_es10b_get_euicc_info(ctx, false);
 	if (!euicc_info)
 		goto error;
-	rc = restrict_euicc_info(euicc_info, allowed_ca);
+	rc = restrict_euicc_info(euicc_info, pars->allowed_ca);
 	if (rc < 0)
 		goto error;
 
@@ -142,7 +141,7 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx, c
 
 	/* Step #5-#9 */
 	init_auth_req.euicc_challenge = euicc_challenge;
-	init_auth_req.smdp_addr = (char *)smdp_addr;
+	init_auth_req.smdp_addr = (char *)pars->smdp_addr;
 	init_auth_req.euicc_info_1 = euicc_info->euicc_info_1;
 	init_auth_res = ipa_esipa_init_auth(ctx, &init_auth_req);
 	if (!init_auth_res)
@@ -153,7 +152,7 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx, c
 		goto error;
 
 	/* Step #10 */
-	rc = check_certificate(allowed_ca, &init_auth_res->init_auth_ok->serverCertificate);
+	rc = check_certificate(pars->allowed_ca, &init_auth_res->init_auth_ok->serverCertificate);
 	if (rc < 0)
 		goto error;
 
@@ -162,7 +161,7 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx, c
 	auth_serv_req.req.serverSignature1 = init_auth_res->init_auth_ok->serverSignature1;
 	auth_serv_req.req.euiccCiPKIdToBeUsed = init_auth_res->init_auth_ok->euiccCiPKIdToBeUsed;
 	auth_serv_req.req.serverCertificate = init_auth_res->init_auth_ok->serverCertificate;
-	gen_ctx_params_1(&auth_serv_req.req.ctxParams1, tac);
+	gen_ctx_params_1(&auth_serv_req.req.ctxParams1, pars->tac);
 	auth_serv_res = ipa_es10b_auth_serv(ctx, &auth_serv_req);
 	if (!auth_serv_res)
 		goto error;
