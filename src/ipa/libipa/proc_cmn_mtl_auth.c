@@ -16,7 +16,7 @@
 #include <AuthenticateServerRequest.h>
 #include "context.h"
 #include "utils.h"
-#include "cmn_mtl_auth_proc.h"
+#include "proc_cmn_mtl_auth.h"
 #include "es10b_get_euicc_info.h"
 #include "es10b_get_euicc_chlg.h"
 #include "esipa_init_auth.h"
@@ -113,7 +113,7 @@ static void gen_ctx_params_1(CtxParams1_t * ctx_params_1, const uint8_t *tac)
 	 * ctx_params_1->choice.ctxParamsForCommonAuthentication.deviceInfo.deviceCapabilities... = ?; */
 }
 
-struct ipa_esipa_auth_clnt_res *ipa_cmn_mtl_auth_proc(struct ipa_context *ctx, const uint8_t *tac,
+struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx, const uint8_t *tac,
 						      const struct ipa_buf *allowed_ca, const char *smdp_addr)
 {
 	struct ipa_es10b_euicc_info *euicc_info = NULL;

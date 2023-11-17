@@ -13,7 +13,7 @@
 #include <AuthenticateClientRequestEsipa.h>
 #include <AuthenticateClientResponseEsipa.h>
 #include "esipa_auth_clnt.h"
-#include "cmn_mtl_auth_proc.h"
+#include "proc_cmn_mtl_auth.h"
 #include "proc_cmn_cancel_sess.h"
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
@@ -69,8 +69,8 @@ void testme_get_eim_pkg(struct ipa_context *ctx)
 	ipa_esipa_get_eim_pkg_free(eim_pkg);
 }
 
-/* A testcase to try out the Common Mutual Authentication Procedure, see also TC_cmn_mtl_auth_proc */
-void testme_cmn_mtl_auth_proc(struct ipa_context *ctx)
+/* A testcase to try out the Common Mutual Authentication Procedure, see also TC_proc_cmn_mtl_auth */
+void testme_proc_cmn_mtl_auth(struct ipa_context *ctx)
 {
 	uint8_t tac[4] = { 0x12, 0x34, 0x56, 0x78 };	/* TODO: Make this a parameter */
 	struct ipa_esipa_auth_clnt_res *rc;
@@ -81,7 +81,7 @@ void testme_cmn_mtl_auth_proc(struct ipa_context *ctx)
 	/* NIST */
 	struct ipa_buf *allowed_ca = ipa_buf_alloc_data(20, (uint8_t *) "\xF5\x41\x72\xBD\xF9\x8A\x95\xD6\x5C\xBE\xB8\x8A\x38\xA1\xC1\x1D\x80\x0A\x85\xC3");
 
-	rc = ipa_cmn_mtl_auth_proc(ctx, tac, allowed_ca, "www.example.net");
+	rc = ipa_proc_cmn_mtl_auth(ctx, tac, allowed_ca, "www.example.net");
 	if (!rc)
 		printf("============> FAILURE!\n");
 
@@ -106,8 +106,8 @@ void ipa_poll(struct ipa_context *ctx)
 {
 //      testme_es10x(ctx);
 //      testme_get_eim_pkg(ctx);
-	testme_cmn_mtl_auth_proc(ctx);
 //	testme_proc_cmn_cancel_sess(ctx);
+	testme_proc_cmn_mtl_auth(ctx);
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)
