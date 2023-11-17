@@ -13,6 +13,7 @@
 #include <onomondo/ipa/ipad.h>
 #include <onomondo/ipa/utils.h>
 #include "esipa_get_eim_pkg.h"
+#include "utils.h"
 #include "context.h"
 #include "euicc.h"
 #include <AuthenticateClientRequestEsipa.h>
@@ -106,7 +107,7 @@ void testme_proc_cmn_cancel_sess(struct ipa_context *ctx)
 	struct ipa_proc_cmn_cancel_sess_pars cmn_cancel_sess_pars = { 0 };
 
 	cmn_cancel_sess_pars.reason = 5;
-	cmn_cancel_sess_pars.transaction_id = transaction_id;
+	IPA_ASSIGN_IPA_BUF_TO_ASN(cmn_cancel_sess_pars.transaction_id, transaction_id);
 	rc = ipa_proc_cmn_cancel_sess(ctx, &cmn_cancel_sess_pars);
 	if (rc < 0)
 		printf("============> FAILURE!\n");

@@ -29,7 +29,7 @@ int ipa_proc_cmn_cancel_sess(struct ipa_context *ctx, const struct ipa_proc_cmn_
 	int rc;
 
 	/* Cancel session on the eUICC side */
-	IPA_ASSIGN_IPA_BUF_TO_ASN(es10b_cancel_session_req.req.transactionId, pars->transaction_id);
+	es10b_cancel_session_req.req.transactionId = pars->transaction_id;
 	es10b_cancel_session_req.req.reason = pars->reason;
 	es10b_cancel_session_res = ipa_es10b_cancel_session(ctx, &es10b_cancel_session_req);
 	if (!es10b_cancel_session_res) {
