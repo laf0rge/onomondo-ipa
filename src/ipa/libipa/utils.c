@@ -130,3 +130,25 @@ void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_p
 		token = strtok(NULL, "\n");
 	}
 }
+
+/*! Compare two strings case insensitive.
+ *  \param[in] str1 first string to compare.
+ *  \param[in] str2 second string to compare.
+ *  \param[in] len length up to which we compare the two strings.
+ *  \returns 0 when both strings match, -1 when there is a difference. */
+int ipa_cmp_case_insensitive(const char *str1, const char *str2, size_t len)
+{
+	size_t i;
+
+	if (!str1)
+		return -1;
+	if (!str2)
+		return -1;
+
+	for (i = 0; i < len; i++) {
+		if (toupper(str1[i]) != toupper(str2[i]))
+			return -1;
+	}
+
+	return 0;
+}

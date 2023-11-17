@@ -8,6 +8,7 @@ struct asn_TYPE_descriptor_s;
 int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv);
 void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_ptr, uint8_t indent,
 		    enum log_subsys log_subsys, enum log_level log_level);
+int ipa_cmp_case_insensitive(const char *str1, const char *str2, size_t len);
 
 /* \! Compare an ASN.1 string object to another ASN.1 string object.
  *  \param[in] asn1_obj1 pointer to first asn1c generated string object to compare.
@@ -36,6 +37,22 @@ void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_p
 	else if ((asn1_obj)->size != buf_len) \
 		__rc = false; \
 	else if (memcmp((asn1_obj)->buf, buf_ptr, (asn1_obj)->size)) \
+		__rc = false; \
+	__rc; \
+})
+
+/* \! Compare an ASN.1 string object to buffer (case insensitive).
+ *  \param[in] asn1_obj pointer to asn1c generated string object to compare.
+ *  \param[in] buf_ptr pointer to buffer with data to compare against.
+ *  \param[in] buf_len length of the data.
+ *  \returns true on match, false on mismatch. */
+#define IPA_ASN_STR_CMP_BUF_I(asn1_obj, buf_ptr, buf_len) ({ \
+	bool __rc = true; \
+	if (!(asn1_obj) || !(buf_ptr)) \
+		__rc = false; \
+	else if ((asn1_obj)->size != buf_len) \
+		__rc = false; \
+	else if (ipa_cmp_case_insensitive((char*)(asn1_obj)->buf, (char*)buf_ptr, (asn1_obj)->size)) \
 		__rc = false; \
 	__rc; \
 })
