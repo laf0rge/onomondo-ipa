@@ -14,9 +14,8 @@
 
 static struct ipa_buf *enc_get_eim_pkg_req(const uint8_t *eid_value)
 {
-	struct EsipaMessageFromIpaToEim msg_to_eim;
+	struct EsipaMessageFromIpaToEim msg_to_eim = { 0 };
 
-	memset(&msg_to_eim, 0, sizeof(msg_to_eim));
 	msg_to_eim.present = EsipaMessageFromIpaToEim_PR_getEimPackageRequest;
 	msg_to_eim.choice.getEimPackageRequest.eidValue.buf = (uint8_t *) eid_value;
 	msg_to_eim.choice.getEimPackageRequest.eidValue.size = IPA_LEN_EID;
@@ -114,6 +113,9 @@ struct ipa_esipa_eim_pkg *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, const u
 	IPA_LOGP_ESIPA("GetEimPackage", LINFO, "Requesting eIM package for eID: %s\n", ipa_hexdump(eid, IPA_LEN_EID));
 
 	esipa_req = enc_get_eim_pkg_req(eid);
+	if (!esipa_req)
+		goto error;
+
 	esipa_res = ipa_esipa_req(ctx, esipa_req, "InitiateAuthentication");
 	if (!esipa_res)
 		goto error;
