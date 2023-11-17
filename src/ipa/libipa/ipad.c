@@ -21,6 +21,7 @@
 #include "esipa_auth_clnt.h"
 #include "proc_cmn_mtl_auth.h"
 #include "proc_cmn_cancel_sess.h"
+#include "proc_direct_prfle_dwnld.h"
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 {
@@ -115,12 +116,32 @@ void testme_proc_cmn_cancel_sess(struct ipa_context *ctx)
 	IPA_FREE(transaction_id);
 }
 
+/* A testcase to try out the Common Mutual Authentication Procedure, see also TC_proc_direct_prfle_dwnld */
+void testme_proc_direct_prfle_dwnld(struct ipa_context *ctx)
+{
+	struct ipa_proc_direct_prfle_dwnlod_pars direct_prfle_dwnlod_pars = { 0 };
+	uint8_t tac[4] = { 0x12, 0x34, 0x56, 0x78 };
+
+	/* Brainpool */
+//      struct ipa_buf *allowed_ca = ipa_buf_alloc_data(20, (uint8_t *) "\xC0\xBC\x70\xBA\x36\x92\x9D\x43\xB4\x67\xFF\x57\x57\x05\x30\xE5\x7A\xB8\xFC\xD8");
+	/* NIST */
+	struct ipa_buf *allowed_ca = ipa_buf_alloc_data(20, (uint8_t *) "\xF5\x41\x72\xBD\xF9\x8A\x95\xD6\x5C\xBE\xB8\x8A\x38\xA1\xC1\x1D\x80\x0A\x85\xC3");
+
+	direct_prfle_dwnlod_pars.ac = "1$SMDP.EXAMPLE.COM$04386-AGYFT-A74Y8-3F815";
+	direct_prfle_dwnlod_pars.tac = tac;
+	direct_prfle_dwnlod_pars.allowed_ca = allowed_ca;
+	ipa_proc_direct_prfle_dwnlod(ctx, &direct_prfle_dwnlod_pars);
+	IPA_FREE(allowed_ca);
+
+}
+
 void ipa_poll(struct ipa_context *ctx)
 {
 //      testme_es10x(ctx);
 //      testme_get_eim_pkg(ctx);
 //	testme_proc_cmn_cancel_sess(ctx);
-	testme_proc_cmn_mtl_auth(ctx);
+//	testme_proc_cmn_mtl_auth(ctx);
+	testme_proc_direct_prfle_dwnld(ctx);
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)
