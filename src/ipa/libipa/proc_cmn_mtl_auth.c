@@ -15,14 +15,16 @@
 #include <InitiateAuthenticationResponseEsipa.h>
 #include <AuthenticateClientResponseEsipa.h>
 #include <AuthenticateServerRequest.h>
+#include <CancelSessionReason.h>
 #include "context.h"
 #include "utils.h"
-#include "proc_cmn_mtl_auth.h"
 #include "es10b_get_euicc_info.h"
 #include "es10b_get_euicc_chlg.h"
 #include "esipa_init_auth.h"
 #include "es10b_auth_serv.h"
 #include "esipa_auth_clnt.h"
+#include "proc_cmn_mtl_auth.h"
+#include "proc_cmn_cancel_sess.h"
 
 /* Walk through the euiccCiPKIdListForVerification list and remove all entries that do not match the given eSIM CA
  * RootCA public key identifier (allowed_ca), See also GSMA SGP.22, section 3.0.1, step 1c. */
@@ -124,7 +126,9 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx, s
 	struct ipa_es10b_auth_serv_res *auth_serv_res = NULL;
 	struct ipa_esipa_auth_clnt_req auth_clnt_req = { 0 };
 	struct ipa_esipa_auth_clnt_res *auth_clnt_res = NULL;
+	struct ipa_proc_cmn_cancel_sess_pars cmn_cancel_sess_pars = { 0 };
 	int rc;
+	bool exec_cmn_cancel_sess = false;
 
 	/* Step #1 */
 	euicc_info = ipa_es10b_get_euicc_info(ctx, false);
@@ -182,18 +186,28 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx, s
 		    *auth_serv_res->auth_serv_ok;
 	}
 	auth_clnt_res = ipa_esipa_auth_clnt(ctx, &auth_clnt_req);
-	if (!auth_clnt_res)
+	if (!auth_clnt_res) {
+		exec_cmn_cancel_sess = true;
 		goto error;
-	else if (auth_clnt_res->auth_clnt_err)
+	} else if (auth_clnt_res->auth_clnt_err) {
+		exec_cmn_cancel_sess = true;
 		goto error;
-	else if (!auth_clnt_res->auth_clnt_ok_dpe && !auth_clnt_res->auth_clnt_ok_dse)
+	} else if (!auth_clnt_res->auth_clnt_ok_dpe && !auth_clnt_res->auth_clnt_ok_dse) {
+		exec_cmn_cancel_sess = true;
 		goto error;
+	}
 
 	ipa_esipa_init_auth_res_free(init_auth_res);
 	ipa_es10b_get_euicc_info_free(euicc_info);
 	ipa_es10b_auth_serv_res_free(auth_serv_res);
 	return auth_clnt_res;
 error:
+	if (exec_cmn_cancel_sess) {
+		cmn_cancel_sess_pars.reason = CancelSessionReason_undefinedReason;
+		cmn_cancel_sess_pars.transaction_id = auth_clnt_req.req.transactionId;
+		ipa_proc_cmn_cancel_sess(ctx, &cmn_cancel_sess_pars);
+	}
+
 	ipa_esipa_init_auth_res_free(init_auth_res);
 	ipa_es10b_get_euicc_info_free(euicc_info);
 	ipa_es10b_auth_serv_res_free(auth_serv_res);
