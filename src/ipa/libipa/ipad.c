@@ -103,8 +103,11 @@ void testme_proc_cmn_cancel_sess(struct ipa_context *ctx)
 {
 	int rc;
 	struct ipa_buf *transaction_id = ipa_buf_alloc_data(3, (uint8_t *) "\xAA\xBB\xCC");
+	struct ipa_proc_cmn_cancel_sess_pars cmn_cancel_sess_pars = { 0 };
 
-	rc = ipa_proc_cmn_cancel_sess(ctx, 5, transaction_id);
+	cmn_cancel_sess_pars.reason = 5;
+	cmn_cancel_sess_pars.transaction_id = transaction_id;
+	rc = ipa_proc_cmn_cancel_sess(ctx, &cmn_cancel_sess_pars);
 	if (rc < 0)
 		printf("============> FAILURE!\n");
 
