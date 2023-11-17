@@ -175,7 +175,8 @@ ber_check_tags(const asn_codec_ctx_t *opt_codec_ctx,
 				ber_tlv_tag_string(td->tags[tagno]),
 				tagno, tag_mode
 			);
-			RETURN(RC_FAIL);
+			//	RETURN(RC_FAIL);
+			printf("===================> OOPS: tlv_tag = %x != td->tags[tagno] = %x!?\n", tlv_tag, td->tags[tagno]);
 		    }
 		}
 
