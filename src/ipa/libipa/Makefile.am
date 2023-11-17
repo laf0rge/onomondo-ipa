@@ -17,7 +17,7 @@ noinst_LIBRARIES = libipa.a
 
 libipa_a_SOURCES = \
 	activation_code.c \
-	cmn_cancel_sess_proc.c \
+	proc_cmn_cancel_sess.c \
 	cmn_mtl_auth_proc.c \
 	esipa.c \
 	esipa_cancel_session.c \
@@ -37,7 +37,7 @@ libipa_a_SOURCES = \
 
 noinst_HEADERS = \
 	activation_code.h \
-	cmn_cancel_sess_proc.h \
+	proc_cmn_cancel_sess.h \
 	cmn_mtl_auth_proc.h \
 	context.h \
 	esipa.h \

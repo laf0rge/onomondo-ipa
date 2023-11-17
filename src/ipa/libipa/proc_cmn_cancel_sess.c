@@ -15,11 +15,11 @@
 #include <CancelSessionResponseOk.h>
 #include "context.h"
 #include "utils.h"
-#include "cmn_cancel_sess_proc.h"
+#include "proc_cmn_cancel_sess.h"
 #include "es10b_cancel_session.h"
 #include "esipa_cancel_session.h"
 
-int ipa_cmn_cancel_sess_proc(struct ipa_context *ctx, long reason, struct ipa_buf *transaction_id)
+int ipa_proc_cmn_cancel_sess(struct ipa_context *ctx, long reason, struct ipa_buf *transaction_id)
 {
 	struct ipa_es10b_cancel_session_req es10b_cancel_session_req = { 0 };
 	struct ipa_es10b_cancel_session_res *es10b_cancel_session_res = NULL;
