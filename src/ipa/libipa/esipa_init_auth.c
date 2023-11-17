@@ -81,6 +81,9 @@ struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, con
 		       ipa_hexdump(req->euicc_challenge, IPA_LEN_EUICC_CHLG));
 
 	esipa_req = enc_init_auth_req(req);
+	if (!esipa_req)
+		goto error;
+
 	esipa_res = ipa_esipa_req(ctx, esipa_req, "InitiateAuthentication");
 	if (!esipa_res)
 		goto error;
