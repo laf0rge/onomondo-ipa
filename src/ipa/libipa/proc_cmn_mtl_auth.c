@@ -1,5 +1,6 @@
 /*
  * Author: Philipp Maier
+ * See also: GSMA SGP.22, section 3.0.1: Common Mutual Authentication Procedure
  *
  */
 
