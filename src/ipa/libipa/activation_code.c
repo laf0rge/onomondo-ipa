@@ -13,9 +13,9 @@
 /*! Parse Activation code.
  *  \param[in] ac ascii string that contains the activation code.
  *  \returns struct with parsed activation code on success, NULL on failure. */
-struct ipa_activation_code *ipa_activation_code_parse(char *ac)
+struct ipa_activation_code *ipa_activation_code_parse(const char *ac)
 {
-	char *item;
+	const char *item;
 	char *item_end;
 	char *item_buf;
 	size_t item_len;
@@ -121,7 +121,7 @@ struct ipa_activation_code *ipa_activation_code_parse(char *ac)
  *  \param[in] indent indentation level of the generated output.
  *  \param[in] log_subsys log subsystem to generate the output for.
  *  \param[in] log_level log level to generate the output for. */
-void ipa_activation_code_dump(struct ipa_activation_code *ac_decoded,
+void ipa_activation_code_dump(const struct ipa_activation_code *ac_decoded,
 			      uint8_t indent, enum log_subsys log_subsys,
 			      enum log_level log_level)
 {
