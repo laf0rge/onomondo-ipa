@@ -5,7 +5,7 @@
 struct ipa_esipa_init_auth_req {
 	uint8_t *euicc_challenge;
 	char *smdp_addr;
-	struct EUICCInfo1 *euicc_info_1;
+	EUICCInfo1_t *euicc_info_1;
 };
 
 struct ipa_esipa_init_auth_res {
