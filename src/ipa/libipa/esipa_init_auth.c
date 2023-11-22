@@ -28,7 +28,7 @@ static struct ipa_buf *enc_init_auth_req(const struct ipa_esipa_init_auth_req *r
 
 	/* add eUICC challenge */
 	IPA_ASSIGN_BUF_TO_ASN(msg_to_eim.choice.initiateAuthenticationRequestEsipa.euiccChallenge,
-			      req->euicc_challenge, IPA_LEN_EUICC_CHLG);
+			      (uint8_t*)req->euicc_challenge, IPA_LEN_EUICC_CHLG);
 
 	/* add SMDP addr */
 	if (req->smdp_addr) {
@@ -37,7 +37,7 @@ static struct ipa_buf *enc_init_auth_req(const struct ipa_esipa_init_auth_req *r
 	}
 
 	/* eUICC info */
-	msg_to_eim.choice.initiateAuthenticationRequestEsipa.euiccInfo1 = req->euicc_info_1;
+	msg_to_eim.choice.initiateAuthenticationRequestEsipa.euiccInfo1 = (EUICCInfo1_t*)req->euicc_info_1;
 
 	/* Encode */
 	return ipa_esipa_msg_to_eim_enc(&msg_to_eim, "InitiateAuthentication");

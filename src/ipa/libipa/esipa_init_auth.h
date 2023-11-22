@@ -3,9 +3,9 @@
 #include "length.h"
 
 struct ipa_esipa_init_auth_req {
-	uint8_t *euicc_challenge;
-	char *smdp_addr;
-	EUICCInfo1_t *euicc_info_1;
+	const uint8_t *euicc_challenge;
+	const char *smdp_addr;
+	const EUICCInfo1_t *euicc_info_1;
 };
 
 struct ipa_esipa_init_auth_res {
