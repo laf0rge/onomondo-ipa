@@ -36,7 +36,7 @@ int ipa_cmp_case_insensitive(const char *str1, const char *str2, size_t len);
 		__rc = false; \
 	else if ((asn1_obj)->size != buf_len) \
 		__rc = false; \
-	else if (memcmp((asn1_obj)->buf, buf_ptr, (asn1_obj)->size)) \
+	else if (memcmp((asn1_obj)->buf, (buf_ptr), buf_len)) \
 		__rc = false; \
 	__rc; \
 })
@@ -52,7 +52,7 @@ int ipa_cmp_case_insensitive(const char *str1, const char *str2, size_t len);
 		__rc = false; \
 	else if ((asn1_obj)->size != buf_len) \
 		__rc = false; \
-	else if (ipa_cmp_case_insensitive((char*)(asn1_obj)->buf, (char*)buf_ptr, (asn1_obj)->size)) \
+	else if (ipa_cmp_case_insensitive((char*)(asn1_obj)->buf, (char*)(buf_ptr), buf_len)) \
 		__rc = false; \
 	__rc; \
 })
@@ -141,8 +141,8 @@ int ipa_cmp_case_insensitive(const char *str1, const char *str2, size_t len);
 #define IPA_COPY_IPA_BUF_TO_ASN(asn1_obj, ipa_buf) ({ \
 	(asn1_obj)->buf = IPA_ALLOC_N(ipa_buf->len); \
 	assert((asn1_obj)->buf); \
-	memcpy((asn1_obj)->buf, ipa_buf->data, ipa_buf->len); \
-	(asn1_obj->size) = (ipa_buf->len); \
+	memcpy((asn1_obj)->buf, (ipa_buf)->data, (ipa_buf)->len); \
+	(asn1_obj)->size = (ipa_buf)->len; \
 })
 
 /* \! Free an allocated SEQUENCE OF ASN.1 string objects. This macro is used to get rid of a list of ASN.1 string
