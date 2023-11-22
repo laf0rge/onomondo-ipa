@@ -112,8 +112,10 @@ struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, con
 	if (res->init_auth_ok && !IPA_ASN_STR_CMP_BUF
 	    (&res->init_auth_ok->serverSigned1.euiccChallenge, req->euicc_challenge, IPA_LEN_EUICC_CHLG)) {
 		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR,
-			       "eIM responded with unexpected euiccChallenge in serverSigned1 (expected: %s)\n",
-			       req->euicc_challenge);
+			       "eIM responded with unexpected euiccChallenge in serverSigned1 (expected: %s, got: %s)\n",
+			       ipa_hexdump(req->euicc_challenge, IPA_LEN_EUICC_CHLG),
+			       ipa_hexdump(res->init_auth_ok->serverSigned1.euiccChallenge.buf,
+					   res->init_auth_ok->serverSigned1.euiccChallenge.size));
 		res->init_auth_err = -1;
 		goto error;
 	}
