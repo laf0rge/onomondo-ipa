@@ -99,7 +99,7 @@ struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, con
 		goto error;
 
 	/* Make sure that the signed serverAddress matches the SMDP address we have sent in the request. */
-	if (!IPA_ASN_STR_CMP_BUF_I
+	if (res->init_auth_ok && !IPA_ASN_STR_CMP_BUF_I
 	    (&res->init_auth_ok->serverSigned1.serverAddress, req->smdp_addr, strlen(req->smdp_addr))) {
 		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR,
 			       "eIM responded with unexpected serverAddress in serverSigned1 (expected: %s)\n",
@@ -109,7 +109,7 @@ struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, con
 	}
 
 	/* Make sure the euiccChallenge matches the euiccChallenge we have sent in the request. */
-	if (!IPA_ASN_STR_CMP_BUF
+	if (res->init_auth_ok && !IPA_ASN_STR_CMP_BUF
 	    (&res->init_auth_ok->serverSigned1.euiccChallenge, req->euicc_challenge, IPA_LEN_EUICC_CHLG)) {
 		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR,
 			       "eIM responded with unexpected euiccChallenge in serverSigned1 (expected: %s)\n",
