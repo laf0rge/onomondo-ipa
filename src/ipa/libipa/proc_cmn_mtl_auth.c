@@ -67,6 +67,13 @@ static int check_certificate(const struct ipa_buf *allowed_ca, const Certificate
 		const struct Extensions *extensions;
 		bool allowed_ca_present = false;
 		int i;
+		struct ipa_buf *allowed_ca_tlv;
+
+		allowed_ca_tlv = ipa_buf_alloc(allowed_ca->len + 2);
+		allowed_ca_tlv->len = allowed_ca->len + 2;
+		allowed_ca_tlv->data[0] = 0x04;
+		allowed_ca_tlv->data[1] = allowed_ca->len;
+		memcpy(allowed_ca_tlv->data + 2, allowed_ca->data, allowed_ca->len);
 
 		extensions = certificate->tbsCertificate.extensions;
 		for (i = 0; i < extensions->list.count; i++) {
@@ -77,10 +84,12 @@ static int check_certificate(const struct ipa_buf *allowed_ca, const Certificate
 			    && memcmp(extension_arcs, id_ce_subjectKeyIdentifier,
 				      IPA_ARRAY_SIZE(id_ce_subjectKeyIdentifier)) == 0) {
 				if (IPA_ASN_STR_CMP_BUF
-				    (&extensions->list.array[i]->extnValue, allowed_ca->data, allowed_ca->len))
+				    (&extensions->list.array[i]->extnValue, allowed_ca_tlv->data, allowed_ca_tlv->len))
 					allowed_ca_present = true;
 			}
 		}
+
+		IPA_FREE(allowed_ca_tlv);
 
 		if (!allowed_ca_present) {
 			IPA_LOGP(SIPA, LERROR,
