@@ -91,7 +91,7 @@ void testme_proc_cmn_mtl_auth(struct ipa_context *ctx)
 
 	cmn_mtl_auth_pars.tac = tac;
 	cmn_mtl_auth_pars.allowed_ca = allowed_ca;
-	cmn_mtl_auth_pars.smdp_addr = "www.example.net";
+	cmn_mtl_auth_pars.smdp_addr = "smdp.example.com";
 	rc = ipa_proc_cmn_mtl_auth(ctx, &cmn_mtl_auth_pars);
 	if (!rc)
 		printf("============> FAILURE!\n");
