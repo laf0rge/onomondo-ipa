@@ -12,16 +12,17 @@
 #include <asn_application.h>
 
 /* Including external dependencies */
-#include <NativeInteger.h>
+#include <INTEGER.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* CertificateSerialNumber */
-typedef long	 CertificateSerialNumber_t;
+typedef INTEGER_t	 CertificateSerialNumber_t;
 
 /* Implementation */
+extern asn_per_constraints_t asn_PER_type_CertificateSerialNumber_constr_1;
 extern asn_TYPE_descriptor_t asn_DEF_CertificateSerialNumber;
 asn_struct_free_f CertificateSerialNumber_free;
 asn_struct_print_f CertificateSerialNumber_print;
