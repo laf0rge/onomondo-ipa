@@ -12,6 +12,18 @@
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/log.h>
 #include <asn_application.h>
+#include "utils.h"
+
+const char *ipa_str_from_num(const struct num_str_map *map, long num, const char *def)
+{
+	do {
+		if (map->num == num)
+			return map->str;
+		map++;
+	} while (map->str != NULL);
+
+	return def;
+}
 
 /*! Generate a hexdump string from the input data.
  *  \param[in] data pointer to binary data.
