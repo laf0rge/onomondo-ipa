@@ -20,6 +20,12 @@
 #include <CancelSessionResponse.h>
 #include "es10b_cancel_session.h"
 
+static const struct num_str_map error_code_strings[] = {
+	{ CancelSessionResponse__cancelSessionResponseError_invalidTransactionId, "invalidTransactionId" },
+	{ CancelSessionResponse__cancelSessionResponseError_undefinedError, "undefinedError" },
+	{ 0, NULL }
+};
+
 static int dec_cancel_session_res(struct ipa_es10b_cancel_session_res *res, struct ipa_buf *es10b_res)
 {
 	struct CancelSessionResponse *asn = NULL;
@@ -34,8 +40,9 @@ static int dec_cancel_session_res(struct ipa_es10b_cancel_session_res *res, stru
 		break;
 	case CancelSessionResponse_PR_cancelSessionResponseError:
 		res->cancel_session_err = asn->choice.cancelSessionResponseError;
-		IPA_LOGP_ES10B("CancelSession", LERROR, "function failed with error code %ld!\n",
-			       res->cancel_session_err);
+		IPA_LOGP_ES10B("CancelSession", LERROR, "function failed with error code %ld=%s!\n",
+			       res->cancel_session_err, ipa_str_from_num(error_code_strings, res->cancel_session_err,
+									 "(unknown)"));
 		break;
 	default:
 		IPA_LOGP_ES10B("CancelSession", LERROR, "unexpected response content!\n");

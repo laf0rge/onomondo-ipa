@@ -20,6 +20,18 @@
 #include <AuthenticateServerResponse.h>
 #include "es10b_auth_serv.h"
 
+static const struct num_str_map error_code_strings[] = {
+	{ AuthenticateErrorCode_invalidCertificate, "invalidCertificate" },
+	{ AuthenticateErrorCode_invalidSignature, "invalidSignature" },
+	{ AuthenticateErrorCode_unsupportedCurve, "unsupportedCurve" },
+	{ AuthenticateErrorCode_noSessionContext, "noSessionContext" },
+	{ AuthenticateErrorCode_invalidOid, "invalidOid" },
+	{ AuthenticateErrorCode_euiccChallengeMismatch, "euiccChallengeMismatch" },
+	{ AuthenticateErrorCode_ciPKUnknown, "ciPKUnknown" },
+	{ AuthenticateErrorCode_undefinedError, "undefinedError" },
+	{ 0, NULL }
+};
+
 static int dec_auth_serv_res(struct ipa_es10b_auth_serv_res *res, struct ipa_buf *es10b_res)
 {
 	struct AuthenticateServerResponse *asn = NULL;
@@ -34,7 +46,9 @@ static int dec_auth_serv_res(struct ipa_es10b_auth_serv_res *res, struct ipa_buf
 		break;
 	case AuthenticateServerResponse_PR_authenticateResponseError:
 		res->auth_serv_err = asn->choice.authenticateResponseError.authenticateErrorCode;
-		IPA_LOGP_ES10B("AuthenticateServer", LERROR, "function failed with error code %ld!\n", res->auth_serv_err);
+		IPA_LOGP_ES10B("AuthenticateServer", LERROR, "function failed with error code %ld=%s!\n",
+			       res->auth_serv_err, ipa_str_from_num(error_code_strings, res->auth_serv_err,
+								    "(unknown)"));
 		break;
 	default:
 		IPA_LOGP_ES10B("AuthenticateServer", LERROR, "unexpected response content!\n");

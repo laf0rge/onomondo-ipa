@@ -19,6 +19,13 @@
 #include <CancelSessionRequestEsipa.h>
 #include <CancelSessionResponseEsipa.h>
 
+static const struct num_str_map error_code_strings[] = {
+	{ CancelSessionResponseEsipa__cancelSessionError_invalidTransactionId, "invalidTransactionId" },
+	{ CancelSessionResponseEsipa__cancelSessionError_euiccSignatureInvalid, "euiccSignatureInvalid" },
+	{ CancelSessionResponseEsipa__cancelSessionError_undefinedError, "undefinedError" },
+	{ 0, NULL }
+};
+
 static struct ipa_buf *enc_cancel_session_req(const struct ipa_esipa_cancel_session_req *req)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim = { 0 };
@@ -63,8 +70,9 @@ static struct ipa_esipa_cancel_session_res *dec_cancel_session_res(const struct 
 		break;
 	case CancelSessionResponseEsipa_PR_cancelSessionError:
 		res->cancel_session_err = msg_to_ipa->choice.cancelSessionResponseEsipa.choice.cancelSessionError;
-		IPA_LOGP_ESIPA("CancelSession", LERROR, "function failed with error code %ld!\n",
-			       res->cancel_session_err);
+		IPA_LOGP_ESIPA("CancelSession", LERROR, "function failed with error code %ld=%s!\n",
+			       res->cancel_session_err, ipa_str_from_num(error_code_strings, res->cancel_session_err,
+									 "(unknown)"));
 		break;
 	default:
 		IPA_LOGP_ESIPA("CancelSession", LERROR, "unexpected response content!\n");

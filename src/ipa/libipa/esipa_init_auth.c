@@ -19,6 +19,18 @@
 #include <InitiateAuthenticationRequestEsipa.h>
 #include <InitiateAuthenticationResponseEsipa.h>
 
+static const struct num_str_map error_code_strings[] = {
+	{ InitiateAuthenticationResponseEsipa__initiateAuthenticationErrorEsipa_invalidDpAddress, "invalidDpAddress" },
+	{ InitiateAuthenticationResponseEsipa__initiateAuthenticationErrorEsipa_euiccVersionNotSupportedByDp,
+	 "euiccVersionNotSupportedByDp" },
+	{ InitiateAuthenticationResponseEsipa__initiateAuthenticationErrorEsipa_ciPKIdNotSupported,
+	 "ciPKIdNotSupported" },
+	{ InitiateAuthenticationResponseEsipa__initiateAuthenticationErrorEsipa_smdpAddressMismatch,
+	 "smdpAddressMismatch" },
+	{ InitiateAuthenticationResponseEsipa__initiateAuthenticationErrorEsipa_smdpOidMismatch, "smdpOidMismatch" },
+	{ 0, NULL }
+};
+
 static struct ipa_buf *enc_init_auth_req(const struct ipa_esipa_init_auth_req *req)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim = { 0 };
@@ -65,8 +77,9 @@ static struct ipa_esipa_init_auth_res *dec_init_auth_res(const struct ipa_buf *m
 	case InitiateAuthenticationResponseEsipa_PR_initiateAuthenticationErrorEsipa:
 		res->init_auth_err =
 		    msg_to_ipa->choice.initiateAuthenticationResponseEsipa.choice.initiateAuthenticationErrorEsipa;
-		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR, "function failed with error code %ld!\n",
-			       res->init_auth_err);
+		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR, "function failed with error code %ld=%s!\n",
+			       res->init_auth_err, ipa_str_from_num(error_code_strings, res->init_auth_err,
+								    "(unknown)"));
 		break;
 	default:
 		IPA_LOGP_ESIPA("InitiateAuthentication", LERROR, "unexpected response content!\n");

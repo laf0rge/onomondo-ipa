@@ -18,6 +18,12 @@
 #include <GetEimPackageRequest.h>
 #include <ProfileDownloadTriggerRequest.h>
 
+static const struct num_str_map error_code_strings[] = {
+	{ GetEimPackageResponse__eimPackageError_noEimPackageAvailable, "noEimPackageAvailable" },
+	{ GetEimPackageResponse__eimPackageError_undefinedError, "undefinedError" },
+	{ 0, NULL }
+};
+
 static struct ipa_buf *enc_get_eim_pkg_req(const uint8_t *eid_value)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim = { 0 };
@@ -100,6 +106,8 @@ static struct ipa_esipa_eim_pkg *dec_get_eim_pkg_req(const struct ipa_buf *msg_t
 		eim_pkg = IPA_ALLOC_ZERO(struct ipa_esipa_eim_pkg);
 		eim_pkg->u.error = msg_to_ipa->choice.getEimPackageResponse.choice.eimPackageError;
 		eim_pkg->type = IPA_ESIPA_EIM_PKG_ERR;
+		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "function failed with error code %d=%s!\n",
+			       eim_pkg->u.error, ipa_str_from_num(error_code_strings, eim_pkg->u.error, "(unknown)"));
 		break;
 	default:
 		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "eIM package is empty!\n");
