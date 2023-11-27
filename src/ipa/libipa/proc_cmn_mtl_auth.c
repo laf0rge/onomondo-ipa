@@ -58,10 +58,16 @@ static int restrict_euicc_info(struct ipa_es10b_euicc_info *euicc_info, const st
 /* Check the certificate for plausibility (see also GSMA SGP.22, section 3.0.1, step #10) */
 static int check_certificate(const struct ipa_buf *allowed_ca, const Certificate_t * certificate)
 {
-	/* In case there is a restriction to a single allowed eSIM CA RootCA (allowed_ca), we need to verify that the
-	 * Subject Key Identifier of the certificate matches the allowed CA */
+	/* GSMA SGP.32, section 3.0.1, step 10 says:
+	 * "If there is a restriction to a single allowed eSIM CA RootCA public key identifier, verify that the Subject
+	 * Key Identifier of the eSIM RootCA corresponding to CERT.XXauth.SIG matches this value."
+	 *
+	 * This technically means that we have to look at the Authority Key Identifier of the certificate we have just
+	 * received from the eIM, since this value is the same as the value in the Subject Key Identifier of the
+	 * eSIM RootCA certificate. */
+
 	if (allowed_ca) {
-		const asn_oid_arc_t id_ce_subjectKeyIdentifier[4] = { 2, 5, 29, 14 };
+		const asn_oid_arc_t id_ce_authorityKeyIdentifier[4] = { 2, 5, 29, 35 };
 		asn_oid_arc_t extension_arcs[256];
 		size_t extension_arcs_len;
 		const struct Extensions *extensions;
@@ -69,20 +75,23 @@ static int check_certificate(const struct ipa_buf *allowed_ca, const Certificate
 		int i;
 		struct ipa_buf *allowed_ca_tlv;
 
-		allowed_ca_tlv = ipa_buf_alloc(allowed_ca->len + 2);
-		allowed_ca_tlv->len = allowed_ca->len + 2;
-		allowed_ca_tlv->data[0] = 0x04;
-		allowed_ca_tlv->data[1] = allowed_ca->len;
-		memcpy(allowed_ca_tlv->data + 2, allowed_ca->data, allowed_ca->len);
+		/* In the certificate the public key identifier is wrapped in a TLV structure */
+		allowed_ca_tlv = ipa_buf_alloc(allowed_ca->len + 4);
+		allowed_ca_tlv->len = allowed_ca->len + 4;
+		allowed_ca_tlv->data[0] = 0x30;
+		allowed_ca_tlv->data[1] = allowed_ca->len + 2;
+		allowed_ca_tlv->data[2] = 0x80;
+		allowed_ca_tlv->data[3] = allowed_ca->len;
+		memcpy(allowed_ca_tlv->data + 4, allowed_ca->data, allowed_ca->len);
 
 		extensions = certificate->tbsCertificate.extensions;
 		for (i = 0; i < extensions->list.count; i++) {
 			extension_arcs_len =
 			    OBJECT_IDENTIFIER_get_arcs(&extensions->list.array[i]->extnID, extension_arcs,
 						       IPA_ARRAY_SIZE(extension_arcs));
-			if (extension_arcs_len == IPA_ARRAY_SIZE(id_ce_subjectKeyIdentifier)
-			    && memcmp(extension_arcs, id_ce_subjectKeyIdentifier,
-				      IPA_ARRAY_SIZE(id_ce_subjectKeyIdentifier)) == 0) {
+			if (extension_arcs_len == IPA_ARRAY_SIZE(id_ce_authorityKeyIdentifier)
+			    && memcmp(extension_arcs, id_ce_authorityKeyIdentifier,
+				      IPA_ARRAY_SIZE(id_ce_authorityKeyIdentifier)) == 0) {
 				if (IPA_ASN_STR_CMP_BUF
 				    (&extensions->list.array[i]->extnValue, allowed_ca_tlv->data, allowed_ca_tlv->len))
 					allowed_ca_present = true;
