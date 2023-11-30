@@ -13,6 +13,7 @@
 #include <onomondo/ipa/log.h>
 #include <onomondo/ipa/ipad.h>
 #include "context.h"
+#include "euicc.h"
 
 #define STORE_DATA_CLA 0x80
 #define STORE_DATA_INS 0xE2
@@ -313,7 +314,7 @@ static int euicc_transceive_es10x(struct ipa_context *ctx, struct ipa_buf *es10x
  *  \returns IPA_BUF with ES10x response on success, NULL on failure. */
 struct ipa_buf *ipa_euicc_transceive_es10x(struct ipa_context *ctx, const struct ipa_buf *es10x_req)
 {
-	struct ipa_buf *es10x_res = ipa_buf_alloc(1024);
+	struct ipa_buf *es10x_res = ipa_buf_alloc(IPA_EUICC_RESPONSE_BUF_SIZE);
 	int rc;
 
 	rc = euicc_transceive_es10x(ctx, es10x_res, es10x_req);
