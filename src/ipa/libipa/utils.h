@@ -12,13 +12,7 @@ struct num_str_map {
 	const char *str;
 };
 
-/* \! Lookup a numeric value in a num to string map and return the coresponding string.
- *  \param[in] map pointer num to str map.
- *  \param[in] num numeric value of the string to look up.
- *  \param[in] def default string to return in case the numeric value is not found.
- *  \returns found string from map, default string in case of no match. */
 const char *ipa_str_from_num(const struct num_str_map *map, long num, const char *def);
-
 int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv);
 void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_ptr, uint8_t indent,
 		    enum log_subsys log_subsys, enum log_level log_level);

@@ -14,6 +14,11 @@
 #include <asn_application.h>
 #include "utils.h"
 
+/* \! Lookup a numeric value in a num to string map and return the coresponding string.
+ *  \param[in] map pointer num to str map.
+ *  \param[in] num numeric value of the string to look up.
+ *  \param[in] def default string to return in case the numeric value is not found.
+ *  \returns found string from map, default string in case of no match. */
 const char *ipa_str_from_num(const struct num_str_map *map, long num, const char *def)
 {
 	do {
