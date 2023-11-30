@@ -122,6 +122,22 @@ static inline struct ipa_buf *ipa_buf_alloc_and_cpy(const uint8_t *in, size_t le
 	return buf;
 }
 
+/*! Assign data from a different location to an uninitialized ipa_buf struct.
+ *  \param[in] buf uninitialized ipa_buf (possibly statically allocated).
+ *  \param[in] data user provided memory to assign to the ipa_buf.
+ *  \param[in] len length of the user provided memory to assign. */
+static inline void ipa_buf_assign(struct ipa_buf *buf, uint8_t *data, size_t len)
+{
+	/*! The purpose of this function is to provide an easy way to assign
+	 *  already existing memory locations to an ipa_buf struct. The result
+	 *  is a valid ipa_buf struct, however it must not be freed using
+	 *  ipa_buf_free(). */
+	memset(buf, 0, sizeof(*buf));
+	buf->data = data;
+	buf->data_len = len;
+	buf->len = len;
+}
+
 /*! Free an ipa_buf object.
  *  \param[in] pointer to ipa_buf object to free. */
 static inline void ipa_buf_free(struct ipa_buf *buf)
