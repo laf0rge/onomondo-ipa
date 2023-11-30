@@ -18,12 +18,15 @@
 #include <AuthenticateClientResponseEsipa.h>
 #include <PrepareDownloadResponse.h>
 #include <CancelSessionReason.h>
+#include <BoundProfilePackage.h>
+#include <GetBoundProfilePackageOkEsipa.h>
 #include "esipa_auth_clnt.h"
 #include "proc_cmn_mtl_auth.h"
 #include "proc_prfle_dwnld.h"
 #include "proc_direct_prfle_dwnld.h"
 #include "esipa_get_bnd_prfle_pkg.h"
 #include "proc_cmn_cancel_sess.h"
+#include "proc_prfle_inst.h"
 
 int ipa_proc_direct_prfle_dwnlod(struct ipa_context *ctx, struct ipa_proc_direct_prfle_dwnlod_pars *pars)
 {
@@ -33,6 +36,7 @@ int ipa_proc_direct_prfle_dwnlod(struct ipa_context *ctx, struct ipa_proc_direct
 	struct ipa_proc_cmn_mtl_auth_pars cmn_mtl_auth_pars = { 0 };
 	struct ipa_proc_cmn_cancel_sess_pars cmn_cancel_sess_pars = { 0 };
 	struct ipa_proc_prfle_dwnlod_pars prfle_dwnlod_pars = { 0 };
+	struct ipa_proc_prfle_inst_pars prfle_inst_pars = { 0 };
 
 	/* This procedure is called when the IPAd receives an eIM package with a download trigger request
 	 * (which contains the activation code) */
@@ -72,8 +76,9 @@ int ipa_proc_direct_prfle_dwnlod(struct ipa_context *ctx, struct ipa_proc_direct
 	 * (we are on an IoT device, maybe have this consent pre-set in a config file? we could als have a mechanism
 	 * where a callback is registered that is used to ask for concent?) */
 
-	/* TODO: Install the Profile to the eUICC as defined in sub-procedure: Profile Installation.
-	 * (See also section 3.1.3.3 of SGP.22) */
+	/* Execute sub procedure: Sub-procedure Profile Installation (See also section 3.1.3.3 of SGP.22) */
+	prfle_inst_pars.bound_profile_package = &get_bnd_prfle_pkg_res->get_bnd_prfle_pkg_ok->boundProfilePackage;
+	ipa_proc_prfle_inst(ctx, &prfle_inst_pars);
 
 	/* TODO: Send back a ProfileDownloadTriggerResult to the eIM */
 
