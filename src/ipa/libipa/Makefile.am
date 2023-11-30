@@ -31,6 +31,7 @@ libipa_a_SOURCES = \
 	es10b_cancel_session.c \
 	es10b_get_euicc_chlg.c \
 	es10b_get_euicc_info.c \
+	es10b_load_bnd_prfle_pkg.c \
 	es10b_prep_dwnld.c \
 	euicc.c \
 	ipad.c \
@@ -56,6 +57,7 @@ noinst_HEADERS = \
 	es10b_cancel_session.h \
 	es10b_get_euicc_chlg.h \
 	es10b_get_euicc_info.h \
+	es10b_load_bnd_prfle_pkg.h \
 	es10b_prep_dwnld.h \
 	euicc.h \
 	length.h \
