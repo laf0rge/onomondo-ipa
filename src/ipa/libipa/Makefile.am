@@ -25,6 +25,7 @@ libipa_a_SOURCES = \
 	esipa_get_bnd_prfle_pkg.c \
 	esipa_get_eim_pkg.c \
 	esipa_auth_clnt.c \
+	esipa_handle_notif.c \
 	esipa_init_auth.c \
 	es10b.c \
 	es10b_auth_serv.c \
@@ -51,6 +52,7 @@ noinst_HEADERS = \
 	esipa_get_bnd_prfle_pkg.h \
 	esipa_get_eim_pkg.h \
 	esipa_auth_clnt.h \
+	esipa_handle_notif.h \
 	esipa_init_auth.h \
 	es10b.h \
 	es10b_auth_serv.h \
