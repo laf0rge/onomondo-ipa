@@ -94,6 +94,7 @@ struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(const struct ipa_buf *
 
 	if (msg_to_ipa->present != epected_res_type) {
 		IPA_LOGP_ESIPA(function_name, LERROR, "unexpected eIM response\n");
+		ASN_STRUCT_FREE(asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
 		return NULL;
 	}
 
