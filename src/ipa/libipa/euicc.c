@@ -279,8 +279,8 @@ static int euicc_transceive_es10x(struct ipa_context *ctx, struct ipa_buf *es10x
 	/* When the transfer of the ES10x request is done, we expect the eUICC
 	 * to answer with a response. */
 	if (sw == 0x9000) {
-		IPA_LOGP(SEUICC, LERROR, "ES10x transmission successful, but no response, sw=%04x\n", sw);
-		return -EINVAL;
+		IPA_LOGP(SEUICC, LINFO, "ES10x transmission successful, sw=%04x\n", sw);
+		return 0;
 	} else if ((sw & 0xff00) == 0x6100) {
 		block_nr = 0;
 
