@@ -218,6 +218,7 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx, s
 	ipa_esipa_init_auth_res_free(init_auth_res);
 	ipa_es10b_get_euicc_info_free(euicc_info);
 	ipa_es10b_auth_serv_res_free(auth_serv_res);
+	IPA_LOGP(SIPA, LINFO, "mutual authentication succeded!\n");
 	return auth_clnt_res;
 error:
 	if (exec_cmn_cancel_sess) {
@@ -230,5 +231,6 @@ error:
 	ipa_es10b_get_euicc_info_free(euicc_info);
 	ipa_es10b_auth_serv_res_free(auth_serv_res);
 	ipa_esipa_auth_clnt_res_free(auth_clnt_res);
+	IPA_LOGP(SIPA, LERROR, "mutual authentication failed!\n");
 	return NULL;
 }
