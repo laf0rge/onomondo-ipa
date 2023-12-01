@@ -113,8 +113,8 @@ static struct ipa_esipa_get_bnd_prfle_pkg_res *dec_get_bnd_prfle_pkg_res(const s
 struct ipa_esipa_get_bnd_prfle_pkg_res *ipa_esipa_get_bnd_prfle_pkg(struct ipa_context *ctx,
 								    const struct ipa_esipa_get_bnd_prfle_pkg_req *req)
 {
-	struct ipa_buf *esipa_req;
-	struct ipa_buf *esipa_res;
+	struct ipa_buf *esipa_req = NULL;
+	struct ipa_buf *esipa_res = NULL;
 	struct ipa_esipa_get_bnd_prfle_pkg_res *res = NULL;
 
 	IPA_LOGP_ESIPA("GetBoundProfilePackage", LINFO, "Requesting bound profile package from eIM\n");

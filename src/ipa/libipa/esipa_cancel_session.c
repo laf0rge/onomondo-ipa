@@ -85,8 +85,8 @@ static struct ipa_esipa_cancel_session_res *dec_cancel_session_res(const struct 
 struct ipa_esipa_cancel_session_res *ipa_esipa_cancel_session(struct ipa_context *ctx,
 							      const struct ipa_esipa_cancel_session_req *req)
 {
-	struct ipa_buf *esipa_req;
-	struct ipa_buf *esipa_res;
+	struct ipa_buf *esipa_req = NULL;
+	struct ipa_buf *esipa_res = NULL;
 	struct ipa_esipa_cancel_session_res *res = NULL;
 
 	IPA_LOGP_ESIPA("CancelSession", LINFO, "Requesting cancellation of session\n");

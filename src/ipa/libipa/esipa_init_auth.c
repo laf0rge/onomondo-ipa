@@ -92,8 +92,8 @@ static struct ipa_esipa_init_auth_res *dec_init_auth_res(const struct ipa_buf *m
 
 struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, const struct ipa_esipa_init_auth_req *req)
 {
-	struct ipa_buf *esipa_req;
-	struct ipa_buf *esipa_res;
+	struct ipa_buf *esipa_req = NULL;
+	struct ipa_buf *esipa_res = NULL;
 	struct ipa_esipa_init_auth_res *res = NULL;
 
 	IPA_LOGP_ESIPA("InitiateAuthentication", LINFO, "Requesting authentication with eUICC challenge: %s\n",

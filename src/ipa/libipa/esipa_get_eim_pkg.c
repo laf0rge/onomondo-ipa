@@ -120,8 +120,8 @@ static struct ipa_esipa_eim_pkg *dec_get_eim_pkg_req(const struct ipa_buf *msg_t
 
 struct ipa_esipa_eim_pkg *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, const uint8_t *eid)
 {
-	struct ipa_buf *esipa_req;
-	struct ipa_buf *esipa_res;
+	struct ipa_buf *esipa_req = NULL;
+	struct ipa_buf *esipa_res = NULL;
 	struct ipa_esipa_eim_pkg *eim_pkg = NULL;
 
 	IPA_LOGP_ESIPA("GetEimPackage", LINFO, "Requesting eIM package for eID: %s\n", ipa_hexdump(eid, IPA_LEN_EID));

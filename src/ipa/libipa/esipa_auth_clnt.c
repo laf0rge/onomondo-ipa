@@ -70,8 +70,8 @@ static struct ipa_esipa_auth_clnt_res *dec_auth_clnt_res(const struct ipa_buf *m
 
 struct ipa_esipa_auth_clnt_res *ipa_esipa_auth_clnt(struct ipa_context *ctx, const struct ipa_esipa_auth_clnt_req *req)
 {
-	struct ipa_buf *esipa_req;
-	struct ipa_buf *esipa_res;
+	struct ipa_buf *esipa_req = NULL;
+	struct ipa_buf *esipa_res = NULL;
 	struct ipa_esipa_auth_clnt_res *res = NULL;
 
 	IPA_LOGP_ESIPA("AuthenticateClient", LINFO, "Requesting client authentication\n");
