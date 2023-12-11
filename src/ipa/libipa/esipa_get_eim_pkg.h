@@ -5,26 +5,11 @@
 
 struct ipa_context;
 
-enum ipa_esipa_eim_pkg_type {
-	IPA_ESIPA_EIM_PKG_AC,
-	IPA_ESIPA_EIM_PKG_ERR,
+struct ipa_esipa_get_eim_pkg_res {
+	struct EsipaMessageFromEimToIpa *msg_to_ipa;
+	struct EuiccPackageRequest *euicc_package_request;
+	long eim_pkg_err;
 };
 
-struct ipa_esipa_eim_pkg_ac {
-	/* GSMA SGP.22 section 4.1 is not very clear about the maximum size of
-	 * an activation code. Usually this code will not exceed 255 characters,
-	 * but with optional "Delete Notification for Device Change" element
-	 * it may exceed 255 characters. */
-	char code[IPA_LEN_AC];
-};
-
-struct ipa_esipa_eim_pkg {
-	enum ipa_esipa_eim_pkg_type type;
-	union {
-		struct ipa_esipa_eim_pkg_ac ac;
-		int error;
-	} u;
-};
-
-struct ipa_esipa_eim_pkg *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, const uint8_t *eid);
-void ipa_esipa_get_eim_pkg_free(struct ipa_esipa_eim_pkg *eim_pkg);
+struct ipa_esipa_get_eim_pkg_res *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, const uint8_t *eid);
+void ipa_esipa_get_eim_pkg_free(struct ipa_esipa_get_eim_pkg_res *res);

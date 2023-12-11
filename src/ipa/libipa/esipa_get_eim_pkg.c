@@ -16,7 +16,6 @@
 #include <EsipaMessageFromIpaToEim.h>
 #include <EsipaMessageFromEimToIpa.h>
 #include <GetEimPackageRequest.h>
-#include <ProfileDownloadTriggerRequest.h>
 
 static const struct num_str_map error_code_strings[] = {
 	{ GetEimPackageResponse__eimPackageError_noEimPackageAvailable, "noEimPackageAvailable" },
@@ -35,52 +34,10 @@ static struct ipa_buf *enc_get_eim_pkg_req(const uint8_t *eid_value)
 	return ipa_esipa_msg_to_eim_enc(&msg_to_eim, "GetEimPackage");
 }
 
-static struct ipa_esipa_eim_pkg *dec_profile_dwnld_trig_req(ProfileDownloadTriggerRequest_t * pdtr)
-{
-	struct ipa_esipa_eim_pkg *eim_pkg = NULL;
-	struct ProfileDownloadData *pdd;
-
-	if (!pdtr->profileDownloadData) {
-		IPA_LOGP_ESIPA("GetEimPackage.ProfileDownloadTriggerRequest", LERROR,
-			       "request did not contain any profile download data.\n");
-		return NULL;
-	}
-	pdd = pdtr->profileDownloadData;
-
-	switch (pdd->present) {
-	case ProfileDownloadData_PR_activationCode:
-		if (pdd->choice.activationCode.size > sizeof(eim_pkg->u.ac.code)) {
-			IPA_LOGP_ESIPA("GetEimPackage.ProfileDownloadTriggerRequest", LERROR,
-				       "no space for over-long activation code!\n");
-			goto error;
-		}
-		eim_pkg = IPA_ALLOC_ZERO(struct ipa_esipa_eim_pkg);
-		memcpy(eim_pkg->u.ac.code, pdd->choice.activationCode.buf, pdd->choice.activationCode.size);
-		eim_pkg->u.ac.code[pdd->choice.activationCode.size] = '\0';
-		eim_pkg->type = IPA_ESIPA_EIM_PKG_AC;
-		break;
-	case ProfileDownloadData_PR_contactDefaultSmdp:
-		/* TODO (open question: is this an optional feature and do we have to support it?) */
-		assert(NULL);
-		break;
-	case ProfileDownloadData_PR_contactSmds:
-		/* TODO (open question: is this an optional feature and do we have to support it?) */
-		assert(NULL);
-		break;
-	default:
-		IPA_LOGP_ESIPA("GetEimPackage.ProfileDownloadTriggerRequest", LERROR,
-			       "Profile download data is empty!\n");
-		break;
-	}
-
-error:
-	return eim_pkg;
-}
-
-static struct ipa_esipa_eim_pkg *dec_get_eim_pkg_req(const struct ipa_buf *msg_to_ipa_encoded)
+struct ipa_esipa_get_eim_pkg_res *dec_get_eim_pkg_req(const struct ipa_buf *msg_to_ipa_encoded)
 {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
-	struct ipa_esipa_eim_pkg *eim_pkg = NULL;
+        struct ipa_esipa_get_eim_pkg_res *res = NULL;
 
 	msg_to_ipa =
 	    ipa_esipa_msg_to_ipa_dec(msg_to_ipa_encoded, "GetEimPackage",
@@ -88,41 +45,40 @@ static struct ipa_esipa_eim_pkg *dec_get_eim_pkg_req(const struct ipa_buf *msg_t
 	if (!msg_to_ipa)
 		return NULL;
 
+	res = IPA_ALLOC_ZERO(struct ipa_esipa_get_eim_pkg_res);
+	res->msg_to_ipa = msg_to_ipa;
+
 	switch (msg_to_ipa->choice.getEimPackageResponse.present) {
 	case GetEimPackageResponse_PR_euiccPackageRequest:
-		/* TODO */
-		assert(NULL);
+	        res->euicc_package_request = &msg_to_ipa->choice.getEimPackageResponse.choice.euiccPackageRequest;
 		break;
 	case GetEimPackageResponse_PR_ipaEuiccDataRequest:
 		/* TODO */
 		assert(NULL);
 		break;
 	case GetEimPackageResponse_PR_profileDownloadTriggerRequest:
-		eim_pkg =
-		    dec_profile_dwnld_trig_req(&msg_to_ipa->choice.getEimPackageResponse.choice.
-					       profileDownloadTriggerRequest);
+		/* TODO */
+		assert(NULL);
 		break;
 	case GetEimPackageResponse_PR_eimPackageError:
-		eim_pkg = IPA_ALLOC_ZERO(struct ipa_esipa_eim_pkg);
-		eim_pkg->u.error = msg_to_ipa->choice.getEimPackageResponse.choice.eimPackageError;
-		eim_pkg->type = IPA_ESIPA_EIM_PKG_ERR;
-		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "function failed with error code %d=%s!\n",
-			       eim_pkg->u.error, ipa_str_from_num(error_code_strings, eim_pkg->u.error, "(unknown)"));
+		res->eim_pkg_err = msg_to_ipa->choice.getEimPackageResponse.choice.eimPackageError;
+		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "function failed with error code %ld=%s!\n",
+			       res->eim_pkg_err, ipa_str_from_num(error_code_strings, res->eim_pkg_err, "(unknown)"));
 		break;
 	default:
-		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "eIM package is empty!\n");
+		IPA_LOGP_ESIPA("GetEimPackage", LERROR, "unexpected response content!\n");
+		res->eim_pkg_err = -1;
 		break;
 	}
 
-	ASN_STRUCT_FREE(asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
-	return eim_pkg;
+	return res;
 }
 
-struct ipa_esipa_eim_pkg *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, const uint8_t *eid)
+struct ipa_esipa_get_eim_pkg_res *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, const uint8_t *eid)
 {
 	struct ipa_buf *esipa_req = NULL;
 	struct ipa_buf *esipa_res = NULL;
-	struct ipa_esipa_eim_pkg *eim_pkg = NULL;
+	struct ipa_esipa_get_eim_pkg_res *res = NULL;
 
 	IPA_LOGP_ESIPA("GetEimPackage", LINFO, "Requesting eIM package for eID: %s\n", ipa_hexdump(eid, IPA_LEN_EID));
 
@@ -130,30 +86,21 @@ struct ipa_esipa_eim_pkg *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, const u
 	if (!esipa_req)
 		goto error;
 
-	esipa_res = ipa_esipa_req(ctx, esipa_req, "InitiateAuthentication");
+	esipa_res = ipa_esipa_req(ctx, esipa_req, "GetEimPackage");
 	if (!esipa_res)
 		goto error;
 
-	eim_pkg = dec_get_eim_pkg_req(esipa_res);
+        res = dec_get_eim_pkg_req(esipa_res);
+	if (!res)
+		goto error;
 
 error:
 	IPA_FREE(esipa_req);
 	IPA_FREE(esipa_res);
-	return eim_pkg;
+	return res;
 }
 
-void ipa_esipa_get_eim_pkg_free(struct ipa_esipa_eim_pkg *eim_pkg)
+void ipa_esipa_get_eim_pkg_free(struct ipa_esipa_get_eim_pkg_res *res)
 {
-	if (!eim_pkg)
-		return;
-
-	/* we do not have any dynamically allocated members yet */
-	switch (eim_pkg->type) {
-	case IPA_ESIPA_EIM_PKG_AC:
-	case IPA_ESIPA_EIM_PKG_ERR:
-	default:
-		break;
-	}
-
-	IPA_FREE(eim_pkg);
+	IPA_ESIPA_RES_FREE(res);
 }

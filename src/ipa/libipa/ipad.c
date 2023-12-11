@@ -67,15 +67,6 @@ void testme_es10x(struct ipa_context *ctx)
 	IPA_FREE(res);
 }
 
-/* A testcase to try out the ESipa function GetEimPackage, see also TC_esipa_get_eim_pkg */
-void testme_get_eim_pkg(struct ipa_context *ctx)
-{
-	struct ipa_esipa_eim_pkg *eim_pkg;
-	eim_pkg =
-	    ipa_esipa_get_eim_pkg(ctx, (uint8_t *) "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F");
-	ipa_esipa_get_eim_pkg_free(eim_pkg);
-}
-
 /* A testcase to try out the Common Mutual Authentication Procedure, see also TC_proc_cmn_mtl_auth */
 void testme_proc_cmn_mtl_auth(struct ipa_context *ctx)
 {
@@ -138,7 +129,6 @@ void testme_proc_direct_prfle_dwnld(struct ipa_context *ctx)
 void ipa_poll(struct ipa_context *ctx)
 {
 //      testme_es10x(ctx);
-//      testme_get_eim_pkg(ctx);
 //	testme_proc_cmn_cancel_sess(ctx);
 //	testme_proc_cmn_mtl_auth(ctx);
 	testme_proc_direct_prfle_dwnld(ctx);
