@@ -27,6 +27,7 @@ libipa_a_SOURCES = \
 	esipa_auth_clnt.c \
 	esipa_handle_notif.c \
 	esipa_init_auth.c \
+	esipa_prvde_eim_pkg_rslt.c \
 	es10b.c \
 	es10b_auth_serv.c \
 	es10b_cancel_session.c \
@@ -58,6 +59,7 @@ noinst_HEADERS = \
 	esipa_auth_clnt.h \
 	esipa_handle_notif.h \
 	esipa_init_auth.h \
+	esipa_prvde_eim_pkg_rslt.h \
 	es10b.h \
 	es10b_auth_serv.h \
 	es10b_cancel_session.h \
