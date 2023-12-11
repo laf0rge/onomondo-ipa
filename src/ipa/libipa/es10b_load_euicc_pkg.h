@@ -1,0 +1,13 @@
+#pragma once
+
+struct ipa_es10b_load_euicc_pkg_req {
+	struct EuiccPackageRequest req;
+};
+
+struct ipa_es10b_load_euicc_pkg_res {
+	struct EuiccPackageResult *res;
+};
+
+struct ipa_es10b_load_euicc_pkg_res *ipa_es10b_load_euicc_pkg(struct ipa_context *ctx,
+							      const struct ipa_es10b_load_euicc_pkg_req *req);
+void ipa_es10b_load_euicc_pkg_res_free(struct ipa_es10b_load_euicc_pkg_res *res);
