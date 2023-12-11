@@ -42,6 +42,7 @@ libipa_a_SOURCES = \
 	ipad.c \
 	proc_prfle_dwnld.c \
 	proc_prfle_inst.c \
+	proc_euicc_pkg_dwnld_exec.c \
 	utils.c \
 	log.c \
 	$(NULL)
@@ -74,5 +75,6 @@ noinst_HEADERS = \
 	length.h \
 	proc_prfle_dwnld.h \
 	proc_prfle_inst.h \
+	proc_euicc_pkg_dwnld_exec.h \
 	utils.h \
 	$(NULL)

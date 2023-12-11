@@ -22,6 +22,7 @@
 #include "proc_cmn_mtl_auth.h"
 #include "proc_cmn_cancel_sess.h"
 #include "proc_direct_prfle_dwnld.h"
+#include "proc_euicc_pkg_dwnld_exec.h"
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 {
@@ -126,12 +127,21 @@ void testme_proc_direct_prfle_dwnld(struct ipa_context *ctx)
 
 }
 
+/* A testcase to try out the Generic eUICC Package Download and Execution, see also TC_proc_eucc_pkg_dwnld_exec */
+void testme_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx)
+{
+	int rc;
+	rc = ipa_proc_eucc_pkg_dwnld_exec(ctx);
+	printf("=========> rc=%i\n", rc);
+}
+
 void ipa_poll(struct ipa_context *ctx)
 {
 //      testme_es10x(ctx);
 //	testme_proc_cmn_cancel_sess(ctx);
 //	testme_proc_cmn_mtl_auth(ctx);
-	testme_proc_direct_prfle_dwnld(ctx);
+//	testme_proc_direct_prfle_dwnld(ctx);
+	testme_proc_eucc_pkg_dwnld_exec(ctx);
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)
