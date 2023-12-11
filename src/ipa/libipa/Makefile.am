@@ -36,6 +36,7 @@ libipa_a_SOURCES = \
 	es10b_load_euicc_pkg.c \
 	es10b_prep_dwnld.c \
 	es10b_rm_notif_from_lst.c \
+	es10b_retr_notif_from_lst.c \
 	euicc.c \
 	ipad.c \
 	proc_prfle_dwnld.c \
@@ -66,6 +67,7 @@ noinst_HEADERS = \
 	es10b_load_euicc_pkg.h \
 	es10b_prep_dwnld.h \
 	es10b_rm_notif_from_lst.h \
+	es10b_retr_notif_from_lst.h \
 	euicc.h \
 	length.h \
 	proc_prfle_dwnld.h \
