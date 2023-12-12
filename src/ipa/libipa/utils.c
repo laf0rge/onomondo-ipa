@@ -50,7 +50,7 @@ char *ipa_hexdump(const uint8_t *data, size_t len)
 		return ("(null)");
 
 	for (i = 0; i < len; i++) {
-		sprintf(out_ptr, "%02x", data[i]);
+		sprintf(out_ptr, "%02X", data[i]);
 		out_ptr += 2;
 
 		/* put three dots and exit early in case we are running out of
