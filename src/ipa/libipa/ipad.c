@@ -61,8 +61,10 @@ void testme_es10x(struct ipa_context *ctx)
 	req->len = 300;
 
 	res = ipa_euicc_transceive_es10x(ctx, req);
-
-	printf("============> GOT DATA: %s (%zu bytes)\n", ipa_hexdump(res->data, res->len), res->len);
+	if (res)
+		printf("============> GOT DATA: %s (%zu bytes)\n", ipa_hexdump(res->data, res->len), res->len);
+	else
+		printf("============> Error!\n");
 
 	IPA_FREE(req);
 	IPA_FREE(res);
