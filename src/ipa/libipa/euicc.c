@@ -207,7 +207,7 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	rc = parse_res_apdu(&res_apdu, buf_res);
 	if (rc < 0) {
 		IPA_LOGP(SEUICC, LERROR,
-			 "invalid response while sending ES10x block %u, offset=%zu\n", block_nr, es10x_res->len);
+			 "invalid response while receiving ES10x block %u, offset=%zu\n", block_nr, es10x_res->len);
 		rc = -EINVAL;
 		goto exit;
 	}
