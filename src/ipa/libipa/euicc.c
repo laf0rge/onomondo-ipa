@@ -30,7 +30,7 @@
 #define MANAGE_CHANNEL_INS 0x70
 
 #define MAX_BLOCKSIZE_TX 255
-#define MAX_BLOCKSIZE_RX 255
+#define MAX_BLOCKSIZE_RX 256
 
 struct req_apdu {
 	uint8_t cla;
@@ -38,12 +38,12 @@ struct req_apdu {
 	uint8_t p1;
 	uint8_t p2;
 	uint8_t lc;
-	uint8_t le;
+	uint16_t le;
 	uint8_t data[255];
 };
 
 struct res_apdu {
-	uint8_t le;
+	uint16_t le;
 	uint8_t data[255];
 	uint16_t sw;
 };
@@ -67,7 +67,11 @@ struct ipa_buf *format_req_apdu(struct req_apdu *req_apdu)
 		buf_req->len = 5 + req_apdu->lc;
 	} else if (req_apdu->lc == 0 && req_apdu->le > 0) {
 		/* Receive data (no data to send) */
-		buf_req->data[4] = req_apdu->le;
+		if (req_apdu->le < 256)
+			buf_req->data[4] = req_apdu->le;
+		else
+			/* See also ETSI TS 102 221, section 10.1.6 */
+			buf_req->data[4] = 0;
 		buf_req->len = 5;
 	} else if (req_apdu->lc == 0 && req_apdu->le == 0) {
 		/* No data to send and no receove data expected */
@@ -162,7 +166,7 @@ exit:
 }
 
 static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
-			    struct ipa_buf *es10x_res, uint8_t block_len, uint8_t block_nr)
+			    struct ipa_buf *es10x_res, uint16_t block_len, uint8_t block_nr)
 {
 	int rc;
 	struct req_apdu req_apdu = { 0 };
@@ -244,6 +248,7 @@ exit:
 static int euicc_transceive_es10x(struct ipa_context *ctx, struct ipa_buf *es10x_res, const struct ipa_buf *es10x_req)
 {
 	uint16_t sw;
+	uint16_t block_len = 0;
 	uint8_t block_nr = 0;
 	size_t offset = 0;
 	int rc;
@@ -285,7 +290,13 @@ static int euicc_transceive_es10x(struct ipa_context *ctx, struct ipa_buf *es10x
 		block_nr = 0;
 
 		while (1) {
-			rc = recv_es10x_block(ctx, &sw, es10x_res, sw & 0xff, block_nr);
+			/* See also ISO/IEC 7816-4, section 7.4.2 and ETSI TS 102 221, section 10.1.6 */
+			if ((sw & 0xff) == 0)
+				block_len = 256;
+			else
+				block_len = sw & 0xff;
+
+			rc = recv_es10x_block(ctx, &sw, es10x_res, block_len, block_nr);
 			if (rc < 0)
 				return -EIO;
 			block_nr++;
