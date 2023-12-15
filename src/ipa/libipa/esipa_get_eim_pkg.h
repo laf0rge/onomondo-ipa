@@ -8,6 +8,8 @@ struct ipa_context;
 struct ipa_esipa_get_eim_pkg_res {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa;
 	struct EuiccPackageRequest *euicc_package_request;
+	struct IpaEuiccDataRequest *ipa_euicc_data_request;
+	struct ProfileDownloadTriggerRequest *dwnld_trigger_request;
 	long eim_pkg_err;
 };
 

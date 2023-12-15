@@ -37,7 +37,7 @@ static struct ipa_buf *enc_get_eim_pkg_req(const uint8_t *eid_value)
 struct ipa_esipa_get_eim_pkg_res *dec_get_eim_pkg_req(const struct ipa_buf *msg_to_ipa_encoded)
 {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
-        struct ipa_esipa_get_eim_pkg_res *res = NULL;
+	struct ipa_esipa_get_eim_pkg_res *res = NULL;
 
 	msg_to_ipa =
 	    ipa_esipa_msg_to_ipa_dec(msg_to_ipa_encoded, "GetEimPackage",
@@ -50,15 +50,14 @@ struct ipa_esipa_get_eim_pkg_res *dec_get_eim_pkg_req(const struct ipa_buf *msg_
 
 	switch (msg_to_ipa->choice.getEimPackageResponse.present) {
 	case GetEimPackageResponse_PR_euiccPackageRequest:
-	        res->euicc_package_request = &msg_to_ipa->choice.getEimPackageResponse.choice.euiccPackageRequest;
+		res->euicc_package_request = &msg_to_ipa->choice.getEimPackageResponse.choice.euiccPackageRequest;
 		break;
 	case GetEimPackageResponse_PR_ipaEuiccDataRequest:
-		/* TODO */
-		assert(NULL);
+		res->ipa_euicc_data_request = &msg_to_ipa->choice.getEimPackageResponse.choice.ipaEuiccDataRequest;
 		break;
 	case GetEimPackageResponse_PR_profileDownloadTriggerRequest:
-		/* TODO */
-		assert(NULL);
+		res->dwnld_trigger_request =
+		    &msg_to_ipa->choice.getEimPackageResponse.choice.profileDownloadTriggerRequest;
 		break;
 	case GetEimPackageResponse_PR_eimPackageError:
 		res->eim_pkg_err = msg_to_ipa->choice.getEimPackageResponse.choice.eimPackageError;
@@ -90,7 +89,7 @@ struct ipa_esipa_get_eim_pkg_res *ipa_esipa_get_eim_pkg(struct ipa_context *ctx,
 	if (!esipa_res)
 		goto error;
 
-        res = dec_get_eim_pkg_req(esipa_res);
+	res = dec_get_eim_pkg_req(esipa_res);
 	if (!res)
 		goto error;
 
