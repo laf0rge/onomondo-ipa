@@ -8,6 +8,8 @@
 #include <assert.h>
 #include <string.h>
 #include <errno.h>
+#include <stdint.h>
+#include <onomondo/ipa/ipad.h>
 #include <onomondo/ipa/mem.h>
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/log.h>
@@ -124,7 +126,8 @@ static void gen_ctx_params_1(CtxParams1_t * ctx_params_1, const uint8_t *tac)
 	/* TODO: This is an optional field, but what is it for?
 	 * ctx_params_1->choice.ctxParamsForCommonAuthentication.matchingId = ? */
 
-	IPA_ASSIGN_BUF_TO_ASN(ctx_params_1->choice.ctxParamsForCommonAuthentication.deviceInfo.tac, (uint8_t *) tac, 4);
+	IPA_ASSIGN_BUF_TO_ASN(ctx_params_1->choice.ctxParamsForCommonAuthentication.deviceInfo.tac, (uint8_t *) tac,
+			      IPA_LEN_TAC);
 
 	/* TODO: the IMEI field is optional, do we need it?
 	 * ctx_params_1->choice.ctxParamsForCommonAuthentication.deviceInfo.imei = (8 byte octet string, optional); */
