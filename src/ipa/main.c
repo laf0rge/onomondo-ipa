@@ -38,6 +38,9 @@ int main(void)
 	cfg.eim_use_ssl = true;
 	cfg.reader_num = 0;
 	cfg.euicc_channel = 1;
+	memcpy(cfg.tac, "\x12\x34\x56\x78", IPA_LEN_TAC);
+	memcpy(cfg.allowed_ca, "\xF5\x41\x72\xBD\xF9\x8A\x95\xD6\x5C\xBE\xB8\x8A\x38\xA1\xC1\x1D\x80\x0A\x85\xC3",
+	       IPA_LEN_ALLOWED_CA);
 	ctx = ipa_new_ctx(&cfg);
 	if (!ctx) {
 		IPA_LOGP(SMAIN, LERROR, "no context, initialization failed!\n");

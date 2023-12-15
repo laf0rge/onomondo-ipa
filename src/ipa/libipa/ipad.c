@@ -18,7 +18,7 @@
 #include "euicc.h"
 #include <AuthenticateClientRequestEsipa.h>
 #include <AuthenticateClientResponseEsipa.h>
-#include "esipa_auth_clnt.h"
+#include "es10b_get_eid.h"
 #include "proc_cmn_mtl_auth.h"
 #include "proc_cmn_cancel_sess.h"
 #include "proc_direct_prfle_dwnld.h"
@@ -41,6 +41,10 @@ struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 		goto error;
 
 	rc = ipa_euicc_init_es10x(ctx);
+	if (rc < 0)
+		goto error;
+
+	rc = ipa_es10b_get_eid(ctx, ctx->eid);
 	if (rc < 0)
 		goto error;
 
@@ -70,80 +74,60 @@ void testme_es10x(struct ipa_context *ctx)
 	IPA_FREE(res);
 }
 
-/* A testcase to try out the Common Mutual Authentication Procedure, see also TC_proc_cmn_mtl_auth */
-void testme_proc_cmn_mtl_auth(struct ipa_context *ctx)
-{
-	uint8_t tac[4] = { 0x12, 0x34, 0x56, 0x78 };	/* TODO: Make this a parameter */
-	struct ipa_esipa_auth_clnt_res *rc;
-	struct ipa_proc_cmn_mtl_auth_pars cmn_mtl_auth_pars = { 0 };
-
-	/* Brainpool */
-//	struct ipa_buf *allowed_ca = ipa_buf_alloc_data(20, (uint8_t *) "\xC0\xBC\x70\xBA\x36\x92\x9D\x43\xB4\x67\xFF\x57\x57\x05\x30\xE5\x7A\xB8\xFC\xD8");
-
-	/* NIST */
-	struct ipa_buf *allowed_ca = ipa_buf_alloc_data(20, (uint8_t *) "\xF5\x41\x72\xBD\xF9\x8A\x95\xD6\x5C\xBE\xB8\x8A\x38\xA1\xC1\x1D\x80\x0A\x85\xC3");
-
-	cmn_mtl_auth_pars.tac = tac;
-	cmn_mtl_auth_pars.allowed_ca = allowed_ca;
-	cmn_mtl_auth_pars.smdp_addr = "smdp.example.com";
-	rc = ipa_proc_cmn_mtl_auth(ctx, &cmn_mtl_auth_pars);
-	if (!rc)
-		printf("============> FAILURE!\n");
-
-	ipa_esipa_auth_clnt_res_free(rc);
-	IPA_FREE(allowed_ca);
-}
-
-/* A testcase to try out the Common Cancel Session Procedure, see also TC_proc_cmn_cancel_sess */
-void testme_proc_cmn_cancel_sess(struct ipa_context *ctx)
-{
-	int rc;
-	struct ipa_buf *transaction_id = ipa_buf_alloc_data(3, (uint8_t *) "\xAA\xBB\xCC");
-	struct ipa_proc_cmn_cancel_sess_pars cmn_cancel_sess_pars = { 0 };
-
-	cmn_cancel_sess_pars.reason = 5;
-	IPA_ASSIGN_IPA_BUF_TO_ASN(cmn_cancel_sess_pars.transaction_id, transaction_id);
-	rc = ipa_proc_cmn_cancel_sess(ctx, &cmn_cancel_sess_pars);
-	if (rc < 0)
-		printf("============> FAILURE!\n");
-
-	IPA_FREE(transaction_id);
-}
-
-/* A testcase to try out the Common Mutual Authentication Procedure, see also TC_proc_direct_prfle_dwnld */
-void testme_proc_direct_prfle_dwnld(struct ipa_context *ctx)
-{
-	struct ipa_proc_direct_prfle_dwnlod_pars direct_prfle_dwnlod_pars = { 0 };
-	uint8_t tac[4] = { 0x12, 0x34, 0x56, 0x78 };
-
-	/* Brainpool */
-//      struct ipa_buf *allowed_ca = ipa_buf_alloc_data(20, (uint8_t *) "\xC0\xBC\x70\xBA\x36\x92\x9D\x43\xB4\x67\xFF\x57\x57\x05\x30\xE5\x7A\xB8\xFC\xD8");
-	/* NIST */
-	struct ipa_buf *allowed_ca = ipa_buf_alloc_data(20, (uint8_t *) "\xF5\x41\x72\xBD\xF9\x8A\x95\xD6\x5C\xBE\xB8\x8A\x38\xA1\xC1\x1D\x80\x0A\x85\xC3");
-
-	direct_prfle_dwnlod_pars.ac = "1$SMDP.EXAMPLE.COM$04386-AGYFT-A74Y8-3F815";
-	direct_prfle_dwnlod_pars.tac = tac;
-	direct_prfle_dwnlod_pars.allowed_ca = allowed_ca;
-	ipa_proc_direct_prfle_dwnlod(ctx, &direct_prfle_dwnlod_pars);
-	IPA_FREE(allowed_ca);
-
-}
-
-/* A testcase to try out the Generic eUICC Package Download and Execution, see also TC_proc_eucc_pkg_dwnld_exec */
-void testme_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx)
-{
-	int rc;
-	rc = ipa_proc_eucc_pkg_dwnld_exec(ctx);
-	printf("=========> rc=%i\n", rc);
-}
-
 void ipa_poll(struct ipa_context *ctx)
 {
-//      testme_es10x(ctx);
-//	testme_proc_cmn_cancel_sess(ctx);
-//	testme_proc_cmn_mtl_auth(ctx);
-//	testme_proc_direct_prfle_dwnld(ctx);
-	testme_proc_eucc_pkg_dwnld_exec(ctx);
+	struct ipa_esipa_get_eim_pkg_res *get_eim_pkg_res = NULL;
+	struct ipa_proc_direct_prfle_dwnlod_pars direct_prfle_dwnlod_pars = { 0 };
+
+	/* Poll eIM */
+	get_eim_pkg_res = ipa_esipa_get_eim_pkg(ctx, ctx->eid);
+	if (!get_eim_pkg_res)
+		goto error;
+	else if (get_eim_pkg_res->eim_pkg_err)
+		goto error;
+
+	/* Relay package contents to suitable handler procedure */
+	if (get_eim_pkg_res->euicc_package_request)
+		ipa_proc_eucc_pkg_dwnld_exec(ctx, get_eim_pkg_res->euicc_package_request);
+	else if (get_eim_pkg_res->ipa_euicc_data_request) {
+		/* TODO */
+		assert(false);
+	} else if (get_eim_pkg_res->dwnld_trigger_request) {
+		struct ipa_buf allowed_ca;
+
+		if (!get_eim_pkg_res->dwnld_trigger_request->profileDownloadData) {
+			/* TODO: Perhaps there is a way to continue anyway. The ProfileDownloadTriggerRequest still
+			 * contains a eimTransactionId, which is also optional. Maybe this eimTransactionId can be
+			 * used to retrieve some context from somewhere that may allow us to continue. */
+			IPA_LOGP(SIPA, LERROR,
+				 "the ProfileDownloadTriggerRequest does not contain ProfileDownloadData -- cannot continue!\n");
+			goto error;
+		}
+		if (get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->present !=
+		    ProfileDownloadData_PR_activationCode) {
+			/* TODO: Perhaps there is a way to continue anyway. The ProfileDownloadData may alternatively
+			 * contain a contactDefaultSmdp flag or an contactSmds information. Maybe we can just ask the
+			 * SM-DP/SM-DS for more context information? */
+			IPA_LOGP(SIPA, LERROR,
+				 "the ProfileDownloadData does not contain an activationCode -- cannot continue!\n");
+			goto error;
+		}
+		ipa_buf_assign(&allowed_ca, ctx->cfg->allowed_ca, IPA_LEN_ALLOWED_CA);
+		direct_prfle_dwnlod_pars.allowed_ca = &allowed_ca;
+		direct_prfle_dwnlod_pars.tac = ctx->cfg->tac;
+		direct_prfle_dwnlod_pars.ac =
+		    IPA_STR_FROM_ASN(&get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->choice.
+				     activationCode);
+		ipa_proc_direct_prfle_dwnlod(ctx, &direct_prfle_dwnlod_pars);
+		IPA_FREE((void *)direct_prfle_dwnlod_pars.ac);
+	} else {
+		IPA_LOGP(SIPA, LERROR,
+			 "the GetEimPackageResponse contains an unsupported request -- cannot continue!\n");
+		goto error;
+	}
+
+error:
+	ipa_esipa_get_eim_pkg_free(get_eim_pkg_res);
 }
 
 void ipa_free_ctx(struct ipa_context *ctx)
