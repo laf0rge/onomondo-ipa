@@ -15,7 +15,7 @@
 #include "context.h"
 #include "utils.h"
 #include "euicc.h"
-#include "es10b.h"
+#include "es10x.h"
 #include <PrepareDownloadRequest.h>
 #include <PrepareDownloadResponse.h>
 #include "es10b_prep_dwnld.h"
@@ -34,7 +34,7 @@ static int dec_prep_dwnld_res(struct ipa_es10b_prep_dwnld_res *res, struct ipa_b
 {
 	struct PrepareDownloadResponse *asn = NULL;
 
-	asn = ipa_es10b_res_dec(&asn_DEF_PrepareDownloadResponse, es10b_res, "PrepareDownload");
+	asn = ipa_es10x_res_dec(&asn_DEF_PrepareDownloadResponse, es10b_res, "PrepareDownload");
 	if (!asn)
 		return -EINVAL;
 
@@ -44,12 +44,12 @@ static int dec_prep_dwnld_res(struct ipa_es10b_prep_dwnld_res *res, struct ipa_b
 		break;
 	case PrepareDownloadResponse_PR_downloadResponseError:
 		res->prep_dwnld_err = asn->choice.downloadResponseError.downloadErrorCode;
-		IPA_LOGP_ES10B("PrepareDownload", LERROR, "function failed with error code %ld=%s!\n",
+		IPA_LOGP_ES10X("PrepareDownload", LERROR, "function failed with error code %ld=%s!\n",
 			       res->prep_dwnld_err, ipa_str_from_num(error_code_strings, res->prep_dwnld_err,
 								     "(unknown)"));
 		break;
 	default:
-		IPA_LOGP_ES10B("PrepareDownload", LERROR, "unexpected response content!\n");
+		IPA_LOGP_ES10X("PrepareDownload", LERROR, "unexpected response content!\n");
 		res->prep_dwnld_err = -1;
 	}
 
@@ -65,15 +65,15 @@ struct ipa_es10b_prep_dwnld_res *ipa_es10b_prep_dwnld(struct ipa_context *ctx,
 	struct ipa_es10b_prep_dwnld_res *res = IPA_ALLOC_ZERO(struct ipa_es10b_prep_dwnld_res);
 	int rc;
 
-	es10b_req = ipa_es10b_req_enc(&asn_DEF_PrepareDownloadRequest, &req->req, "PrepareDownload");
+	es10b_req = ipa_es10x_req_enc(&asn_DEF_PrepareDownloadRequest, &req->req, "PrepareDownload");
 	if (!es10b_req) {
-		IPA_LOGP_ES10B("PrepareDownload", LERROR, "unable to encode ES10b request\n");
+		IPA_LOGP_ES10X("PrepareDownload", LERROR, "unable to encode ES10b request\n");
 		goto error;
 	}
 
 	es10b_res = ipa_euicc_transceive_es10x(ctx, es10b_req);
 	if (!es10b_res) {
-		IPA_LOGP_ES10B("PrepareDownload", LERROR, "no ES10b response\n");
+		IPA_LOGP_ES10X("PrepareDownload", LERROR, "no ES10b response\n");
 		goto error;
 	}
 
@@ -93,5 +93,5 @@ error:
 
 void ipa_es10b_prep_dwnld_res_free(struct ipa_es10b_prep_dwnld_res *res)
 {
-	IPA_ES10B_RES_FREE(asn_DEF_PrepareDownloadResponse, res);
+	IPA_ES10X_RES_FREE(asn_DEF_PrepareDownloadResponse, res);
 }

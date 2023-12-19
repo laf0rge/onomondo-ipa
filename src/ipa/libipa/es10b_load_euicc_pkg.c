@@ -15,7 +15,7 @@
 #include "context.h"
 #include "utils.h"
 #include "euicc.h"
-#include "es10b.h"
+#include "es10x.h"
 #include <EuiccPackageRequest.h>
 #include <EuiccPackageResult.h>
 #include "es10b_load_euicc_pkg.h"
@@ -24,7 +24,7 @@ static int dec_load_euicc_pkg_res(struct ipa_es10b_load_euicc_pkg_res *res, stru
 {
 	struct EuiccPackageResult *asn = NULL;
 
-	asn = ipa_es10b_res_dec(&asn_DEF_EuiccPackageResult, es10b_res, "LoadEuiccPackage");
+	asn = ipa_es10x_res_dec(&asn_DEF_EuiccPackageResult, es10b_res, "LoadEuiccPackage");
 	if (!asn)
 		return -EINVAL;
 
@@ -40,15 +40,15 @@ struct ipa_es10b_load_euicc_pkg_res *ipa_es10b_load_euicc_pkg(struct ipa_context
 	struct ipa_es10b_load_euicc_pkg_res *res = IPA_ALLOC_ZERO(struct ipa_es10b_load_euicc_pkg_res);
 	int rc;
 
-	es10b_req = ipa_es10b_req_enc(&asn_DEF_EuiccPackageRequest, &req->req, "LoadEuiccPackage");
+	es10b_req = ipa_es10x_req_enc(&asn_DEF_EuiccPackageRequest, &req->req, "LoadEuiccPackage");
 	if (!es10b_req) {
-		IPA_LOGP_ES10B("LoadEuiccPackage", LERROR, "unable to encode ES10b request\n");
+		IPA_LOGP_ES10X("LoadEuiccPackage", LERROR, "unable to encode ES10b request\n");
 		goto error;
 	}
 
 	es10b_res = ipa_euicc_transceive_es10x(ctx, es10b_req);
 	if (!es10b_res) {
-		IPA_LOGP_ES10B("LoadEuiccPackage", LERROR, "no ES10b response\n");
+		IPA_LOGP_ES10X("LoadEuiccPackage", LERROR, "no ES10b response\n");
 		goto error;
 	}
 
@@ -68,5 +68,5 @@ error:
 
 void ipa_es10b_load_euicc_pkg_res_free(struct ipa_es10b_load_euicc_pkg_res *res)
 {
-	IPA_ES10B_RES_FREE(asn_DEF_EuiccPackageResult, res);
+	IPA_ES10X_RES_FREE(asn_DEF_EuiccPackageResult, res);
 }

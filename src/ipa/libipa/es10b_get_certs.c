@@ -15,7 +15,7 @@
 #include "context.h"
 #include "utils.h"
 #include "euicc.h"
-#include "es10b.h"
+#include "es10x.h"
 #include <GetCertsRequest.h>
 #include <GetCertsResponse.h>
 #include "es10b_get_certs.h"
@@ -30,7 +30,7 @@ static int dec_get_certs_res(struct ipa_es10b_get_certs_res *res, struct ipa_buf
 {
 	struct GetCertsResponse *asn = NULL;
 
-	asn = ipa_es10b_res_dec(&asn_DEF_GetCertsResponse, es10b_res, "GetCerts");
+	asn = ipa_es10x_res_dec(&asn_DEF_GetCertsResponse, es10b_res, "GetCerts");
 	if (!asn)
 		return -EINVAL;
 
@@ -41,12 +41,12 @@ static int dec_get_certs_res(struct ipa_es10b_get_certs_res *res, struct ipa_buf
 		break;
 	case GetCertsResponse_PR_getCertsError:
 		res->get_certs_err = asn->choice.getCertsError;
-		IPA_LOGP_ES10B("GetCerts", LERROR, "function failed with error code %ld=%s!\n",
+		IPA_LOGP_ES10X("GetCerts", LERROR, "function failed with error code %ld=%s!\n",
 			       res->get_certs_err, ipa_str_from_num(error_code_strings, res->get_certs_err,
 								    "(unknown)"));
 		break;
 	default:
-		IPA_LOGP_ES10B("GetCerts", LERROR, "unexpected response content!\n");
+		IPA_LOGP_ES10X("GetCerts", LERROR, "unexpected response content!\n");
 		res->get_certs_err = -1;
 	}
 
@@ -61,15 +61,15 @@ struct ipa_es10b_get_certs_res *ipa_es10b_get_certs(struct ipa_context *ctx, con
 	struct ipa_es10b_get_certs_res *res = IPA_ALLOC_ZERO(struct ipa_es10b_get_certs_res);
 	int rc;
 
-	es10b_req = ipa_es10b_req_enc(&asn_DEF_GetCertsRequest, &req->req, "GetCerts");
+	es10b_req = ipa_es10x_req_enc(&asn_DEF_GetCertsRequest, &req->req, "GetCerts");
 	if (!es10b_req) {
-		IPA_LOGP_ES10B("GetCerts", LERROR, "unable to encode ES10b request\n");
+		IPA_LOGP_ES10X("GetCerts", LERROR, "unable to encode ES10b request\n");
 		goto error;
 	}
 
 	es10b_res = ipa_euicc_transceive_es10x(ctx, es10b_req);
 	if (!es10b_res) {
-		IPA_LOGP_ES10B("GetCerts", LERROR, "no ES10b response\n");
+		IPA_LOGP_ES10X("GetCerts", LERROR, "no ES10b response\n");
 		goto error;
 	}
 
@@ -89,5 +89,5 @@ error:
 
 void ipa_es10b_get_certs_res_free(struct ipa_es10b_get_certs_res *res)
 {
-	IPA_ES10B_RES_FREE(asn_DEF_GetCertsResponse, res);
+	IPA_ES10X_RES_FREE(asn_DEF_GetCertsResponse, res);
 }

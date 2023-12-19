@@ -17,14 +17,14 @@
 #include "length.h"
 #include "utils.h"
 #include "euicc.h"
-#include "es10b.h"
+#include "es10x.h"
 #include "es10b_load_bnd_prfle_pkg.h"
 
 static int dec_prfle_inst_res(struct ipa_es10b_load_bnd_prfle_pkg_res *res, struct ipa_buf *es10b_res)
 {
 	struct ProfileInstallationResult *asn = NULL;
 
-	asn = ipa_es10b_res_dec(&asn_DEF_ProfileInstallationResult, es10b_res, "LoadBoundProfilePackage");
+	asn = ipa_es10x_res_dec(&asn_DEF_ProfileInstallationResult, es10b_res, "LoadBoundProfilePackage");
 	if (!asn)
 		return -EINVAL;
 
@@ -47,7 +47,7 @@ struct ipa_es10b_load_bnd_prfle_pkg_res *ipa_es10b_load_bnd_prfle_pkg(struct ipa
 	ipa_buf_assign(&es10b_req, segment, segment_len);
 	es10b_res = ipa_euicc_transceive_es10x(ctx, &es10b_req);
 	if (!es10b_res) {
-		IPA_LOGP_ES10B("LoadBoundProfilePackage", LERROR, "no ES10b response\n");
+		IPA_LOGP_ES10X("LoadBoundProfilePackage", LERROR, "no ES10b response\n");
 		goto error;
 	}
 
@@ -68,5 +68,5 @@ error:
 
 void ipa_es10b_load_bnd_prfle_res_free(struct ipa_es10b_load_bnd_prfle_pkg_res *res)
 {
-	IPA_ES10B_RES_FREE(asn_DEF_ProfileInstallationResult, res);
+	IPA_ES10X_RES_FREE(asn_DEF_ProfileInstallationResult, res);
 }

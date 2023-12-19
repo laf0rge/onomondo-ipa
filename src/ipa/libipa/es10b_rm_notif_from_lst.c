@@ -16,7 +16,7 @@
 #include "length.h"
 #include "utils.h"
 #include "euicc.h"
-#include "es10b.h"
+#include "es10x.h"
 #include "es10b_get_euicc_chlg.h"
 #include <NotificationSentRequest.h>
 #include <NotificationSentResponse.h>
@@ -34,12 +34,12 @@ static int dec_notif_sent_resp(struct ipa_buf *es10b_res)
 	struct NotificationSentResponse *asn = NULL;
 	int rc = 0;
 
-	asn = ipa_es10b_res_dec(&asn_DEF_NotificationSentResponse, es10b_res, "RemoveNotificationFromList");
+	asn = ipa_es10x_res_dec(&asn_DEF_NotificationSentResponse, es10b_res, "RemoveNotificationFromList");
 	if (!asn)
 		return -EINVAL;
 
 	if (asn->deleteNotificationStatus) {
-		IPA_LOGP_ES10B("RemoveNotificationFromList", LERROR, "function failed with status code %ld=%s!\n",
+		IPA_LOGP_ES10X("RemoveNotificationFromList", LERROR, "function failed with status code %ld=%s!\n",
 			       asn->deleteNotificationStatus, ipa_str_from_num(error_code_strings,
 									       asn->deleteNotificationStatus,
 									       "(unknown)"));
@@ -60,15 +60,15 @@ int ipa_es10b_rm_notif_from_lst(struct ipa_context *ctx, long seq_number)
 
 	notif_sent_req.seqNumber = seq_number;
 
-	es10b_req = ipa_es10b_req_enc(&asn_DEF_NotificationSentRequest, &notif_sent_req, "RemoveNotificationFromList");
+	es10b_req = ipa_es10x_req_enc(&asn_DEF_NotificationSentRequest, &notif_sent_req, "RemoveNotificationFromList");
 	if (!es10b_req) {
-		IPA_LOGP_ES10B("RemoveNotificationFromList", LERROR, "unable to encode ES10b request\n");
+		IPA_LOGP_ES10X("RemoveNotificationFromList", LERROR, "unable to encode ES10b request\n");
 		goto error;
 	}
 
 	es10b_res = ipa_euicc_transceive_es10x(ctx, es10b_req);
 	if (!es10b_res) {
-		IPA_LOGP_ES10B("RemoveNotificationFromList", LERROR, "no ES10b response\n");
+		IPA_LOGP_ES10X("RemoveNotificationFromList", LERROR, "no ES10b response\n");
 		goto error;
 	}
 

@@ -16,7 +16,7 @@
 #include "length.h"
 #include "utils.h"
 #include "euicc.h"
-#include "es10b.h"
+#include "es10x.h"
 #include "es10b_get_euicc_chlg.h"
 #include "GetEuiccDataRequest.h"
 #include "GetEuiccDataResponse.h"
@@ -27,7 +27,7 @@ static int dec_get_euicc_data_res(uint8_t *eid, struct ipa_buf *es10b_res)
 	struct GetEuiccDataResponse *asn = NULL;
 	uint8_t eid_buf[IPA_LEN_EID];
 
-	asn = ipa_es10b_res_dec(&asn_DEF_GetEuiccDataResponse, es10b_res, "GetEID");
+	asn = ipa_es10x_res_dec(&asn_DEF_GetEuiccDataResponse, es10b_res, "GetEID");
 	if (!asn)
 		return -EINVAL;
 
@@ -47,15 +47,15 @@ int ipa_es10b_get_eid(struct ipa_context *ctx, uint8_t *eid)
 
 	get_euicc_data_req.tagList.buf = (uint8_t *) "\x5A";
 	get_euicc_data_req.tagList.size = 1;
-	es10b_req = ipa_es10b_req_enc(&asn_DEF_GetEuiccDataRequest, &get_euicc_data_req, "GetEID");
+	es10b_req = ipa_es10x_req_enc(&asn_DEF_GetEuiccDataRequest, &get_euicc_data_req, "GetEID");
 	if (!es10b_req) {
-		IPA_LOGP_ES10B("GetEID", LERROR, "unable to encode ES10b request\n");
+		IPA_LOGP_ES10X("GetEID", LERROR, "unable to encode ES10b request\n");
 		goto error;
 	}
 
 	es10b_res = ipa_euicc_transceive_es10x(ctx, es10b_req);
 	if (!es10b_res) {
-		IPA_LOGP_ES10B("GetEID", LERROR, "no ES10b response\n");
+		IPA_LOGP_ES10X("GetEID", LERROR, "no ES10b response\n");
 		goto error;
 	}
 

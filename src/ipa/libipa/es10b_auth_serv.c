@@ -15,7 +15,7 @@
 #include "context.h"
 #include "utils.h"
 #include "euicc.h"
-#include "es10b.h"
+#include "es10x.h"
 #include <AuthenticateServerRequest.h>
 #include <AuthenticateServerResponse.h>
 #include "es10b_auth_serv.h"
@@ -36,7 +36,7 @@ static int dec_auth_serv_res(struct ipa_es10b_auth_serv_res *res, struct ipa_buf
 {
 	struct AuthenticateServerResponse *asn = NULL;
 
-	asn = ipa_es10b_res_dec(&asn_DEF_AuthenticateServerResponse, es10b_res, "AuthenticateServer");
+	asn = ipa_es10x_res_dec(&asn_DEF_AuthenticateServerResponse, es10b_res, "AuthenticateServer");
 	if (!asn)
 		return -EINVAL;
 
@@ -46,12 +46,12 @@ static int dec_auth_serv_res(struct ipa_es10b_auth_serv_res *res, struct ipa_buf
 		break;
 	case AuthenticateServerResponse_PR_authenticateResponseError:
 		res->auth_serv_err = asn->choice.authenticateResponseError.authenticateErrorCode;
-		IPA_LOGP_ES10B("AuthenticateServer", LERROR, "function failed with error code %ld=%s!\n",
+		IPA_LOGP_ES10X("AuthenticateServer", LERROR, "function failed with error code %ld=%s!\n",
 			       res->auth_serv_err, ipa_str_from_num(error_code_strings, res->auth_serv_err,
 								    "(unknown)"));
 		break;
 	default:
-		IPA_LOGP_ES10B("AuthenticateServer", LERROR, "unexpected response content!\n");
+		IPA_LOGP_ES10X("AuthenticateServer", LERROR, "unexpected response content!\n");
 		res->auth_serv_err  = -1;
 	}
 
@@ -70,15 +70,15 @@ struct ipa_es10b_auth_serv_res *ipa_es10b_auth_serv(struct ipa_context *ctx, con
 	struct ipa_es10b_auth_serv_res *res = IPA_ALLOC_ZERO(struct ipa_es10b_auth_serv_res);
 	int rc;
 
-	es10b_req = ipa_es10b_req_enc(&asn_DEF_AuthenticateServerRequest, &req->req, "AuthenticateServer");
+	es10b_req = ipa_es10x_req_enc(&asn_DEF_AuthenticateServerRequest, &req->req, "AuthenticateServer");
 	if (!es10b_req) {
-		IPA_LOGP_ES10B("AuthenticateServer", LERROR, "unable to encode ES10b request\n");
+		IPA_LOGP_ES10X("AuthenticateServer", LERROR, "unable to encode ES10b request\n");
 		goto error;
 	}
 
 	es10b_res = ipa_euicc_transceive_es10x(ctx, es10b_req);
 	if (!es10b_res) {
-		IPA_LOGP_ES10B("AuthenticateServer", LERROR, "no ES10b response\n");
+		IPA_LOGP_ES10X("AuthenticateServer", LERROR, "no ES10b response\n");
 		goto error;
 	}
 
@@ -100,5 +100,5 @@ error:
  *  \param[inout] res pointer to struct that holds the AuthenticateServer response. */
 void ipa_es10b_auth_serv_res_free(struct ipa_es10b_auth_serv_res *res)
 {
-	IPA_ES10B_RES_FREE(asn_DEF_AuthenticateServerResponse, res);
+	IPA_ES10X_RES_FREE(asn_DEF_AuthenticateServerResponse, res);
 }

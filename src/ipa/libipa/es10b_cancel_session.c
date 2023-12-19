@@ -15,7 +15,7 @@
 #include "context.h"
 #include "utils.h"
 #include "euicc.h"
-#include "es10b.h"
+#include "es10x.h"
 #include <CancelSessionRequest.h>
 #include <CancelSessionResponse.h>
 #include "es10b_cancel_session.h"
@@ -30,7 +30,7 @@ static int dec_cancel_session_res(struct ipa_es10b_cancel_session_res *res, stru
 {
 	struct CancelSessionResponse *asn = NULL;
 
-	asn = ipa_es10b_res_dec(&asn_DEF_CancelSessionResponse, es10b_res, "CancelSession");
+	asn = ipa_es10x_res_dec(&asn_DEF_CancelSessionResponse, es10b_res, "CancelSession");
 	if (!asn)
 		return -EINVAL;
 
@@ -40,12 +40,12 @@ static int dec_cancel_session_res(struct ipa_es10b_cancel_session_res *res, stru
 		break;
 	case CancelSessionResponse_PR_cancelSessionResponseError:
 		res->cancel_session_err = asn->choice.cancelSessionResponseError;
-		IPA_LOGP_ES10B("CancelSession", LERROR, "function failed with error code %ld=%s!\n",
+		IPA_LOGP_ES10X("CancelSession", LERROR, "function failed with error code %ld=%s!\n",
 			       res->cancel_session_err, ipa_str_from_num(error_code_strings, res->cancel_session_err,
 									 "(unknown)"));
 		break;
 	default:
-		IPA_LOGP_ES10B("CancelSession", LERROR, "unexpected response content!\n");
+		IPA_LOGP_ES10X("CancelSession", LERROR, "unexpected response content!\n");
 		res->cancel_session_err = -1;
 	}
 
@@ -61,15 +61,15 @@ struct ipa_es10b_cancel_session_res *ipa_es10b_cancel_session(struct ipa_context
 	struct ipa_es10b_cancel_session_res *res = IPA_ALLOC_ZERO(struct ipa_es10b_cancel_session_res);
 	int rc;
 
-	es10b_req = ipa_es10b_req_enc(&asn_DEF_CancelSessionRequest, &req->req, "CancelSession");
+	es10b_req = ipa_es10x_req_enc(&asn_DEF_CancelSessionRequest, &req->req, "CancelSession");
 	if (!es10b_req) {
-		IPA_LOGP_ES10B("CancelSession", LERROR, "unable to encode ES10b request\n");
+		IPA_LOGP_ES10X("CancelSession", LERROR, "unable to encode ES10b request\n");
 		goto error;
 	}
 
 	es10b_res = ipa_euicc_transceive_es10x(ctx, es10b_req);
 	if (!es10b_res) {
-		IPA_LOGP_ES10B("CancelSession", LERROR, "no ES10b response\n");
+		IPA_LOGP_ES10X("CancelSession", LERROR, "no ES10b response\n");
 		goto error;
 	}
 
@@ -80,7 +80,7 @@ struct ipa_es10b_cancel_session_res *ipa_es10b_cancel_session(struct ipa_context
 	if (res->cancel_session_ok
 	    && !IPA_ASN_STR_CMP(&res->cancel_session_ok->euiccCancelSessionSigned.transactionId,
 				&req->req.transactionId)) {
-		IPA_LOGP_ES10B("CancelSession", LERROR, "eIM responded with unexpected transaction ID\n");
+		IPA_LOGP_ES10X("CancelSession", LERROR, "eIM responded with unexpected transaction ID\n");
 		res->cancel_session_err = -1;
 		goto error;
 	}
@@ -97,5 +97,5 @@ error:
 
 void ipa_es10b_cancel_session_res_free(struct ipa_es10b_cancel_session_res *res)
 {
-	IPA_ES10B_RES_FREE(asn_DEF_CancelSessionResponse, res);
+	IPA_ES10X_RES_FREE(asn_DEF_CancelSessionResponse, res);
 }

@@ -16,7 +16,7 @@
 #include "length.h"
 #include "utils.h"
 #include "euicc.h"
-#include "es10b.h"
+#include "es10x.h"
 #include "es10b_get_euicc_chlg.h"
 #include "GetEuiccChallengeRequest.h"
 #include "GetEuiccChallengeResponse.h"
@@ -27,7 +27,7 @@ static int dec_get_euicc_chlg(uint8_t *euicc_chlg, struct ipa_buf *es10b_res)
 	struct GetEuiccChallengeResponse *asn = NULL;
 	uint8_t euicc_chlg_buf[IPA_LEN_EUICC_CHLG];
 
-	asn = ipa_es10b_res_dec(&asn_DEF_GetEuiccChallengeResponse, es10b_res, "GetEuiccChallengeResponse");
+	asn = ipa_es10x_res_dec(&asn_DEF_GetEuiccChallengeResponse, es10b_res, "GetEuiccChallengeResponse");
 	if (!asn)
 		return -EINVAL;
 
@@ -46,15 +46,15 @@ int ipa_es10b_get_euicc_chlg(struct ipa_context *ctx, uint8_t *euicc_chlg)
 	int rc = -EINVAL;
 
 	es10b_req =
-	    ipa_es10b_req_enc(&asn_DEF_GetEuiccChallengeRequest, &get_euicc_chlg_req, "GetEuiccChallengeRequest");
+	    ipa_es10x_req_enc(&asn_DEF_GetEuiccChallengeRequest, &get_euicc_chlg_req, "GetEuiccChallengeRequest");
 	if (!es10b_req) {
-		IPA_LOGP_ES10B("GetEuiccChallengeRequest", LERROR, "unable to encode ES10b request\n");
+		IPA_LOGP_ES10X("GetEuiccChallengeRequest", LERROR, "unable to encode ES10b request\n");
 		goto error;
 	}
 
 	es10b_res = ipa_euicc_transceive_es10x(ctx, es10b_req);
 	if (!es10b_res) {
-		IPA_LOGP_ES10B("GetEuiccChallengeRequest", LERROR, "no ES10b response\n");
+		IPA_LOGP_ES10X("GetEuiccChallengeRequest", LERROR, "no ES10b response\n");
 		goto error;
 	}
 
