@@ -1,7 +1,5 @@
 #pragma once
 
-#include "length.h"
-#include "es10b.h"
 #include <stdbool.h>
 #include <EUICCInfo1.h>
 #include <EUICCInfo2.h>

@@ -1,8 +1,5 @@
 #pragma once
 
-#include "length.h"
-#include "es10b.h"
-#include <stdbool.h>
 #include <AuthenticateServerRequest.h>
 
 /* GSMA SGP.22, section 5.7.13 */
