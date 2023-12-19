@@ -13,20 +13,15 @@
 #include <onomondo/ipa/mem.h>
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/log.h>
-#include <AuthenticateClientRequestEsipa.h>
-#include <InitiateAuthenticationResponseEsipa.h>
-#include <AuthenticateClientResponseEsipa.h>
-#include <AuthenticateServerRequest.h>
-#include <CancelSessionReason.h>
 #include "context.h"
 #include "utils.h"
 #include "es10b_get_euicc_info.h"
 #include "es10b_get_euicc_chlg.h"
-#include "esipa_init_auth.h"
 #include "es10b_auth_serv.h"
 #include "esipa_auth_clnt.h"
-#include "proc_cmn_mtl_auth.h"
+#include "esipa_init_auth.h"
 #include "proc_cmn_cancel_sess.h"
+#include "proc_cmn_mtl_auth.h"
 
 /* Walk through the euiccCiPKIdListForVerification list and remove all entries that do not match the given eSIM CA
  * RootCA public key identifier (allowed_ca), See also GSMA SGP.22, section 3.0.1, step 1c. */

@@ -12,7 +12,6 @@
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/scard.h>
 #include <onomondo/ipa/log.h>
-#include <ProfileInstallationResult.h>
 #include "context.h"
 #include "length.h"
 #include "utils.h"

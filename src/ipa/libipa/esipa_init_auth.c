@@ -9,15 +9,14 @@
 #include <onomondo/ipa/http.h>
 #include <onomondo/ipa/log.h>
 #include <onomondo/ipa/ipad.h>
+#include <EsipaMessageFromIpaToEim.h>
+#include <InitiateAuthenticationRequestEsipa.h>
+#include <InitiateAuthenticationResponseEsipa.h>
 #include "utils.h"
 #include "length.h"
 #include "context.h"
 #include "esipa.h"
 #include "esipa_init_auth.h"
-#include <EsipaMessageFromIpaToEim.h>
-#include <EsipaMessageFromEimToIpa.h>
-#include <InitiateAuthenticationRequestEsipa.h>
-#include <InitiateAuthenticationResponseEsipa.h>
 
 static const struct num_str_map error_code_strings[] = {
 	{ InitiateAuthenticationResponseEsipa__initiateAuthenticationErrorEsipa_invalidDpAddress, "invalidDpAddress" },

@@ -1,5 +1,12 @@
 #pragma once
 
+#include <AuthenticateClientRequestEsipa.h>
+#include <EsipaMessageFromEimToIpa.h>
+#include <TransactionId.h>
+#include <AuthenticateClientOkDPEsipa.h>
+#include <AuthenticateClientOkDSEsipa.h>
+struct ipa_context;
+
 struct ipa_esipa_auth_clnt_req {
 	struct AuthenticateClientRequestEsipa req;
 };

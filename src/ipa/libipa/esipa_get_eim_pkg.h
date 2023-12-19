@@ -1,7 +1,10 @@
 #pragma once
 
 #include <stdint.h>
-
+#include <EsipaMessageFromEimToIpa.h>
+#include <EuiccPackageRequest.h>
+#include <IpaEuiccDataRequest.h>
+#include <ProfileDownloadTriggerRequest.h>
 struct ipa_context;
 
 struct ipa_esipa_get_eim_pkg_res {

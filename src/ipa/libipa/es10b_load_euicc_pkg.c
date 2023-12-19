@@ -16,8 +16,6 @@
 #include "utils.h"
 #include "euicc.h"
 #include "es10x.h"
-#include <EuiccPackageRequest.h>
-#include <EuiccPackageResult.h>
 #include "es10b_load_euicc_pkg.h"
 
 static int dec_load_euicc_pkg_res(struct ipa_es10b_load_euicc_pkg_res *res, struct ipa_buf *es10b_res)

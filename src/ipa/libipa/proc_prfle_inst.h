@@ -1,5 +1,8 @@
 #pragma once
 
+#include <BoundProfilePackage.h>
+struct ipa_context;
+
 struct ipa_proc_prfle_inst_pars {
 	const BoundProfilePackage_t *bound_profile_package;
 };

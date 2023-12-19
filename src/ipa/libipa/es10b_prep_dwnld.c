@@ -16,8 +16,6 @@
 #include "utils.h"
 #include "euicc.h"
 #include "es10x.h"
-#include <PrepareDownloadRequest.h>
-#include <PrepareDownloadResponse.h>
 #include "es10b_prep_dwnld.h"
 
 static const struct num_str_map error_code_strings[] = {

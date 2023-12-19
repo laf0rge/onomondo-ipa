@@ -1,6 +1,9 @@
 #pragma once
 
 #include <AuthenticateServerRequest.h>
+#include <AuthenticateServerResponse.h>
+#include <AuthenticateResponseOk.h>
+struct ipa_context;
 
 /* GSMA SGP.22, section 5.7.13 */
 struct ipa_es10b_auth_serv_req {

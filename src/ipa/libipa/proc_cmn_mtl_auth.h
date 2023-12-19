@@ -1,6 +1,9 @@
 #pragma once
 
+#include <stdint.h>
+struct ipa_buf;
 struct ipa_esipa_auth_clnt_res;
+struct ipa_context;
 
 struct ipa_proc_cmn_mtl_auth_pars {
 	const uint8_t *tac;

@@ -8,9 +8,9 @@
 #include <onomondo/ipa/http.h>
 #include <onomondo/ipa/log.h>
 #include <onomondo/ipa/ipad.h>
+#include <EsipaMessageFromIpaToEim.h>
 #include <ProvideEimPackageResult.h>
 #include <SGP32-RetrieveNotificationsListResponse.h>
-#include <RetrieveNotificationsListResponse.h>
 #include "utils.h"
 #include "length.h"
 #include "context.h"

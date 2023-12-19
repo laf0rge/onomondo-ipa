@@ -16,8 +16,6 @@
 #include "utils.h"
 #include "euicc.h"
 #include "es10x.h"
-#include <GetCertsRequest.h>
-#include <GetCertsResponse.h>
 #include "es10b_get_certs.h"
 
 static const struct num_str_map error_code_strings[] = {

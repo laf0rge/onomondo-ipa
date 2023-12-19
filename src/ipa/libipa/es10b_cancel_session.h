@@ -1,7 +1,9 @@
 #pragma once
 
 #include <CancelSessionRequest.h>
+#include <CancelSessionResponse.h>
 #include <CancelSessionResponseOk.h>
+struct ipa_context;
 
 /* GSMA SGP.22, section 5.7.14 */
 struct ipa_es10b_cancel_session_req {

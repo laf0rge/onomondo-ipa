@@ -13,11 +13,9 @@
 #include <onomondo/ipa/log.h>
 #include "context.h"
 #include "utils.h"
-#include <AuthenticateClientOkDPEsipa.h>
-#include <PrepareDownloadResponse.h>
-#include "proc_prfle_dwnld.h"
 #include "es10b_prep_dwnld.h"
 #include "esipa_get_bnd_prfle_pkg.h"
+#include "proc_prfle_dwnld.h"
 
 struct ipa_esipa_get_bnd_prfle_pkg_res *ipa_proc_prfle_dwnlod(struct ipa_context *ctx,
 							      struct ipa_proc_prfle_dwnlod_pars *pars)

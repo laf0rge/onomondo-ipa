@@ -16,8 +16,6 @@
 #include "utils.h"
 #include "euicc.h"
 #include "es10x.h"
-#include <AuthenticateServerRequest.h>
-#include <AuthenticateServerResponse.h>
 #include "es10b_auth_serv.h"
 
 static const struct num_str_map error_code_strings[] = {

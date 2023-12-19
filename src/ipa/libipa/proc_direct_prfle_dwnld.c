@@ -14,19 +14,13 @@
 #include "context.h"
 #include "utils.h"
 #include "activation_code.h"
-#include <AuthenticateClientRequestEsipa.h>
-#include <AuthenticateClientResponseEsipa.h>
-#include <PrepareDownloadResponse.h>
-#include <CancelSessionReason.h>
-#include <BoundProfilePackage.h>
-#include <GetBoundProfilePackageOkEsipa.h>
 #include "esipa_auth_clnt.h"
 #include "proc_cmn_mtl_auth.h"
 #include "proc_prfle_dwnld.h"
-#include "proc_direct_prfle_dwnld.h"
 #include "esipa_get_bnd_prfle_pkg.h"
 #include "proc_cmn_cancel_sess.h"
 #include "proc_prfle_inst.h"
+#include "proc_direct_prfle_dwnld.h"
 
 int ipa_proc_direct_prfle_dwnlod(struct ipa_context *ctx, struct ipa_proc_direct_prfle_dwnlod_pars *pars)
 {

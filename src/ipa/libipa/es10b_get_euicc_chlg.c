@@ -12,15 +12,15 @@
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/scard.h>
 #include <onomondo/ipa/log.h>
+#include <GetEuiccChallengeRequest.h>
+#include <GetEuiccChallengeResponse.h>
+#include <Octet16.h>
 #include "context.h"
 #include "length.h"
 #include "utils.h"
 #include "euicc.h"
 #include "es10x.h"
 #include "es10b_get_euicc_chlg.h"
-#include "GetEuiccChallengeRequest.h"
-#include "GetEuiccChallengeResponse.h"
-#include "Octet16.h"
 
 static int dec_get_euicc_chlg(uint8_t *euicc_chlg, struct ipa_buf *es10b_res)
 {

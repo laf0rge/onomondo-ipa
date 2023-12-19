@@ -11,16 +11,13 @@
 #include <onomondo/ipa/mem.h>
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/log.h>
-#include <BoundProfilePackage.h>
-#include <InitialiseSecureChannelRequest.h>
-#include <ProfileInstallationResult.h>
-#include "es10x.h"
 #include "context.h"
 #include "utils.h"
-#include "proc_prfle_inst.h"
+#include "es10x.h"
 #include "es10b_load_bnd_prfle_pkg.h"
 #include "esipa_handle_notif.h"
 #include "es10b_rm_notif_from_lst.h"
+#include "proc_prfle_inst.h"
 
 /* We receive the Initialize Secure Channel Request, its decoded form, so we must encode it again */
 struct ipa_buf *enc_init_sec_chan_req(const InitialiseSecureChannelRequest_t * init_sec_chan_req)

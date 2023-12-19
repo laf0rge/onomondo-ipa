@@ -1,7 +1,10 @@
 #pragma once
 
 #include <stdbool.h>
-#include <CancelSessionRequestEsipa.h>
+#include <TransactionId.h>
+#include <CancelSessionResponseOk.h>
+#include <EsipaMessageFromEimToIpa.h>
+struct ipa_context;
 
 struct ipa_esipa_cancel_session_req {
 	TransactionId_t *transaction_id;

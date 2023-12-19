@@ -11,19 +11,14 @@
 #include <onomondo/ipa/mem.h>
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/log.h>
-#include <EuiccPackageRequest.h>
-#include <EuiccPackageResult.h>
-#include <RetrieveNotificationsListRequest.h>
-#include <RetrieveNotificationsListResponse.h>
-#include <EimAcknowledgements.h>
 #include "context.h"
 #include "utils.h"
-#include "proc_euicc_pkg_dwnld_exec.h"
 #include "esipa_get_eim_pkg.h"
 #include "es10b_load_euicc_pkg.h"
 #include "es10b_retr_notif_from_lst.h"
 #include "esipa_prvde_eim_pkg_rslt.h"
 #include "es10b_rm_notif_from_lst.h"
+#include "proc_euicc_pkg_dwnld_exec.h"
 
 static int remove_notifications(struct ipa_context *ctx, struct EimAcknowledgements *eim_acknowledgements)
 {

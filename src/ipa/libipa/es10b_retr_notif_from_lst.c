@@ -16,8 +16,6 @@
 #include "utils.h"
 #include "euicc.h"
 #include "es10x.h"
-#include <RetrieveNotificationsListRequest.h>
-#include <RetrieveNotificationsListResponse.h>
 #include "es10b_retr_notif_from_lst.h"
 
 static const struct num_str_map error_code_strings[] = {

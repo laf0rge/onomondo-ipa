@@ -9,16 +9,14 @@
 #include <onomondo/ipa/http.h>
 #include <onomondo/ipa/log.h>
 #include <onomondo/ipa/ipad.h>
+#include <EsipaMessageFromIpaToEim.h>
+#include <SGP32-PrepareDownloadResponse.h>
+#include <GetBoundProfilePackageRequestEsipa.h>
+#include <GetBoundProfilePackageResponseEsipa.h>
 #include "utils.h"
 #include "length.h"
 #include "context.h"
 #include "esipa.h"
-#include "SGP32-PrepareDownloadResponse.h"
-#include "PrepareDownloadResponse.h"
-#include <EsipaMessageFromIpaToEim.h>
-#include <EsipaMessageFromEimToIpa.h>
-#include <GetBoundProfilePackageRequestEsipa.h>
-#include <GetBoundProfilePackageResponseEsipa.h>
 #include "esipa_get_bnd_prfle_pkg.h"
 
 static const struct num_str_map error_code_strings[] = {

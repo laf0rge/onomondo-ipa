@@ -1,5 +1,9 @@
 #pragma once
 
+#include <RetrieveNotificationsListRequest.h>
+#include <RetrieveNotificationsListResponse.h>
+struct ipa_context;
+
 struct ipa_es10b_retr_notif_from_lst_req {
 	struct RetrieveNotificationsListRequest req;
 };

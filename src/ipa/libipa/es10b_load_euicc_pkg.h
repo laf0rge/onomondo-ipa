@@ -1,5 +1,9 @@
 #pragma once
 
+#include <EuiccPackageRequest.h>
+#include <EuiccPackageResult.h>
+struct ipa_context;
+
 struct ipa_es10b_load_euicc_pkg_req {
 	struct EuiccPackageRequest req;
 };

@@ -16,8 +16,6 @@
 #include "utils.h"
 #include "euicc.h"
 #include "es10x.h"
-#include <CancelSessionRequest.h>
-#include <CancelSessionResponse.h>
 #include "es10b_cancel_session.h"
 
 static const struct num_str_map error_code_strings[] = {

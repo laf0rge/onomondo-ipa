@@ -1,5 +1,8 @@
 #pragma once
 
+#include <ProfileInstallationResult.h>
+struct ipa_context;
+
 struct ipa_esipa_handle_notif_req {
 	const struct ProfileInstallationResult *profile_installation_result;
 };

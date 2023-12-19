@@ -19,8 +19,6 @@
 #include "es10b_get_euicc_info.h"
 #include <GetEuiccInfo1Request.h>
 #include <GetEuiccInfo2Request.h>
-#include <EUICCInfo1.h>
-#include <EUICCInfo2.h>
 
 static int dec_get_euicc_info1(struct ipa_es10b_euicc_info *euicc_info, struct ipa_buf *es10b_res)
 {

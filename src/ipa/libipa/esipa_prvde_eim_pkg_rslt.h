@@ -3,7 +3,10 @@
 #include <stdint.h>
 #include <EuiccPackageResult.h>
 #include <RetrieveNotificationsListResponse.h>
-
+#include <IpaEuiccDataResponse.h>
+#include <ProfileDownloadTriggerResult.h>
+#include <EsipaMessageFromEimToIpa.h>
+#include <EimAcknowledgements.h>
 struct ipa_context;
 
 struct ipa_esipa_prvde_eim_pkg_rslt_req {

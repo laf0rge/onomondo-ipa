@@ -1,5 +1,9 @@
 #pragma once
 
+#include <stdint.h>
+#include <ProfileInstallationResult.h>
+struct ipa_context;
+
 struct ipa_es10b_load_bnd_prfle_pkg_res {
 	struct ProfileInstallationResult *res;
 };

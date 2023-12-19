@@ -1,5 +1,10 @@
 #pragma once
 
+#include <GetCertsRequest.h>
+#include <GetCertsResponse.h>
+#include <Certificate.h>
+struct ipa_context;
+
 struct ipa_es10b_get_certs_req {
 	struct GetCertsRequest req;
 };

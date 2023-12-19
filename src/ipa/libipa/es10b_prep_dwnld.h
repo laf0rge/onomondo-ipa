@@ -1,6 +1,9 @@
 #pragma once
 
 #include <PrepareDownloadRequest.h>
+#include <PrepareDownloadResponse.h>
+#include <PrepareDownloadResponseOk.h>
+struct ipa_context;
 
 /* GSMA SGP.22, section 5.7.5 */
 struct ipa_es10b_prep_dwnld_req {

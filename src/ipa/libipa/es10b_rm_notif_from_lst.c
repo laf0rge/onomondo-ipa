@@ -12,15 +12,15 @@
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/scard.h>
 #include <onomondo/ipa/log.h>
+#include <NotificationSentRequest.h>
+#include <NotificationSentResponse.h>
+#include <Octet16.h>
 #include "context.h"
 #include "length.h"
 #include "utils.h"
 #include "euicc.h"
 #include "es10x.h"
 #include "es10b_get_euicc_chlg.h"
-#include <NotificationSentRequest.h>
-#include <NotificationSentResponse.h>
-#include "Octet16.h"
 
 static const struct num_str_map error_code_strings[] = {
 	{ NotificationSentResponse__deleteNotificationStatus_ok, "ok" },

@@ -9,14 +9,13 @@
 #include <onomondo/ipa/http.h>
 #include <onomondo/ipa/log.h>
 #include <onomondo/ipa/ipad.h>
+#include <EsipaMessageFromIpaToEim.h>
+#include <EsipaMessageFromEimToIpa.h>
 #include "utils.h"
 #include "length.h"
 #include "context.h"
 #include "esipa.h"
 #include "esipa_handle_notif.h"
-#include <EsipaMessageFromIpaToEim.h>
-#include <EsipaMessageFromEimToIpa.h>
-#include <ProfileInstallationResult.h>
 
 static struct ipa_buf *enc_handle_notif_req(const struct ipa_esipa_handle_notif_req *req)
 {

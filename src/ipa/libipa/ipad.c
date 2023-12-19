@@ -16,8 +16,6 @@
 #include "utils.h"
 #include "context.h"
 #include "euicc.h"
-#include <AuthenticateClientRequestEsipa.h>
-#include <AuthenticateClientResponseEsipa.h>
 #include "es10b_get_eid.h"
 #include "proc_cmn_mtl_auth.h"
 #include "proc_cmn_cancel_sess.h"

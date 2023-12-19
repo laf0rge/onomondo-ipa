@@ -1,5 +1,11 @@
 #pragma once
 
+#include <stdint.h>
+#include <EUICCInfo1.h>
+#include <EsipaMessageFromEimToIpa.h>
+#include <InitiateAuthenticationOkEsipa.h>
+struct ipa_context;
+
 struct ipa_esipa_init_auth_req {
 	const uint8_t *euicc_challenge;
 	const char *smdp_addr;

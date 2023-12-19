@@ -11,14 +11,11 @@
 #include <onomondo/ipa/mem.h>
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/log.h>
-#include <SGP32-CancelSessionResponse.h>
-#include <SGP32-CancelSessionOk.h>
-#include <CancelSessionResponseOk.h>
 #include "context.h"
 #include "utils.h"
-#include "proc_cmn_cancel_sess.h"
 #include "es10b_cancel_session.h"
 #include "esipa_cancel_session.h"
+#include "proc_cmn_cancel_sess.h"
 
 int ipa_proc_cmn_cancel_sess(struct ipa_context *ctx, const struct ipa_proc_cmn_cancel_sess_pars *pars)
 {
