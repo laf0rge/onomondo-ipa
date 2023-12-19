@@ -6,8 +6,6 @@
 #include <EUICCInfo1.h>
 #include <EUICCInfo2.h>
 
-#define IPA_ES10B_CI_PKID_MAX 255
-
 /* GSMA SGP.22, section 5.7.8 */
 struct ipa_es10b_euicc_info {
 	EUICCInfo1_t *euicc_info_1;
