@@ -3,6 +3,7 @@
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/log.h>
 #include <stddef.h>
+#include <stdbool.h>
 struct asn_TYPE_descriptor_s;
 
 /*! A mapping between human-readable string and numeric value, when forming arrays of this struct, the last entry
