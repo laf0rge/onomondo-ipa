@@ -1,7 +1,5 @@
 #pragma once
 
-#include "length.h"
-
 struct ipa_esipa_auth_clnt_req {
 	struct AuthenticateClientRequestEsipa req;
 };

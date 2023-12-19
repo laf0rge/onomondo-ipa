@@ -1,7 +1,5 @@
 #pragma once
 
-#include "length.h"
-
 struct ipa_esipa_init_auth_req {
 	const uint8_t *euicc_challenge;
 	const char *smdp_addr;

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "length.h"
-
 struct ipa_esipa_get_bnd_prfle_pkg_req {
 	PrepareDownloadResponse_t *prep_dwnld_res;
 };
