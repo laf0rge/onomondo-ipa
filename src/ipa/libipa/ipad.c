@@ -21,6 +21,7 @@
 #include "proc_cmn_cancel_sess.h"
 #include "proc_direct_prfle_dwnld.h"
 #include "proc_euicc_pkg_dwnld_exec.h"
+#include "proc_euicc_data_req.h"
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 {
@@ -75,8 +76,7 @@ void testme_es10x(struct ipa_context *ctx)
 void ipa_poll(struct ipa_context *ctx)
 {
 	struct ipa_esipa_get_eim_pkg_res *get_eim_pkg_res = NULL;
-	struct ipa_proc_direct_prfle_dwnlod_pars direct_prfle_dwnlod_pars = { 0 };
-
+	
 	/* Poll eIM */
 	get_eim_pkg_res = ipa_esipa_get_eim_pkg(ctx, ctx->eid);
 	if (!get_eim_pkg_res)
@@ -88,9 +88,11 @@ void ipa_poll(struct ipa_context *ctx)
 	if (get_eim_pkg_res->euicc_package_request)
 		ipa_proc_eucc_pkg_dwnld_exec(ctx, get_eim_pkg_res->euicc_package_request);
 	else if (get_eim_pkg_res->ipa_euicc_data_request) {
-		/* TODO */
-		assert(false);
+		struct ipa_proc_euicc_data_req_pars euicc_data_req_pars = { 0 };
+		euicc_data_req_pars.ipa_euicc_data_request = get_eim_pkg_res->ipa_euicc_data_request;
+		ipa_proc_euicc_data_req(ctx, &euicc_data_req_pars);
 	} else if (get_eim_pkg_res->dwnld_trigger_request) {
+		struct ipa_proc_direct_prfle_dwnlod_pars direct_prfle_dwnlod_pars = { 0 };
 		struct ipa_buf allowed_ca;
 
 		if (!get_eim_pkg_res->dwnld_trigger_request->profileDownloadData) {

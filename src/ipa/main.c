@@ -34,6 +34,7 @@ int main(void)
 	IPA_LOGP(SMAIN, LINFO, "ipa!\n");
 
 	strcpy(cfg.eim_addr, "127.0.0.1:4430");
+	strcpy(cfg.eim_id, "myEIM");
 	cfg.eim_use_ssl = true;
 	cfg.reader_num = 0;
 	cfg.euicc_channel = 1;
