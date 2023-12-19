@@ -1,6 +1,6 @@
 /*
  * Author: Philipp Maier <pmaier@sysmocom.de> / sysmocom - s.f.m.c. GmbH
- * See also: GSMA SGP.22, 5.7.7: Function (ES10b): GetEID
+ * See also: GSMA SGP.22, 5.7.20: Function (ES10c): GetEID
  *
  */
 
@@ -17,10 +17,9 @@
 #include "utils.h"
 #include "euicc.h"
 #include "es10x.h"
-#include "es10b_get_euicc_chlg.h"
 #include "GetEuiccDataRequest.h"
 #include "GetEuiccDataResponse.h"
-#include "Octet16.h"
+#include "es10c_get_eid.h"
 
 static int dec_get_euicc_data_res(uint8_t *eid, struct ipa_buf *es10b_res)
 {
@@ -38,7 +37,7 @@ static int dec_get_euicc_data_res(uint8_t *eid, struct ipa_buf *es10b_res)
 	return 0;
 }
 
-int ipa_es10b_get_eid(struct ipa_context *ctx, uint8_t *eid)
+int ipa_es10c_get_eid(struct ipa_context *ctx, uint8_t *eid)
 {
 	struct ipa_buf *es10b_req = NULL;
 	struct ipa_buf *es10b_res = NULL;

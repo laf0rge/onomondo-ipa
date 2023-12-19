@@ -16,7 +16,7 @@
 #include "utils.h"
 #include "context.h"
 #include "euicc.h"
-#include "es10b_get_eid.h"
+#include "es10c_get_eid.h"
 #include "proc_cmn_mtl_auth.h"
 #include "proc_cmn_cancel_sess.h"
 #include "proc_direct_prfle_dwnld.h"
@@ -42,7 +42,7 @@ struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 	if (rc < 0)
 		goto error;
 
-	rc = ipa_es10b_get_eid(ctx, ctx->eid);
+	rc = ipa_es10c_get_eid(ctx, ctx->eid);
 	if (rc < 0)
 		goto error;
 
