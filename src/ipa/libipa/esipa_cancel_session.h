@@ -1,6 +1,7 @@
 #pragma once
 
 #include "length.h"
+#include <stdbool.h>
 #include <CancelSessionRequestEsipa.h>
 
 struct ipa_esipa_cancel_session_req {
