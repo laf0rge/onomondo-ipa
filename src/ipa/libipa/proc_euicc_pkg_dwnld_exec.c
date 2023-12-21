@@ -49,8 +49,6 @@ int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, struct EuiccPackageReq
 	struct ipa_es10b_retr_notif_from_lst_res *retr_notif_from_lst_res = NULL;
 	struct ipa_esipa_prvde_eim_pkg_rslt_req prvde_eim_pkg_rslt_req = { 0 };
 	struct ipa_esipa_prvde_eim_pkg_rslt_res *prvde_eim_pkg_rslt_res = NULL;
-
-	struct RetrieveNotificationsListRequest__searchCriteria search_criteria = { 0 };
 	int rc;
 
 	/* Step #3-#8 (ES10b.LoadEuiccPackage) */
@@ -62,12 +60,10 @@ int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, struct EuiccPackageReq
 		goto error;
 
 	/* Step #9 (ES10b.RetrieveNotificationsList) */
-	/* TODO: can we somehow put this part inside the ipa_es10b_retr_notif_from_lst function? */
 	/* TODO: this is a conditional step, only when the eUICC package contained PSMOs we retrieve notifications */
-	search_criteria.choice.seqNumber =
+	retr_notif_from_lst_req.search_criteria.choice.seqNumber =
 	    load_euicc_pkg_res->res->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.seqNumber;
-	search_criteria.present = RetrieveNotificationsListRequest__searchCriteria_PR_seqNumber;
-	retr_notif_from_lst_req.req.searchCriteria = &search_criteria;
+	retr_notif_from_lst_req.search_criteria.present = RetrieveNotificationsListRequest__searchCriteria_PR_seqNumber;
 	retr_notif_from_lst_res = ipa_es10b_retr_notif_from_lst(ctx, &retr_notif_from_lst_req);
 	if (!retr_notif_from_lst_res)
 		goto error;
@@ -86,8 +82,8 @@ int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, struct EuiccPackageReq
 	/* Step #15-17 (ES10b.RemoveNotificationFromList) */
 	/* Remove the notification for the euiccPackageResult. */
 	rc = ipa_es10b_rm_notif_from_lst(ctx,
-					 load_euicc_pkg_res->res->choice.
-					 euiccPackageResultSigned.euiccPackageResultDataSigned.seqNumber);
+					 load_euicc_pkg_res->res->choice.euiccPackageResultSigned.
+					 euiccPackageResultDataSigned.seqNumber);
 	if (rc < 0)
 		goto error;
 	/* Remove the notifications that the eIM has requested to remove in the provideEimPackageResultResponse. */

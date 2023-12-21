@@ -2,6 +2,8 @@
 
 #include <EsipaMessageFromEimToIpa.h>
 #include <EsipaMessageFromIpaToEim.h>
+#include <SGP32-RetrieveNotificationsListResponse.h>
+#include <RetrieveNotificationsListResponse.h>
 struct ipa_buf;
 
 #define IPA_LOGP_ESIPA(func, level, fmt, args...) \
@@ -16,6 +18,9 @@ struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(const struct ipa_buf *
 							  enum EsipaMessageFromEimToIpa_PR epected_res_type);
 struct ipa_buf *ipa_esipa_msg_to_eim_enc(const struct EsipaMessageFromIpaToEim *msg_to_eim, const char *function_name);
 struct ipa_buf *ipa_esipa_req(struct ipa_context *ctx, const struct ipa_buf *esipa_req, const char *function_name);
+void ipa_convert_notification_list(struct SGP32_RetrieveNotificationsListResponse__notificationList *lst_out,
+				   const struct RetrieveNotificationsListResponse__notificationList *lst_in);
+void ipa_free_converted_notification_list(struct SGP32_RetrieveNotificationsListResponse__notificationList *lst);
 
 /*! A helper macro to free the basic contents of an ESIPA response. This macro is intended to be used from within the
  *  concrete implementation of an ESIPA function. It only frees the common contents and the struct itsself. In case

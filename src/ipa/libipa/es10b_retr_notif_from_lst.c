@@ -16,6 +16,7 @@
 #include "utils.h"
 #include "euicc.h"
 #include "es10x.h"
+#include "esipa.h"
 #include "es10b_retr_notif_from_lst.h"
 
 static const struct num_str_map error_code_strings[] = {
@@ -46,12 +47,62 @@ static int dec_retr_notif_from_lst_res(struct ipa_es10b_retr_notif_from_lst_res 
 		res->notif_lst_result_err = -1;
 	}
 
+	if (res->notification_list) {
+		res->sgp32_notification_list =
+		    IPA_ALLOC(struct SGP32_RetrieveNotificationsListResponse__notificationList);
+		memset(res->sgp32_notification_list, 0, sizeof(*res->sgp32_notification_list));
+		ipa_convert_notification_list(res->sgp32_notification_list, res->notification_list);
+	} else {
+		res->sgp32_notification_list = NULL;
+	}
+
 	res->res = asn;
 	return 0;
 }
 
-struct ipa_es10b_retr_notif_from_lst_res *ipa_es10b_retr_notif_from_lst(struct ipa_context *ctx,
-									const struct ipa_es10b_retr_notif_from_lst_req
+struct ipa_buf *enc_retr_notif_from_lst_req(const struct ipa_es10b_retr_notif_from_lst_req *req)
+{
+	struct RetrieveNotificationsListRequest asn = { 0 };
+	struct RetrieveNotificationsListRequest__searchCriteria search_criteria = { 0 };
+	struct ipa_buf *es10b_req = NULL;
+
+	if (req->dr_search_criteria) {
+		/* Convert from foreigen searchCriteria (see comment in header file) */
+		switch (req->dr_search_criteria->present) {
+		case IpaEuiccDataRequest__searchCriteria_PR_seqNumber:
+			search_criteria.present = RetrieveNotificationsListRequest__searchCriteria_PR_seqNumber;
+			search_criteria.choice.seqNumber = req->dr_search_criteria->choice.seqNumber;
+			break;
+		case IpaEuiccDataRequest__searchCriteria_PR_profileManagementOperation:
+			search_criteria.present =
+			    RetrieveNotificationsListRequest__searchCriteria_PR_profileManagementOperation;
+			search_criteria.choice.profileManagementOperation =
+			    req->dr_search_criteria->choice.profileManagementOperation;
+			break;
+		case IpaEuiccDataRequest__searchCriteria_PR_euiccPackageResults:
+			IPA_LOGP_ES10X("RetrieveNotificationsList", LERROR,
+				       "unsupported searchCriteria in IpaEuiccDataRequest!\n");
+			search_criteria.present = RetrieveNotificationsListRequest__searchCriteria_PR_NOTHING;
+			break;
+		default:
+			IPA_LOGP_ES10X("RetrieveNotificationsList", LERROR,
+				       "empty searchCriteria in IpaEuiccDataRequest!\n");
+			search_criteria.present = RetrieveNotificationsListRequest__searchCriteria_PR_NOTHING;
+			break;
+		}
+	} else {
+		/* Use native search_criteria as provided by caller */
+		search_criteria = req->search_criteria;
+	}
+
+	if (req->search_criteria.present != RetrieveNotificationsListRequest__searchCriteria_PR_NOTHING)
+		asn.searchCriteria = &search_criteria;
+	es10b_req = ipa_es10x_req_enc(&asn_DEF_RetrieveNotificationsListRequest, &asn, "RetrieveNotificationsList");
+
+	return es10b_req;
+}
+
+struct ipa_es10b_retr_notif_from_lst_res *ipa_es10b_retr_notif_from_lst(struct ipa_context *ctx, const struct ipa_es10b_retr_notif_from_lst_req
 									*req)
 {
 	struct ipa_buf *es10b_req = NULL;
@@ -59,8 +110,7 @@ struct ipa_es10b_retr_notif_from_lst_res *ipa_es10b_retr_notif_from_lst(struct i
 	struct ipa_es10b_retr_notif_from_lst_res *res = IPA_ALLOC_ZERO(struct ipa_es10b_retr_notif_from_lst_res);
 	int rc;
 
-	es10b_req =
-	    ipa_es10x_req_enc(&asn_DEF_RetrieveNotificationsListRequest, &req->req, "RetrieveNotificationsList");
+	es10b_req = enc_retr_notif_from_lst_req(req);
 	if (!es10b_req) {
 		IPA_LOGP_ES10X("RetrieveNotificationsList", LERROR, "unable to encode ES10b request\n");
 		goto error;
@@ -88,5 +138,7 @@ error:
 
 void ipa_es10b_retr_notif_from_lst_res_free(struct ipa_es10b_retr_notif_from_lst_res *res)
 {
+	ipa_free_converted_notification_list(res->sgp32_notification_list);
+	IPA_FREE(res->sgp32_notification_list);
 	IPA_ES10X_RES_FREE(asn_DEF_RetrieveNotificationsListResponse, res);
 }
