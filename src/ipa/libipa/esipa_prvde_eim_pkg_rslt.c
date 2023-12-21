@@ -17,56 +17,6 @@
 #include "esipa.h"
 #include "esipa_prvde_eim_pkg_rslt.h"
 
-static void convert_notification_list(struct SGP32_RetrieveNotificationsListResponse__notificationList *lst_out,
-				      const struct RetrieveNotificationsListResponse__notificationList *lst_in)
-{
-	unsigned int i;
-	struct PendingNotification *pending_notif_item;
-	struct SGP32_PendingNotification *sgp32_pending_notif_item;
-
-	OtherSignedNotification_t *other_signed_notification;
-	ProfileInstallationResultData_t *profile_Installation_result_data;
-	EuiccSignPIR_t *euicc_sign_PIR;
-
-	for (i = 0; i < lst_in->list.count; i++) {
-		pending_notif_item = lst_in->list.array[i];
-
-		switch (pending_notif_item->present) {
-		case PendingNotification_PR_profileInstallationResult:
-			profile_Installation_result_data =
-			    &pending_notif_item->choice.profileInstallationResult.profileInstallationResultData;
-			euicc_sign_PIR = &pending_notif_item->choice.profileInstallationResult.euiccSignPIR;
-
-			sgp32_pending_notif_item = IPA_ALLOC(struct SGP32_PendingNotification);
-			ASN_SEQUENCE_ADD(&lst_out->list, sgp32_pending_notif_item);
-			sgp32_pending_notif_item->present = SGP32_PendingNotification_PR_profileInstallationResult;
-			sgp32_pending_notif_item->choice.profileInstallationResult.profileInstallationResultData =
-			    *profile_Installation_result_data;
-			sgp32_pending_notif_item->choice.profileInstallationResult.euiccSignPIR = *euicc_sign_PIR;
-			break;
-		case PendingNotification_PR_otherSignedNotification:
-			other_signed_notification = &pending_notif_item->choice.otherSignedNotification;
-
-			sgp32_pending_notif_item = IPA_ALLOC(struct SGP32_PendingNotification);
-			ASN_SEQUENCE_ADD(&lst_out->list, sgp32_pending_notif_item);
-			sgp32_pending_notif_item->present = SGP32_PendingNotification_PR_otherSignedNotification;
-			sgp32_pending_notif_item->choice.otherSignedNotification = *other_signed_notification;
-			break;
-		default:
-			IPA_LOGP_ESIPA("ProvideEimPackageResult", LERROR, "skipping empty PendingNotification item\n");
-			break;
-		}
-	}
-}
-
-static void free_converted_notification_list(struct SGP32_RetrieveNotificationsListResponse__notificationList *lst)
-{
-	int i;
-	for (i = 0; i < lst->list.count; i++)
-		IPA_FREE(lst->list.array[i]);
-	IPA_FREE(lst->list.array);
-}
-
 static struct ipa_buf *enc_prvde_eim_pkg_rslt_req(const struct ipa_esipa_prvde_eim_pkg_rslt_req *req)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim = { 0 };
@@ -84,8 +34,9 @@ static struct ipa_buf *enc_prvde_eim_pkg_rslt_req(const struct ipa_esipa_prvde_e
 		    *req->euicc_package_result;
 		msg_to_eim.choice.provideEimPackageResult.choice.ePRAndNotifications.notificationList.present =
 		    SGP32_RetrieveNotificationsListResponse_PR_notificationList;
-		convert_notification_list(&msg_to_eim.choice.provideEimPackageResult.choice.ePRAndNotifications.
-					  notificationList.choice.notificationList, req->notification_list);
+		ipa_convert_notification_list(&msg_to_eim.choice.provideEimPackageResult.choice.
+					      ePRAndNotifications.notificationList.choice.notificationList,
+					      req->notification_list);
 		notification_list_allocated = true;
 	} else if (req->euicc_package_result) {
 		msg_to_eim.choice.provideEimPackageResult.present = ProvideEimPackageResult_PR_euiccPackageResult;
@@ -111,9 +62,10 @@ static struct ipa_buf *enc_prvde_eim_pkg_rslt_req(const struct ipa_esipa_prvde_e
 
 	enc = ipa_esipa_msg_to_eim_enc(&msg_to_eim, "ProvideEimPackageResult");
 
-	if (notification_list_allocated)
-		free_converted_notification_list(&msg_to_eim.choice.provideEimPackageResult.choice.ePRAndNotifications.
-						 notificationList.choice.notificationList);
+	if (notification_list_allocated) {
+		ipa_free_converted_notification_list(&msg_to_eim.choice.provideEimPackageResult.choice.
+						     ePRAndNotifications.notificationList.choice.notificationList);
+	}
 
 	return enc;
 }
@@ -138,8 +90,7 @@ struct ipa_esipa_prvde_eim_pkg_rslt_res *dec_prvde_eim_pkg_rslt_res(const struct
 	return res;
 }
 
-struct ipa_esipa_prvde_eim_pkg_rslt_res *ipa_esipa_prvde_eim_pkg_rslt(struct ipa_context *ctx,
-								      const struct ipa_esipa_prvde_eim_pkg_rslt_req
+struct ipa_esipa_prvde_eim_pkg_rslt_res *ipa_esipa_prvde_eim_pkg_rslt(struct ipa_context *ctx, const struct ipa_esipa_prvde_eim_pkg_rslt_req
 								      *req)
 {
 	struct ipa_buf *esipa_req = NULL;
