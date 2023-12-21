@@ -18,6 +18,7 @@ int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv);
 void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_ptr, uint8_t indent,
 		    enum log_subsys log_subsys, enum log_level log_level);
 int ipa_cmp_case_insensitive(const char *str1, const char *str2, size_t len);
+bool ipa_tag_in_taglist(uint16_t tag, const struct ipa_buf *tag_list);
 
 /* \! Compare an ASN.1 string object to another ASN.1 string object.
  *  \param[in] asn1_obj1 pointer to first asn1c generated string object to compare.

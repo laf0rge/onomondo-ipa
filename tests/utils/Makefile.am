@@ -21,4 +21,5 @@ utils_test_SOURCES = \
 	$(NULL)
 
 utils_test_LDADD = \
+	$(top_srcdir)/src/ipa/libipa/libipa.a \
 	$(NULL)
