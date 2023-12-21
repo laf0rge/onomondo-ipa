@@ -10,7 +10,6 @@ struct ipa_context;
 
 /* IPA Configuration */
 struct ipa_config {
-	char default_smdp_addr[IPA_LEN_FQDN];
 	char eim_addr[IPA_LEN_FQDN];
 	uint8_t tac[IPA_LEN_TAC];
 	uint8_t allowed_ca[IPA_LEN_ALLOWED_CA];
