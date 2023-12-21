@@ -68,6 +68,31 @@ error:
 	return NULL;
 }
 
+static void convert_euicc_info_2(struct SGP32_EUICCInfo2 *euicc_info_out, struct EUICCInfo2 *euicc_info_in)
+{
+	memset(euicc_info_out, 0, sizeof(*euicc_info_out));
+
+	euicc_info_out->profileVersion = euicc_info_in->profileVersion;
+	euicc_info_out->svn = euicc_info_in->svn;
+	euicc_info_out->euiccFirmwareVer = euicc_info_in->euiccFirmwareVer;
+	euicc_info_out->extCardResource = euicc_info_in->extCardResource;
+	euicc_info_out->uiccCapability = euicc_info_in->uiccCapability;
+	euicc_info_out->ts102241Version = euicc_info_in->ts102241Version;
+	euicc_info_out->globalplatformVersion = euicc_info_in->globalplatformVersion;
+	euicc_info_out->rspCapability = euicc_info_in->rspCapability;
+	euicc_info_out->euiccCiPKIdListForVerification.list.count =
+	    euicc_info_in->euiccCiPKIdListForVerification.list.count;
+	euicc_info_out->euiccCiPKIdListForVerification.list.array =
+	    euicc_info_in->euiccCiPKIdListForVerification.list.array;
+	euicc_info_out->euiccCiPKIdListForSigning.list.count = euicc_info_in->euiccCiPKIdListForSigning.list.count;
+	euicc_info_out->euiccCiPKIdListForSigning.list.array = euicc_info_in->euiccCiPKIdListForSigning.list.array;
+	euicc_info_out->euiccCategory = euicc_info_in->euiccCategory;
+	euicc_info_out->forbiddenProfilePolicyRules = euicc_info_in->forbiddenProfilePolicyRules;
+	euicc_info_out->ppVersion = euicc_info_in->ppVersion;
+	euicc_info_out->sasAcreditationNumber = euicc_info_in->sasAcreditationNumber;
+	euicc_info_out->certificationDataObject = euicc_info_in->certificationDataObject;
+}
+
 static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, struct ipa_buf *es10b_res)
 {
 	struct EUICCInfo2 *asn = NULL;
@@ -77,6 +102,11 @@ static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, struct i
 		return -EINVAL;
 
 	euicc_info->euicc_info_2 = asn;
+
+	/* Also offer EUICCInfo2 in SGP32 format */
+	euicc_info->sgp32_euicc_info_2 = IPA_ALLOC(struct SGP32_EUICCInfo2);
+	convert_euicc_info_2(euicc_info->sgp32_euicc_info_2, euicc_info->euicc_info_2);
+
 	return 0;
 }
 
@@ -135,6 +165,7 @@ void ipa_es10b_get_euicc_info_free(struct ipa_es10b_euicc_info *euicc_info)
 	if (!euicc_info)
 		return;
 
+	IPA_FREE(euicc_info->sgp32_euicc_info_2);
 	ASN_STRUCT_FREE(asn_DEF_EUICCInfo1, euicc_info->euicc_info_1);
 	ASN_STRUCT_FREE(asn_DEF_EUICCInfo2, euicc_info->euicc_info_2);
 
