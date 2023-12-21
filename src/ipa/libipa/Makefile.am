@@ -21,6 +21,7 @@ libipa_a_SOURCES = \
 	es10b_auth_serv.c \
 	es10b_cancel_session.c \
 	es10b_get_certs.c \
+	es10b_get_eim_cfg_data.c \
 	es10b_get_euicc_chlg.c \
 	es10b_get_euicc_info.c \
 	es10b_load_bnd_prfle_pkg.c \
@@ -57,6 +58,7 @@ noinst_HEADERS = \
 	es10b_auth_serv.h \
 	es10b_cancel_session.h \
 	es10b_get_certs.h \
+	es10b_get_eim_cfg_data.h \
 	es10b_get_euicc_chlg.h \
 	es10b_get_euicc_info.h \
 	es10b_load_bnd_prfle_pkg.h \
