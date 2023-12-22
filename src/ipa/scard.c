@@ -108,14 +108,14 @@ int ipa_scard_transceive(void *scard_ctx, struct ipa_buf *res,
 
 	res->len = res->data_len;
 	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d TX:%s\n", ctx->reader_num,
-		 ipa_hexdump(req->data, req->len));
+		 ipa_buf_hexdump(req));
 
 	rc = SCardTransmit(ctx->hCard, ctx->pioSendPci, req->data, req->len,
 			   &ctx->pioRecvPci, res->data, &res->len);
 	PCSC_ERROR(ctx->reader_num, rc, "SCardEndTransaction");
 
 	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d RX:%s\n", ctx->reader_num,
-		 res->len ? ipa_hexdump(res->data, res->len) : "(no data)");
+		 res->len ? ipa_buf_hexdump(res) : "(no data)");
 
 	return 0;
 error:
@@ -166,7 +166,7 @@ int ipa_scard_atr(void *scard_ctx, struct ipa_buf *atr)
 			 atr->data, &atr->len);
 	PCSC_ERROR(ctx->reader_num, rc, "SCardStatus");
 	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d ATR:%s\n", ctx->reader_num,
-		 ipa_hexdump(atr->data, atr->len));
+		 ipa_buf_hexdump(atr));
 	return 0;
 error:
 	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d atr query failed!\n",
