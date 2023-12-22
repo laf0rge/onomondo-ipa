@@ -111,7 +111,7 @@ static int check_certificate(const struct ipa_buf *allowed_ca, const Certificate
 	return 0;
 }
 
-static void gen_ctx_params_1(CtxParams1_t * ctx_params_1, const uint8_t *tac)
+static void gen_ctx_params_1(struct CtxParams1 *ctx_params_1, const uint8_t *tac)
 {
 	assert(ctx_params_1);
 	memset(ctx_params_1, 0, sizeof(*ctx_params_1));

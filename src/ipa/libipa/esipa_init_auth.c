@@ -12,6 +12,7 @@
 #include <EsipaMessageFromIpaToEim.h>
 #include <InitiateAuthenticationRequestEsipa.h>
 #include <InitiateAuthenticationResponseEsipa.h>
+#include <OCTET_STRING.h>
 #include "utils.h"
 #include "length.h"
 #include "context.h"
@@ -33,7 +34,7 @@ static const struct num_str_map error_code_strings[] = {
 static struct ipa_buf *enc_init_auth_req(const struct ipa_esipa_init_auth_req *req)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim = { 0 };
-	UTF8String_t smdp_address = { 0 };
+	struct OCTET_STRING smdp_address = { 0 };
 
 	msg_to_eim.present = EsipaMessageFromIpaToEim_PR_initiateAuthenticationRequestEsipa;
 

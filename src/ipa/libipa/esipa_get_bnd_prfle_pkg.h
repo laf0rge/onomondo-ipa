@@ -6,7 +6,7 @@
 struct ipa_context;
 
 struct ipa_esipa_get_bnd_prfle_pkg_req {
-	PrepareDownloadResponse_t *prep_dwnld_res;
+	struct PrepareDownloadResponse *prep_dwnld_res;
 };
 
 struct ipa_esipa_get_bnd_prfle_pkg_res {

@@ -2,7 +2,7 @@
 
 #include <AuthenticateClientRequestEsipa.h>
 #include <EsipaMessageFromEimToIpa.h>
-#include <TransactionId.h>
+#include <OCTET_STRING.h>
 #include <AuthenticateClientOkDPEsipa.h>
 #include <AuthenticateClientOkDSEsipa.h>
 struct ipa_context;
@@ -13,9 +13,9 @@ struct ipa_esipa_auth_clnt_req {
 
 struct ipa_esipa_auth_clnt_res {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa;
-	TransactionId_t *transaction_id;
-	AuthenticateClientOkDPEsipa_t *auth_clnt_ok_dpe;
-	AuthenticateClientOkDSEsipa_t *auth_clnt_ok_dse;
+	struct OCTET_STRING *transaction_id;
+	struct AuthenticateClientOkDPEsipa *auth_clnt_ok_dpe;
+	struct AuthenticateClientOkDSEsipa *auth_clnt_ok_dse;
 	long auth_clnt_err;
 };
 

@@ -12,7 +12,7 @@ struct ipa_es10b_cancel_session_req {
 
 struct ipa_es10b_cancel_session_res {
 	struct CancelSessionResponse *res;
-	CancelSessionResponseOk_t *cancel_session_ok;
+	struct CancelSessionResponseOk *cancel_session_ok;
 	long cancel_session_err;
 };
 

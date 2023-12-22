@@ -1,14 +1,14 @@
 #pragma once
 
 #include <stdbool.h>
-#include <TransactionId.h>
+#include <OCTET_STRING.h>
 #include <CancelSessionResponseOk.h>
 #include <EsipaMessageFromEimToIpa.h>
 struct ipa_context;
 
 struct ipa_esipa_cancel_session_req {
-	TransactionId_t *transaction_id;
-	CancelSessionResponseOk_t *cancel_session_ok;
+	struct OCTET_STRING *transaction_id;
+	struct CancelSessionResponseOk *cancel_session_ok;
 	long cancel_session_err;
 };
 

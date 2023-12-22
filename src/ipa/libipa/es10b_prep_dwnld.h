@@ -12,7 +12,7 @@ struct ipa_es10b_prep_dwnld_req {
 
 struct ipa_es10b_prep_dwnld_res {
 	struct PrepareDownloadResponse *res;
-	PrepareDownloadResponseOk_t *prep_dwnld_ok;
+	struct PrepareDownloadResponseOk *prep_dwnld_ok;
 	long prep_dwnld_err;
 };
 

@@ -20,7 +20,7 @@
 #include "proc_prfle_inst.h"
 
 /* We receive the Initialize Secure Channel Request, its decoded form, so we must encode it again */
-struct ipa_buf *enc_init_sec_chan_req(const InitialiseSecureChannelRequest_t * init_sec_chan_req)
+struct ipa_buf *enc_init_sec_chan_req(const struct InitialiseSecureChannelRequest *init_sec_chan_req)
 {
 	struct ipa_buf *init_sec_chan_req_encoded = ipa_buf_alloc(IPA_ES10X_ASN_ENCODER_BUF_SIZE);
 	asn_enc_rval_t rc;
@@ -75,7 +75,7 @@ int handle_load_bnd_prfle_pkg_res(struct ipa_context *ctx, struct ipa_es10b_load
 
 int ipa_proc_prfle_inst(struct ipa_context *ctx, struct ipa_proc_prfle_inst_pars *pars)
 {
-	const InitialiseSecureChannelRequest_t *init_sec_chan_req = NULL;
+	const struct InitialiseSecureChannelRequest *init_sec_chan_req = NULL;
 	struct ipa_es10b_load_bnd_prfle_pkg_res *load_bnd_prfle_pkg_res = NULL;
 	struct ipa_buf *init_sec_chan_req_encoded = NULL;
 	unsigned int i;

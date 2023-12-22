@@ -12,7 +12,7 @@ struct ipa_es10b_auth_serv_req {
 
 struct ipa_es10b_auth_serv_res {
 	struct AuthenticateServerResponse *res;
-	AuthenticateResponseOk_t *auth_serv_ok;
+	struct AuthenticateResponseOk *auth_serv_ok;
 	long auth_serv_err;
 };
 
