@@ -48,26 +48,6 @@ error:
 	return NULL;
 }
 
-/* A testcase to try out a full ES10b tranmssion cycle, see also TC_es10x_transceive */
-void testme_es10x(struct ipa_context *ctx)
-{
-	struct ipa_buf *req = ipa_buf_alloc(1024);
-	struct ipa_buf *res;
-
-	memset(req->data, 0x41, 300);
-	req->data[299] = 0xEE;
-	req->len = 300;
-
-	res = ipa_euicc_transceive_es10x(ctx, req);
-	if (res)
-		printf("============> GOT DATA: %s (%zu bytes)\n", ipa_hexdump(res->data, res->len), res->len);
-	else
-		printf("============> Error!\n");
-
-	IPA_FREE(req);
-	IPA_FREE(res);
-}
-
 void ipa_poll(struct ipa_context *ctx)
 {
 	ipa_proc_eim_pkg_retr(ctx);
