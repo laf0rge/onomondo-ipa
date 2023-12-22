@@ -162,6 +162,9 @@ error:
 	return NULL;
 }
 
+/*! Convert a notificationList (RetrieveNotificationsListResponse) from RSP to SGP32 format.
+ *  \param[out] lst_out output of notificationList in SGP32 format.
+ *  \param[in] lst_in input of notificationList in RSP format. */
 void ipa_convert_notification_list(struct SGP32_RetrieveNotificationsListResponse__notificationList *lst_out,
 				   const struct RetrieveNotificationsListResponse__notificationList *lst_in)
 {
@@ -204,6 +207,8 @@ void ipa_convert_notification_list(struct SGP32_RetrieveNotificationsListRespons
 	}
 }
 
+/*! Fre a converted notificationList (RetrieveNotificationsListResponse).
+ *  \param[in] lst_out output of notificationList in SGP32 format. */
 void ipa_free_converted_notification_list(struct SGP32_RetrieveNotificationsListResponse__notificationList *lst)
 {
 	int i;
