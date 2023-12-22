@@ -18,7 +18,7 @@
 #include "proc_prfle_dwnld.h"
 
 struct ipa_esipa_get_bnd_prfle_pkg_res *ipa_proc_prfle_dwnlod(struct ipa_context *ctx,
-							      struct ipa_proc_prfle_dwnlod_pars *pars)
+							      const struct ipa_proc_prfle_dwnlod_pars *pars)
 {
 	struct ipa_es10b_prep_dwnld_req prep_dwnld_req = { 0 };
 	struct ipa_es10b_prep_dwnld_res *prep_dwnld_res = NULL;

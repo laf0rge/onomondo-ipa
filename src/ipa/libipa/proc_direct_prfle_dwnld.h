@@ -10,4 +10,4 @@ struct ipa_proc_direct_prfle_dwnlod_pars {
 	const struct ipa_buf *allowed_ca;
 };
 
-int ipa_proc_direct_prfle_dwnlod(struct ipa_context *ctx, struct ipa_proc_direct_prfle_dwnlod_pars *pars);
+int ipa_proc_direct_prfle_dwnlod(struct ipa_context *ctx, const struct ipa_proc_direct_prfle_dwnlod_pars *pars);

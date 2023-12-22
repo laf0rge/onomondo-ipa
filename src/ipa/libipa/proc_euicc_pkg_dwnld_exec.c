@@ -40,7 +40,7 @@ static int remove_notifications(struct ipa_context *ctx, struct EimAcknowledgeme
 	return 0;
 }
 
-int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, struct EuiccPackageRequest *euicc_package_request)
+int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, const struct EuiccPackageRequest *euicc_package_request)
 {
 	struct ipa_esipa_get_eim_pkg_res *get_eim_pkg_res = NULL;
 	struct ipa_es10b_load_euicc_pkg_req load_euicc_pkg_req = { 0 };

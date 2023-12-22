@@ -22,7 +22,7 @@
 #include "proc_prfle_inst.h"
 #include "proc_direct_prfle_dwnld.h"
 
-int ipa_proc_direct_prfle_dwnlod(struct ipa_context *ctx, struct ipa_proc_direct_prfle_dwnlod_pars *pars)
+int ipa_proc_direct_prfle_dwnlod(struct ipa_context *ctx, const struct ipa_proc_direct_prfle_dwnlod_pars *pars)
 {
 	struct ipa_activation_code *activation_code = NULL;
 	struct ipa_esipa_auth_clnt_res *auth_clnt_res = NULL;

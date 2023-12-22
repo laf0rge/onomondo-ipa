@@ -19,7 +19,7 @@
 #include "es10x.h"
 #include "es10b_load_bnd_prfle_pkg.h"
 
-static int dec_prfle_inst_res(struct ipa_es10b_load_bnd_prfle_pkg_res *res, struct ipa_buf *es10b_res)
+static int dec_prfle_inst_res(struct ipa_es10b_load_bnd_prfle_pkg_res *res, const struct ipa_buf *es10b_res)
 {
 	struct ProfileInstallationResult *asn = NULL;
 
@@ -31,7 +31,7 @@ static int dec_prfle_inst_res(struct ipa_es10b_load_bnd_prfle_pkg_res *res, stru
 	return 0;
 }
 
-struct ipa_es10b_load_bnd_prfle_pkg_res *ipa_es10b_load_bnd_prfle_pkg(struct ipa_context *ctx, uint8_t *segment,
+struct ipa_es10b_load_bnd_prfle_pkg_res *ipa_es10b_load_bnd_prfle_pkg(struct ipa_context *ctx, const uint8_t *segment,
 								      size_t segment_len)
 {
 	struct ipa_buf es10b_req;

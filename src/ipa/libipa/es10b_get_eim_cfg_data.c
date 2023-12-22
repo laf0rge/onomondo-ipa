@@ -19,7 +19,7 @@
 #include "es10x.h"
 #include "es10b_get_eim_cfg_data.h"
 
-static int dec_get_eim_cfg_data(struct ipa_es10b_eim_cfg_data *eim_cfg_data, struct ipa_buf *es10a_res)
+static int dec_get_eim_cfg_data(struct ipa_es10b_eim_cfg_data *eim_cfg_data, const struct ipa_buf *es10a_res)
 {
 	struct GetEimConfigurationDataResponse *asn = NULL;
 

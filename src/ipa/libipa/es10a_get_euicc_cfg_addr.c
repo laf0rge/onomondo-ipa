@@ -19,7 +19,7 @@
 #include "es10x.h"
 #include "es10a_get_euicc_cfg_addr.h"
 
-static int dec_get_euicc_cfg_addr(struct ipa_es10a_euicc_cfg_addr *euicc_cfg_addr, struct ipa_buf *es10a_res)
+static int dec_get_euicc_cfg_addr(struct ipa_es10a_euicc_cfg_addr *euicc_cfg_addr, const struct ipa_buf *es10a_res)
 {
 	struct EuiccConfiguredAddressesResponse *asn = NULL;
 

@@ -20,7 +20,7 @@
 #include <GetEuiccInfo1Request.h>
 #include <GetEuiccInfo2Request.h>
 
-static int dec_get_euicc_info1(struct ipa_es10b_euicc_info *euicc_info, struct ipa_buf *es10b_res)
+static int dec_get_euicc_info1(struct ipa_es10b_euicc_info *euicc_info, const struct ipa_buf *es10b_res)
 {
 	struct EUICCInfo1 *asn = NULL;
 
@@ -32,7 +32,7 @@ static int dec_get_euicc_info1(struct ipa_es10b_euicc_info *euicc_info, struct i
 	return 0;
 }
 
-struct ipa_es10b_euicc_info *get_euicc_info1(struct ipa_context *ctx)
+static struct ipa_es10b_euicc_info *get_euicc_info1(struct ipa_context *ctx)
 {
 	struct ipa_buf *es10b_req = NULL;
 	struct ipa_buf *es10b_res = NULL;
@@ -68,7 +68,7 @@ error:
 	return NULL;
 }
 
-static void convert_euicc_info_2(struct SGP32_EUICCInfo2 *euicc_info_out, struct EUICCInfo2 *euicc_info_in)
+static void convert_euicc_info_2(struct SGP32_EUICCInfo2 *euicc_info_out, const struct EUICCInfo2 *euicc_info_in)
 {
 	memset(euicc_info_out, 0, sizeof(*euicc_info_out));
 
@@ -93,7 +93,7 @@ static void convert_euicc_info_2(struct SGP32_EUICCInfo2 *euicc_info_out, struct
 	euicc_info_out->certificationDataObject = euicc_info_in->certificationDataObject;
 }
 
-static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, struct ipa_buf *es10b_res)
+static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, const struct ipa_buf *es10b_res)
 {
 	struct EUICCInfo2 *asn = NULL;
 
@@ -110,7 +110,7 @@ static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, struct i
 	return 0;
 }
 
-struct ipa_es10b_euicc_info *get_euicc_info2(struct ipa_context *ctx)
+static struct ipa_es10b_euicc_info *get_euicc_info2(struct ipa_context *ctx)
 {
 	struct ipa_buf *es10b_req = NULL;
 	struct ipa_buf *es10b_res = NULL;

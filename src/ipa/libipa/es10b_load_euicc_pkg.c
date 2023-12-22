@@ -18,7 +18,7 @@
 #include "es10x.h"
 #include "es10b_load_euicc_pkg.h"
 
-static int dec_load_euicc_pkg_res(struct ipa_es10b_load_euicc_pkg_res *res, struct ipa_buf *es10b_res)
+static int dec_load_euicc_pkg_res(struct ipa_es10b_load_euicc_pkg_res *res, const struct ipa_buf *es10b_res)
 {
 	struct EuiccPackageResult *asn = NULL;
 

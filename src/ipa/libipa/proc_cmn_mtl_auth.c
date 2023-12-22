@@ -132,7 +132,7 @@ static void gen_ctx_params_1(struct CtxParams1 *ctx_params_1, const uint8_t *tac
 	 * ctx_params_1->choice.ctxParamsForCommonAuthentication.deviceInfo.deviceCapabilities... = ?; */
 }
 
-struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx, struct ipa_proc_cmn_mtl_auth_pars *pars)
+struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx, const struct ipa_proc_cmn_mtl_auth_pars *pars)
 {
 	struct ipa_es10b_euicc_info *euicc_info = NULL;
 	uint8_t euicc_challenge[IPA_LEN_SERV_CHLG];

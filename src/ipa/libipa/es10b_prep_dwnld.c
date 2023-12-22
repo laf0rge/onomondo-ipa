@@ -28,7 +28,7 @@ static const struct num_str_map error_code_strings[] = {
 	{ 0, NULL }
 };
 
-static int dec_prep_dwnld_res(struct ipa_es10b_prep_dwnld_res *res, struct ipa_buf *es10b_res)
+static int dec_prep_dwnld_res(struct ipa_es10b_prep_dwnld_res *res, const struct ipa_buf *es10b_res)
 {
 	struct PrepareDownloadResponse *asn = NULL;
 

@@ -22,7 +22,7 @@
 #include "es10x.h"
 #include "es10b_get_euicc_chlg.h"
 
-static int dec_get_euicc_chlg(uint8_t *euicc_chlg, struct ipa_buf *es10b_res)
+static int dec_get_euicc_chlg(uint8_t *euicc_chlg, const struct ipa_buf *es10b_res)
 {
 	struct GetEuiccChallengeResponse *asn = NULL;
 	uint8_t euicc_chlg_buf[IPA_LEN_EUICC_CHLG];

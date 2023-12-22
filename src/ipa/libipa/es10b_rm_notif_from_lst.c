@@ -29,7 +29,7 @@ static const struct num_str_map error_code_strings[] = {
 	{ 0, NULL }
 };
 
-static int dec_notif_sent_resp(struct ipa_buf *es10b_res)
+static int dec_notif_sent_resp(const struct ipa_buf *es10b_res)
 {
 	struct NotificationSentResponse *asn = NULL;
 	int rc = 0;

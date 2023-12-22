@@ -21,7 +21,7 @@
 #include "GetEuiccDataResponse.h"
 #include "es10c_get_eid.h"
 
-static int dec_get_euicc_data_res(uint8_t *eid, struct ipa_buf *es10b_res)
+static int dec_get_euicc_data_res(uint8_t *eid, const struct ipa_buf *es10b_res)
 {
 	struct GetEuiccDataResponse *asn = NULL;
 	uint8_t eid_buf[IPA_LEN_EID];

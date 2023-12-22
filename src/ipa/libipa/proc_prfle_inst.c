@@ -20,7 +20,7 @@
 #include "proc_prfle_inst.h"
 
 /* We receive the Initialize Secure Channel Request, its decoded form, so we must encode it again */
-struct ipa_buf *enc_init_sec_chan_req(const struct InitialiseSecureChannelRequest *init_sec_chan_req)
+static struct ipa_buf *enc_init_sec_chan_req(const struct InitialiseSecureChannelRequest *init_sec_chan_req)
 {
 	struct ipa_buf *init_sec_chan_req_encoded = ipa_buf_alloc(IPA_ES10X_ASN_ENCODER_BUF_SIZE);
 	asn_enc_rval_t rc;
@@ -47,8 +47,8 @@ struct ipa_buf *enc_init_sec_chan_req(const struct InitialiseSecureChannelReques
 }
 
 /* Return codes: < 0 = error, 0 = ok, 1 = Result was present, notification sent */
-int handle_load_bnd_prfle_pkg_res(struct ipa_context *ctx, struct ipa_es10b_load_bnd_prfle_pkg_res *res,
-				  long *seq_number)
+static int handle_load_bnd_prfle_pkg_res(struct ipa_context *ctx, struct ipa_es10b_load_bnd_prfle_pkg_res *res,
+					 long *seq_number)
 {
 	struct ipa_esipa_handle_notif_req handle_notif_req = { 0 };
 	int rc;
@@ -73,7 +73,7 @@ int handle_load_bnd_prfle_pkg_res(struct ipa_context *ctx, struct ipa_es10b_load
 	return 1;
 }
 
-int ipa_proc_prfle_inst(struct ipa_context *ctx, struct ipa_proc_prfle_inst_pars *pars)
+int ipa_proc_prfle_inst(struct ipa_context *ctx, const struct ipa_proc_prfle_inst_pars *pars)
 {
 	const struct InitialiseSecureChannelRequest *init_sec_chan_req = NULL;
 	struct ipa_es10b_load_bnd_prfle_pkg_res *load_bnd_prfle_pkg_res = NULL;
