@@ -142,6 +142,12 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res,
 			 curl_easy_strerror(rc));
 		goto error;
 	}
+	rc = curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
+	if (rc != CURLE_OK) {
+		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
+			 curl_easy_strerror(rc));
+		goto error;
+	}
 	rc = curl_easy_perform(curl);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "HTTP request to %s failed: %s\n", url,
