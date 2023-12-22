@@ -5,9 +5,11 @@
 #include <string.h>
 #include "mem.h"
 
+/*! Get the size of an array in elements.
+ *  \param[in] array array reference. */
 #define IPA_ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
-/* \! Allocate memory for an object, ensure that the allocation was successful and that the memory is initialized.
+/*! Allocate memory for an object, ensure that the allocation was successful and that the memory is initialized.
  *  \param[in] obj description of the object to allocated (struct).
  *  \returns dynamically allocated memory of the object size. */
 #define IPA_ALLOC_ZERO(obj) ({ \
@@ -18,7 +20,7 @@
 	__ptr; \
 })
 
-/* \! Allocate N bytes of memory, ensure that the allocation was successful and that the memory is initialized.
+/*! Allocate N bytes of memory, ensure that the allocation was successful and that the memory is initialized.
  *  \param[in] n number of bytes to allocate.
  *  \returns N bytes of dynamically allocated memory. */
 #define IPA_ALLOC_N_ZERO(n) ({ \
