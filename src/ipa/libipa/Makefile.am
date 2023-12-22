@@ -45,6 +45,7 @@ libipa_a_SOURCES = \
 	proc_cmn_cancel_sess.c \
 	proc_cmn_mtl_auth.c \
 	proc_direct_prfle_dwnld.c \
+	proc_eim_pkg_retr.c \
 	proc_euicc_data_req.c \
 	proc_euicc_pkg_dwnld_exec.c \
 	proc_prfle_dwnld.c \
@@ -82,6 +83,7 @@ noinst_HEADERS = \
 	proc_cmn_cancel_sess.h \
 	proc_cmn_mtl_auth.h \
 	proc_direct_prfle_dwnld.h \
+	proc_eim_pkg_retr.h \
 	proc_euicc_data_req.h \
 	proc_euicc_pkg_dwnld_exec.h \
 	proc_prfle_dwnld.h \
