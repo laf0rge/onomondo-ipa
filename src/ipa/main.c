@@ -3,28 +3,11 @@
  *
  */
 
-#include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <sys/select.h>
-#include <sys/time.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netinet/tcp.h>
 #include <errno.h>
-#include <unistd.h>
 #include <string.h>
-#include <assert.h>
-#include <signal.h>
 #include <onomondo/ipa/log.h>
-#include <onomondo/ipa/utils.h>
-#include <onomondo/ipa/http.h>
-#include <onomondo/ipa/scard.h>
 #include <onomondo/ipa/ipad.h>
-
-#include <EsipaMessageFromIpaToEim.h>
-#include <GetEuiccDataRequest.h>
 
 int main(void)
 {
