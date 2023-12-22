@@ -65,8 +65,8 @@ int ipa_proc_eim_pkg_retr(struct ipa_context *ctx)
 		direct_prfle_dwnlod_pars.allowed_ca = &allowed_ca;
 		direct_prfle_dwnlod_pars.tac = ctx->cfg->tac;
 		direct_prfle_dwnlod_pars.ac =
-		    IPA_STR_FROM_ASN(&get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->
-				     choice.activationCode);
+		    IPA_STR_FROM_ASN(&get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->choice.
+				     activationCode);
 		ipa_proc_direct_prfle_dwnlod(ctx, &direct_prfle_dwnlod_pars);
 		IPA_FREE((void *)direct_prfle_dwnlod_pars.ac);
 	} else {

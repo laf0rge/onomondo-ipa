@@ -94,8 +94,7 @@ struct ipa_activation_code *ipa_activation_code_parse(const char *ac)
 			break;
 		case 5:
 			if (strlen(item_buf) > 0)
-				ac_decoded->delete_notification_for_device_change
-				    = item_buf;
+				ac_decoded->delete_notification_for_device_change = item_buf;
 			else
 				IPA_FREE(item_buf);
 			break;
@@ -123,8 +122,7 @@ struct ipa_activation_code *ipa_activation_code_parse(const char *ac)
  *  \param[in] log_subsys log subsystem to generate the output for.
  *  \param[in] log_level log level to generate the output for. */
 void ipa_activation_code_dump(const struct ipa_activation_code *ac_decoded,
-			      uint8_t indent, enum log_subsys log_subsys,
-			      enum log_level log_level)
+			      uint8_t indent, enum log_subsys log_subsys, enum log_level log_level)
 {
 	char indent_str[256];
 
@@ -138,26 +136,19 @@ void ipa_activation_code_dump(const struct ipa_activation_code *ac_decoded,
 		return;
 	}
 
-	IPA_LOGP(log_subsys, log_level, "%s SM-DP+Address: \"%s\"\n",
-		 indent_str, ac_decoded->sm_dp_plus_address);
-	IPA_LOGP(log_subsys, log_level, "%s AC_Token: \"%s\"\n", indent_str,
-		 ac_decoded->ac_token);
+	IPA_LOGP(log_subsys, log_level, "%s SM-DP+Address: \"%s\"\n", indent_str, ac_decoded->sm_dp_plus_address);
+	IPA_LOGP(log_subsys, log_level, "%s AC_Token: \"%s\"\n", indent_str, ac_decoded->ac_token);
 	if (ac_decoded->sm_dp_plus_oid)
-		IPA_LOGP(log_subsys, log_level, "%s SM-DP+ OID: \"%s\"\n",
-			 indent_str, ac_decoded->sm_dp_plus_oid);
+		IPA_LOGP(log_subsys, log_level, "%s SM-DP+ OID: \"%s\"\n", indent_str, ac_decoded->sm_dp_plus_oid);
 	if (ac_decoded->confirmation_code_required)
-		IPA_LOGP(log_subsys, log_level,
-			 "%s Confirmation Code Required Flag: (present)\n",
-			 indent_str);
+		IPA_LOGP(log_subsys, log_level, "%s Confirmation Code Required Flag: (present)\n", indent_str);
 	if (ac_decoded->ci_public_key_indicator)
 		IPA_LOGP(log_subsys, log_level,
-			 "%s CI Public Key indicator: \"%s\"\n", indent_str,
-			 ac_decoded->ci_public_key_indicator);
+			 "%s CI Public Key indicator: \"%s\"\n", indent_str, ac_decoded->ci_public_key_indicator);
 	if (ac_decoded->delete_notification_for_device_change)
 		IPA_LOGP(log_subsys, log_level,
 			 "%s Delete Notification for Device Change: \"%s\"\n",
-			 indent_str,
-			 ac_decoded->delete_notification_for_device_change);
+			 indent_str, ac_decoded->delete_notification_for_device_change);
 
 }
 

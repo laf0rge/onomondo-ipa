@@ -82,8 +82,8 @@ int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, const struct EuiccPack
 	/* Step #15-17 (ES10b.RemoveNotificationFromList) */
 	/* Remove the notification for the euiccPackageResult. */
 	rc = ipa_es10b_rm_notif_from_lst(ctx,
-					 load_euicc_pkg_res->res->choice.euiccPackageResultSigned.
-					 euiccPackageResultDataSigned.seqNumber);
+					 load_euicc_pkg_res->res->choice.
+					 euiccPackageResultSigned.euiccPackageResultDataSigned.seqNumber);
 	if (rc < 0)
 		goto error;
 	/* Remove the notifications that the eIM has requested to remove in the provideEimPackageResultResponse. */

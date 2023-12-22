@@ -39,14 +39,12 @@ void *ipa_http_init(void)
 }
 
 /* Callback function to extract the HTTP response */
-static size_t store_response_cb(void *ptr, size_t size, size_t nmemb,
-				void *clientp)
+static size_t store_response_cb(void *ptr, size_t size, size_t nmemb, void *clientp)
 {
 	struct ipa_buf *buf = clientp;
 
 	if (buf->len + size * nmemb > buf->data_len) {
-		IPA_LOGP(SHTTP, LERROR,
-			 "HTTP response exceeds buffer limit!\n");
+		IPA_LOGP(SHTTP, LERROR, "HTTP response exceeds buffer limit!\n");
 		return 0;
 	}
 
@@ -62,8 +60,7 @@ static size_t store_response_cb(void *ptr, size_t size, size_t nmemb,
  *  \param[out] req buffer with HTTP request (POST).
  *  \param[in] url URL with HTTP request.
  *  \returns 0 on success, -EIO on failure. */
-int ipa_http_req(void *http_ctx, struct ipa_buf *res,
-		 const struct ipa_buf *req, char *url)
+int ipa_http_req(void *http_ctx, struct ipa_buf *res, const struct ipa_buf *req, char *url)
 {
 	struct http_ctx *ctx = http_ctx;
 	CURL *curl = NULL;
@@ -81,81 +78,67 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res,
 	/* Bypass SSL certificate verification (only for debug, disable in productive use!) */
 	rc = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 	if (rc != CURLE_OK) {
-		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
-			 curl_easy_strerror(rc));
+		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
 
 	/* Bypass SSL hostname verification (only for debug, disable in productive use!) */
 	rc = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 	if (rc != CURLE_OK) {
-		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
-			 curl_easy_strerror(rc));
+		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
-	IPA_LOGP(SHTTP, LINFO,
-		 "security disabled: will not verify server certificate and hostname\n");
+	IPA_LOGP(SHTTP, LINFO, "security disabled: will not verify server certificate and hostname\n");
 #endif
 
 	/* Setup header, see also SGP.32, section 6.1.1 */
 	list = curl_slist_append(list, "Accept:");
 	list = curl_slist_append(list, "User-Agent: " IPA_HTTP_USER_AGENT);
-	list =
-	    curl_slist_append(list,
-			      "X-Admin-Protocol: " IPA_HTTP_X_ADMIN_PROTOCOL);
+	list = curl_slist_append(list, "X-Admin-Protocol: " IPA_HTTP_X_ADMIN_PROTOCOL);
 	list = curl_slist_append(list, "Content-Type: " IPA_HTTP_CONTENT_TYPE);
 	rc = curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
 	if (rc != CURLE_OK) {
-		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
-			 curl_easy_strerror(rc));
+		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
 
 	/* Perform HTTP Request */
 	rc = curl_easy_setopt(curl, CURLOPT_URL, url);
 	if (rc != CURLE_OK) {
-		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
-			 curl_easy_strerror(rc));
+		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
 	rc = curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req->data);
 	if (rc != CURLE_OK) {
-		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
-			 curl_easy_strerror(rc));
+		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
 	rc = curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, req->len);
 	if (rc != CURLE_OK) {
-		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
-			 curl_easy_strerror(rc));
+		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
 	rc = curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, store_response_cb);
 	if (rc != CURLE_OK) {
-		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
-			 curl_easy_strerror(rc));
+		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
 	rc = curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)res);
 	if (rc != CURLE_OK) {
-		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
-			 curl_easy_strerror(rc));
+		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
 	rc = curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
 	if (rc != CURLE_OK) {
-		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n",
-			 curl_easy_strerror(rc));
+		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
 	rc = curl_easy_perform(curl);
 	if (rc != CURLE_OK) {
-		IPA_LOGP(SHTTP, LERROR, "HTTP request to %s failed: %s\n", url,
-			 curl_easy_strerror(rc));
+		IPA_LOGP(SHTTP, LERROR, "HTTP request to %s failed: %s\n", url, curl_easy_strerror(rc));
 		goto error;
 	}
-	IPA_LOGP(SHTTP, LINFO, "HTTP request to %s successful: %s\n", url,
-		 curl_easy_strerror(rc));
+	IPA_LOGP(SHTTP, LINFO, "HTTP request to %s successful: %s\n", url, curl_easy_strerror(rc));
 
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(list);

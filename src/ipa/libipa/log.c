@@ -40,8 +40,7 @@ static const char *level_str[_NUM_LOG_LEVEL] = {
 	[LDEBUG] = "DEBUG",
 };
 
-void ipa_logp(uint32_t subsys, uint32_t level, const char *file, int line,
-	      const char *format, ...)
+void ipa_logp(uint32_t subsys, uint32_t level, const char *file, int line, const char *format, ...)
 {
 	va_list ap;
 

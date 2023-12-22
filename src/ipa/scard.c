@@ -49,13 +49,11 @@ void *ipa_scard_init(unsigned int reader_num)
 	ctx->reader_num = reader_num;
 
 	/* Initialize reader */
-	rc = SCardEstablishContext(SCARD_SCOPE_SYSTEM, NULL, NULL,
-				   &ctx->hContext);
+	rc = SCardEstablishContext(SCARD_SCOPE_SYSTEM, NULL, NULL, &ctx->hContext);
 	PCSC_ERROR(reader_num, rc, "SCardEstablishContext");
 
 	dwReaders = SCARD_AUTOALLOCATE;
-	rc = SCardListReaders(ctx->hContext, NULL, (LPSTR) & mszReaders,
-			      &dwReaders);
+	rc = SCardListReaders(ctx->hContext, NULL, (LPSTR) & mszReaders, &dwReaders);
 	PCSC_ERROR(reader_num, rc, "SCardListReaders");
 
 	num_readers = 0;
@@ -71,20 +69,17 @@ void *ipa_scard_init(unsigned int reader_num)
 
 	/* Initialize card */
 	rc = SCardConnect(ctx->hContext, reader_name, SCARD_SHARE_SHARED,
-			  SCARD_PROTOCOL_T0, &ctx->hCard,
-			  &ctx->dwActiveProtocol);
+			  SCARD_PROTOCOL_T0, &ctx->hCard, &ctx->dwActiveProtocol);
 	PCSC_ERROR(reader_num, rc, "SCardConnect");
 	ctx->pioSendPci = SCARD_PCI_T0;
 
-	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d (%s) initialized.\n",
-		 reader_num, reader_name);
+	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d (%s) initialized.\n", reader_num, reader_name);
 	ctx->initialized = true;
 
 	SCardFreeMemory(ctx->hContext, mszReaders);
 	return ctx;
 error:
-	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d initialization failed!\n",
-		 reader_num);
+	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d initialization failed!\n", reader_num);
 	if (mszReaders)
 		SCardFreeMemory(ctx->hContext, mszReaders);
 	IPA_FREE(ctx);
@@ -96,8 +91,7 @@ error:
  *  \param[out] res buffer to store smartcard response.
  *  \param[out] req buffer with smartcard request.
  *  \returns 0 on success, -EIO on failure. */
-int ipa_scard_transceive(void *scard_ctx, struct ipa_buf *res,
-			 const struct ipa_buf *req)
+int ipa_scard_transceive(void *scard_ctx, struct ipa_buf *res, const struct ipa_buf *req)
 {
 	struct scard_ctx *ctx = scard_ctx;
 	LONG rc;
@@ -107,11 +101,9 @@ int ipa_scard_transceive(void *scard_ctx, struct ipa_buf *res,
 	assert(req);
 
 	res->len = res->data_len;
-	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d TX:%s\n", ctx->reader_num,
-		 ipa_buf_hexdump(req));
+	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d TX:%s\n", ctx->reader_num, ipa_buf_hexdump(req));
 
-	rc = SCardTransmit(ctx->hCard, ctx->pioSendPci, req->data, req->len,
-			   &ctx->pioRecvPci, res->data, &res->len);
+	rc = SCardTransmit(ctx->hCard, ctx->pioSendPci, req->data, req->len, &ctx->pioRecvPci, res->data, &res->len);
 	PCSC_ERROR(ctx->reader_num, rc, "SCardEndTransaction");
 
 	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d RX:%s\n", ctx->reader_num,
@@ -119,8 +111,7 @@ int ipa_scard_transceive(void *scard_ctx, struct ipa_buf *res,
 
 	return 0;
 error:
-	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d transceive failed!\n",
-		 ctx->reader_num);
+	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d transceive failed!\n", ctx->reader_num);
 	return -EIO;
 }
 
@@ -136,12 +127,10 @@ int ipa_scard_reset(void *scard_ctx)
 	rc = SCardReconnect(ctx->hCard, SCARD_SHARE_SHARED, SCARD_PROTOCOL_T0,
 			    SCARD_RESET_CARD, &ctx->dwActiveProtocol);
 	PCSC_ERROR(ctx->reader_num, rc, "SCardReconnect");
-	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d card reset\n",
-		 ctx->reader_num);
+	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d card reset\n", ctx->reader_num);
 	return 0;
 error:
-	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d reset failed!\n",
-		 ctx->reader_num);
+	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d reset failed!\n", ctx->reader_num);
 	return -EIO;
 }
 
@@ -162,15 +151,12 @@ int ipa_scard_atr(void *scard_ctx, struct ipa_buf *atr)
 	assert(ctx);
 
 	atr->len = atr->data_len;
-	rc = SCardStatus(ctx->hCard, pbReader, &dwReaderLen, &dwState, &dwProt,
-			 atr->data, &atr->len);
+	rc = SCardStatus(ctx->hCard, pbReader, &dwReaderLen, &dwState, &dwProt, atr->data, &atr->len);
 	PCSC_ERROR(ctx->reader_num, rc, "SCardStatus");
-	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d ATR:%s\n", ctx->reader_num,
-		 ipa_buf_hexdump(atr));
+	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d ATR:%s\n", ctx->reader_num, ipa_buf_hexdump(atr));
 	return 0;
 error:
-	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d atr query failed!\n",
-		 ctx->reader_num);
+	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d atr query failed!\n", ctx->reader_num);
 	return -EIO;
 }
 
@@ -196,7 +182,6 @@ int ipa_scard_free(void *scard_ctx)
 	IPA_FREE(ctx);
 	return 0;
 error:
-	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d free failed!\n",
-		 ctx->reader_num);
+	IPA_LOGP(SSCARD, LERROR, "PCSC reader #%d free failed!\n", ctx->reader_num);
 	return -EIO;
 }

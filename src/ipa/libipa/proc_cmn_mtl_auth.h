@@ -11,4 +11,5 @@ struct ipa_proc_cmn_mtl_auth_pars {
 	const char *smdp_addr;
 };
 
-struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx, const struct ipa_proc_cmn_mtl_auth_pars *pars);
+struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx,
+						      const struct ipa_proc_cmn_mtl_auth_pars *pars);

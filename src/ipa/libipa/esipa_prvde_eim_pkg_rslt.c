@@ -34,9 +34,8 @@ static struct ipa_buf *enc_prvde_eim_pkg_rslt_req(const struct ipa_esipa_prvde_e
 		    *req->euicc_package_result;
 		msg_to_eim.choice.provideEimPackageResult.choice.ePRAndNotifications.notificationList.present =
 		    SGP32_RetrieveNotificationsListResponse_PR_notificationList;
-		ipa_convert_notification_list(&msg_to_eim.choice.provideEimPackageResult.choice.
-					      ePRAndNotifications.notificationList.choice.notificationList,
-					      req->notification_list);
+		ipa_convert_notification_list(&msg_to_eim.choice.provideEimPackageResult.choice.ePRAndNotifications.
+					      notificationList.choice.notificationList, req->notification_list);
 		notification_list_allocated = true;
 	} else if (req->euicc_package_result) {
 		msg_to_eim.choice.provideEimPackageResult.present = ProvideEimPackageResult_PR_euiccPackageResult;
@@ -63,8 +62,9 @@ static struct ipa_buf *enc_prvde_eim_pkg_rslt_req(const struct ipa_esipa_prvde_e
 	enc = ipa_esipa_msg_to_eim_enc(&msg_to_eim, "ProvideEimPackageResult");
 
 	if (notification_list_allocated) {
-		ipa_free_converted_notification_list(&msg_to_eim.choice.provideEimPackageResult.choice.
-						     ePRAndNotifications.notificationList.choice.notificationList);
+		ipa_free_converted_notification_list(&msg_to_eim.choice.provideEimPackageResult.
+						     choice.ePRAndNotifications.notificationList.choice.
+						     notificationList);
 	}
 
 	return enc;

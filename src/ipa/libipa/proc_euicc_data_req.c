@@ -151,8 +151,8 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 			    (&eim_cfg_data->eim_cfg_data->eimConfigurationDataList.list.array[i]->eimId,
 			     ctx->cfg->eim_id, strlen(ctx->cfg->eim_id))) {
 				ipa_euicc_data_response.choice.ipaEuiccData.associationToken =
-				    eim_cfg_data->eim_cfg_data->eimConfigurationDataList.list.array[i]->
-				    associationToken;
+				    eim_cfg_data->eim_cfg_data->eimConfigurationDataList.list.
+				    array[i]->associationToken;
 			}
 		}
 	}

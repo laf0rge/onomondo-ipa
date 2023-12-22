@@ -133,10 +133,10 @@ int ipa_proc_prfle_inst(struct ipa_context *ctx, const struct ipa_proc_prfle_ins
 			IPA_LOGP(SIPA, LDEBUG, "transferring ES8+.ReplaceSessionKeys segments...\n");
 			load_bnd_prfle_pkg_res =
 			    ipa_es10b_load_bnd_prfle_pkg(ctx,
-							 pars->bound_profile_package->secondSequenceOf87->list.
-							 array[i]->buf,
-							 pars->bound_profile_package->secondSequenceOf87->list.
-							 array[i]->size);
+							 pars->bound_profile_package->secondSequenceOf87->
+							 list.array[i]->buf,
+							 pars->bound_profile_package->secondSequenceOf87->
+							 list.array[i]->size);
 			if (!load_bnd_prfle_pkg_res) {
 				IPA_LOGP(SIPA, LERROR, "failed to transfer ES8+.ReplaceSessionKeys segments!\n");
 				goto error;

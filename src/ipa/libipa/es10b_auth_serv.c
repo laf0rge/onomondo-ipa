@@ -38,7 +38,7 @@ static int dec_auth_serv_res(struct ipa_es10b_auth_serv_res *res, const struct i
 	if (!asn)
 		return -EINVAL;
 
-	switch(asn->present) {
+	switch (asn->present) {
 	case AuthenticateServerResponse_PR_authenticateResponseOk:
 		res->auth_serv_ok = &asn->choice.authenticateResponseOk;
 		break;
@@ -50,7 +50,7 @@ static int dec_auth_serv_res(struct ipa_es10b_auth_serv_res *res, const struct i
 		break;
 	default:
 		IPA_LOGP_ES10X("AuthenticateServer", LERROR, "unexpected response content!\n");
-		res->auth_serv_err  = -1;
+		res->auth_serv_err = -1;
 	}
 
 	res->res = asn;

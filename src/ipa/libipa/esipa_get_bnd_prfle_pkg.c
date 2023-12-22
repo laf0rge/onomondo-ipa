@@ -58,8 +58,8 @@ static struct ipa_buf *enc_get_bnd_prfle_pkg_req(const struct ipa_esipa_get_bnd_
 	case PrepareDownloadResponse_PR_downloadResponseError:
 		msg_to_eim.choice.getBoundProfilePackageRequestEsipa.prepareDownloadResponse.present =
 		    SGP32_PrepareDownloadResponse_PR_downloadResponseError;
-		msg_to_eim.choice.getBoundProfilePackageRequestEsipa.prepareDownloadResponse.
-		    choice.downloadResponseError = req->prep_dwnld_res->choice.downloadResponseError;
+		msg_to_eim.choice.getBoundProfilePackageRequestEsipa.prepareDownloadResponse.choice.
+		    downloadResponseError = req->prep_dwnld_res->choice.downloadResponseError;
 		msg_to_eim.choice.getBoundProfilePackageRequestEsipa.transactionId =
 		    req->prep_dwnld_res->choice.downloadResponseError.transactionId;
 		break;
