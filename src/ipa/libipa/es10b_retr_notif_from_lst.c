@@ -138,6 +138,8 @@ error:
 
 void ipa_es10b_retr_notif_from_lst_res_free(struct ipa_es10b_retr_notif_from_lst_res *res)
 {
+	if (!res)
+		return;
 	ipa_free_converted_notification_list(res->sgp32_notification_list);
 	IPA_FREE(res->sgp32_notification_list);
 	IPA_ES10X_RES_FREE(asn_DEF_RetrieveNotificationsListResponse, res);
