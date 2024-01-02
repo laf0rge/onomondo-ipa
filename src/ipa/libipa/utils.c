@@ -185,12 +185,12 @@ bool ipa_tag_in_taglist(uint16_t tag, const struct ipa_buf *tag_list)
 	tag_bytes_left = tag_list->len;
 
 	while (1) {
-		if ((tag_list_ptr[0] & 0x1F) == 0x1F && tag_bytes_left >= 2) {
+		if (tag_bytes_left >= 2 && (tag_list_ptr[0] & 0x1F) == 0x1F) {
 			tag_from_list = tag_list_ptr[0] << 8;
 			tag_from_list |= tag_list_ptr[1];
 			tag_list_ptr += 2;
 			tag_bytes_left -= 2;
-		} else if (tag_bytes_left >= 1) {
+		} else if (tag_bytes_left >= 1 && (tag_list_ptr[0] & 0x1F) != 0x1F) {
 			tag_from_list = tag_list_ptr[0];
 			tag_list_ptr++;
 			tag_bytes_left--;
