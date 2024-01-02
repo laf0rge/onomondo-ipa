@@ -18,6 +18,9 @@
 #include "es10c_get_eid.h"
 #include "proc_eim_pkg_retr.h"
 
+/*! Create a new ipa_context and prepare links towards eIM and eUICC.
+ *  \param[in] cfg IPAd configuration.
+ *  \returns ipa_context on success, NULL on failure. */
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 {
 	struct ipa_context *ctx;
@@ -48,11 +51,15 @@ error:
 	return NULL;
 }
 
+/*! poll the IPAd (may be called in regular intervals or on purpose).
+ *  \param[inout] ctx pointer to ipa_context. */
 void ipa_poll(struct ipa_context *ctx)
 {
 	ipa_proc_eim_pkg_retr(ctx);
 }
 
+/*! close links towards eIM and eUICC and free an ipa_context.
+ *  \param[inout] ctx pointer to ipa_context. */
 void ipa_free_ctx(struct ipa_context *ctx)
 {
 	if (!ctx)
