@@ -320,7 +320,7 @@ static int euicc_transceive_es10x(struct ipa_context *ctx, struct ipa_buf *es10x
 }
 
 /*! Transceive eUICC/es10x APDU.
- *  \param[inout] scard_ctx smartcard reader context.
+ *  \param[inout] ctx pointer to ipa_context.
  *  \param[out] es10x_res buffer with eUICC/es10x request.
  *  \returns IPA_BUF with ES10x response on success, NULL on failure. */
 struct ipa_buf *ipa_euicc_transceive_es10x(struct ipa_context *ctx, const struct ipa_buf *es10x_req)
