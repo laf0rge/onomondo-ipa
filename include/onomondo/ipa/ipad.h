@@ -23,5 +23,5 @@ struct ipa_config {
 };
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg);
-void ipa_poll(struct ipa_context *ctx);
+int ipa_poll(struct ipa_context *ctx);
 void ipa_free_ctx(struct ipa_context *ctx);

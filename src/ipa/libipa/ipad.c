@@ -52,10 +52,11 @@ error:
 }
 
 /*! poll the IPAd (may be called in regular intervals or on purpose).
- *  \param[inout] ctx pointer to ipa_context. */
-void ipa_poll(struct ipa_context *ctx)
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \returns 0 on success, negative on error. */
+int ipa_poll(struct ipa_context *ctx)
 {
-	ipa_proc_eim_pkg_retr(ctx);
+	return ipa_proc_eim_pkg_retr(ctx);
 }
 
 /*! close links towards eIM and eUICC and free an ipa_context.
