@@ -458,6 +458,9 @@ exit:
 
 }
 
+/*! open the communication channel between eUICC and IPAd.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \returns 0 on success, negative on error. */
 int ipa_euicc_init_es10x(struct ipa_context *ctx)
 {
 	int rc;
@@ -469,6 +472,9 @@ int ipa_euicc_init_es10x(struct ipa_context *ctx)
 	return rc;
 }
 
+/*! close the communication channel between eUICC and IPAd.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \returns 0 on success, negative on error. */
 int ipa_euicc_close_es10x(struct ipa_context *ctx)
 {
 	return manage_channel(ctx, true);
