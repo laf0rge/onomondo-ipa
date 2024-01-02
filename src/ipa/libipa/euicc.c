@@ -455,7 +455,6 @@ exit:
 	IPA_FREE(buf_req);
 	IPA_FREE(buf_res);
 	return rc;
-
 }
 
 /*! open the communication channel between eUICC and IPAd.
