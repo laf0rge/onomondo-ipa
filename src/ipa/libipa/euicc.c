@@ -50,7 +50,7 @@ struct res_apdu {
 
 /* Format the given req_apdu struct into an IPA_BUF that contains the APDU
  * bytes to send. */
-struct ipa_buf *format_req_apdu(struct req_apdu *req_apdu)
+static struct ipa_buf *format_req_apdu(struct req_apdu *req_apdu)
 {
 	struct ipa_buf *buf_req = ipa_buf_alloc(5 + req_apdu->lc);
 	assert(buf_req);
@@ -89,7 +89,7 @@ struct ipa_buf *format_req_apdu(struct req_apdu *req_apdu)
 
 /* Take the received APDU bytes in res_encoded and parse them into an APDU
  * struct (res_apdu) */
-int parse_res_apdu(struct res_apdu *res_apdu, struct ipa_buf *res_encoded)
+static int parse_res_apdu(struct res_apdu *res_apdu, struct ipa_buf *res_encoded)
 {
 	memset(res_apdu, 0, sizeof(*res_apdu));
 
