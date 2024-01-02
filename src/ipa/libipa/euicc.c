@@ -394,7 +394,7 @@ exit:
 
 }
 
-static int open_channel(struct ipa_context *ctx)
+static int manage_channel(struct ipa_context *ctx, bool close)
 {
 	int rc;
 	struct req_apdu req_apdu = { 0 };
@@ -407,17 +407,21 @@ static int open_channel(struct ipa_context *ctx)
 	assert(channel <= 3);
 
 	if (channel == 0) {
-		IPA_LOGP(SEUICC, LINFO, "using basic logical channel %u\n", channel);
+		IPA_LOGP(SEUICC, LINFO, "using basic logical channel %u, no need to %s a channel\n", channel,
+			 close ? "close" : "open");
 		return 0;
 	}
 
 	buf_res = ipa_buf_alloc(MAX_BLOCKSIZE_RX + 2);
 	assert(buf_res);
 
-	/* OPEN CHANNEL */
+	/* MANAGE CHANNEL */
 	req_apdu.cla = MANAGE_CHANNEL_CLA;
 	req_apdu.ins = MANAGE_CHANNEL_INS;
-	req_apdu.p1 = 0x00;
+	if (close)
+		req_apdu.p1 = 0x80;
+	else
+		req_apdu.p1 = 0x00;
 	req_apdu.p2 = channel;
 	req_apdu.lc = 0;
 	req_apdu.le = 0;
@@ -425,25 +429,28 @@ static int open_channel(struct ipa_context *ctx)
 
 	rc = ipa_scard_transceive(ctx->scard_ctx, buf_res, buf_req);
 	if (rc < 0) {
-		IPA_LOGP(SEUICC, LERROR, "unable open logical channel %u due to communication error\n", channel);
+		IPA_LOGP(SEUICC, LERROR, "unable %s logical channel %u due to communication error with eUICC\n",
+			 close ? "close" : "open", channel);
 		rc = -EIO;
 		goto exit;
 	}
 
 	rc = parse_res_apdu(&res_apdu, buf_res);
 	if (rc < 0) {
-		IPA_LOGP(SEUICC, LERROR, "invalid response while opening logical channel %u\n", channel);
+		IPA_LOGP(SEUICC, LERROR, "invalid response from eUICC, cannot %s logical channel %u\n",
+			 close ? "close" : "open", channel);
 		rc = -EINVAL;
 		goto exit;
 	}
 
 	if ((res_apdu.sw) != 0x9000) {
-		IPA_LOGP(SEUICC, LERROR, "failed to open logical channel %u, sw=%04x\n", channel, res_apdu.sw);
+		IPA_LOGP(SEUICC, LERROR, "failed to %s logical channel %u, sw=%04x\n", close ? "close" : "open",
+			 channel, res_apdu.sw);
 		rc = -EINVAL;
 		goto exit;
 	}
 
-	IPA_LOGP(SEUICC, LINFO, "logical channel %u opened\n", channel);
+	IPA_LOGP(SEUICC, LINFO, "logical channel %u %s\n", channel, close ? "closed" : "opened");
 exit:
 	IPA_FREE(buf_req);
 	IPA_FREE(buf_res);
@@ -454,10 +461,15 @@ exit:
 int ipa_euicc_init_es10x(struct ipa_context *ctx)
 {
 	int rc;
-	rc = open_channel(ctx);
+	rc = manage_channel(ctx, false);
 	if (rc < 0)
 		return rc;
 
 	rc = select_isd_r(ctx);
 	return rc;
+}
+
+int ipa_euicc_close_es10x(struct ipa_context *ctx)
+{
+	return manage_channel(ctx, true);
 }
