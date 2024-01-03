@@ -145,7 +145,7 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 		eim_cfg_data = ipa_es10b_get_eim_cfg_data(ctx);
 		if (!eim_cfg_data || !eim_cfg_data->eim_cfg_data)
 			goto handle_error;
-	        eim_cfg_data_item = ipa_es10b_get_eim_cfg_data_filter(eim_cfg_data, ctx->cfg->eim_id);
+		eim_cfg_data_item = ipa_es10b_get_eim_cfg_data_filter(eim_cfg_data, ctx->eim_id);
 		if (!eim_cfg_data_item)
 			goto handle_error;
 		ipa_euicc_data_response.choice.ipaEuiccData.associationToken = eim_cfg_data_item->associationToken;
