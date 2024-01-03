@@ -25,16 +25,26 @@ static int dec_get_euicc_data_res(uint8_t *eid, const struct ipa_buf *es10b_res)
 {
 	struct GetEuiccDataResponse *asn = NULL;
 	uint8_t eid_buf[IPA_LEN_EID];
+	int rc = 0;
 
 	asn = ipa_es10x_res_dec(&asn_DEF_GetEuiccDataResponse, es10b_res, "GetEID");
 	if (!asn)
 		return -EINVAL;
 
+	if (asn->eidValue.size != IPA_LEN_EID) {
+		IPA_LOGP_ES10X("GetEID", LERROR, "eID has wrong length, expected %u, got %ld\n", IPA_LEN_EID,
+			       asn->eidValue.size);
+		rc = -EINVAL;
+		goto error;
+	}
+
 	IPA_COPY_ASN_BUF(eid_buf, &asn->eidValue);
 	memcpy(eid, eid_buf, sizeof(eid_buf));
+
+error:
 	ASN_STRUCT_FREE(asn_DEF_GetEuiccDataResponse, asn);
 
-	return 0;
+	return rc;
 }
 
 int ipa_es10c_get_eid(struct ipa_context *ctx, uint8_t *eid)
