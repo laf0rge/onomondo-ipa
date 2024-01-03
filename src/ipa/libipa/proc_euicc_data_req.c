@@ -140,21 +140,15 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 		    &euicc_cfg_addr->euicc_cfg_addr->rootDsAddress;
 	}
 	if (ipa_tag_in_taglist(0x84, tag_list)) {
-		unsigned int i;
+		struct EimConfigurationData *eim_cfg_data_item;
 		IPA_LOGP(SIPA, LINFO, "eIM asks for Association token\n");
 		eim_cfg_data = ipa_es10b_get_eim_cfg_data(ctx);
 		if (!eim_cfg_data || !eim_cfg_data->eim_cfg_data)
 			goto handle_error;
-
-		for (i = 0; i < eim_cfg_data->eim_cfg_data->eimConfigurationDataList.list.count; i++) {
-			if (IPA_ASN_STR_CMP_BUF
-			    (&eim_cfg_data->eim_cfg_data->eimConfigurationDataList.list.array[i]->eimId,
-			     ctx->cfg->eim_id, strlen(ctx->cfg->eim_id))) {
-				ipa_euicc_data_response.choice.ipaEuiccData.associationToken =
-				    eim_cfg_data->eim_cfg_data->eimConfigurationDataList.list.
-				    array[i]->associationToken;
-			}
-		}
+	        eim_cfg_data_item = ipa_es10b_get_eim_cfg_data_filter(eim_cfg_data, ctx->cfg->eim_id);
+		if (!eim_cfg_data_item)
+			goto handle_error;
+		ipa_euicc_data_response.choice.ipaEuiccData.associationToken = eim_cfg_data_item->associationToken;
 	}
 	if (ipa_tag_in_taglist(0xA5, tag_list)) {
 		IPA_LOGP(SIPA, LINFO, "eIM asks for EUM certificate\n");

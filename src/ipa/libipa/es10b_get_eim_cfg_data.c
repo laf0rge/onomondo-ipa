@@ -72,3 +72,37 @@ void ipa_es10b_get_eim_cfg_data_free(struct ipa_es10b_eim_cfg_data *eim_cfg_data
 {
 	IPA_ES10X_RES_FREE(asn_DEF_GetEimConfigurationDataResponse, eim_cfg_data);
 }
+
+struct EimConfigurationData *ipa_es10b_get_eim_cfg_data_filter(struct ipa_es10b_eim_cfg_data *eim_cfg_data,
+							       char *eim_id)
+{
+	unsigned int i;
+
+	if (!eim_cfg_data || !eim_cfg_data->eim_cfg_data) {
+		IPA_LOGP_ES10X("GetEimConfigurationData", LERROR,
+			       "cannot filter non existent EimConfigurationData list\n");
+		return NULL;
+	}
+
+	if (eim_cfg_data->eim_cfg_data->eimConfigurationDataList.list.count < 1) {
+		IPA_LOGP_ES10X("GetEimConfigurationData", LERROR, "cannot filter empty EimConfigurationData list\n");
+		return NULL;
+	}
+
+	/* In case no eim_id is specified, just pick the first item from the list */
+	if (!eim_id || eim_id[0] == '\0') {
+		return eim_cfg_data->eim_cfg_data->eimConfigurationDataList.list.array[0];
+	}
+
+	for (i = 0; i < eim_cfg_data->eim_cfg_data->eimConfigurationDataList.list.count; i++) {
+		if (IPA_ASN_STR_CMP_BUF
+		    (&eim_cfg_data->eim_cfg_data->eimConfigurationDataList.list.array[i]->eimId, eim_id,
+		     strlen(eim_id))) {
+			return eim_cfg_data->eim_cfg_data->eimConfigurationDataList.list.array[i];
+		}
+	}
+
+	IPA_LOGP_ES10X("GetEimConfigurationData", LERROR, "cannot find eimId %s in EimConfigurationData list\n",
+		       eim_id);
+	return NULL;
+}
