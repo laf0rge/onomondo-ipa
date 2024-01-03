@@ -2,6 +2,7 @@
 
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/log.h>
+#include <errno.h>
 #include <stddef.h>
 #include <stdbool.h>
 struct asn_TYPE_descriptor_s;
