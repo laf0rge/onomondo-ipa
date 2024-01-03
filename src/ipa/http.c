@@ -60,7 +60,7 @@ static size_t store_response_cb(void *ptr, size_t size, size_t nmemb, void *clie
  *  \param[out] req buffer with HTTP request (POST).
  *  \param[in] url URL with HTTP request.
  *  \returns 0 on success, -EIO on failure. */
-int ipa_http_req(void *http_ctx, struct ipa_buf *res, const struct ipa_buf *req, char *url)
+int ipa_http_req(void *http_ctx, struct ipa_buf *res, const struct ipa_buf *req, const char *url)
 {
 	struct http_ctx *ctx = http_ctx;
 	CURL *curl = NULL;
