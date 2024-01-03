@@ -9,16 +9,22 @@
 
 struct ipa_context;
 
-/* IPA Configuration */
+/*! IPAd Configuration */
 struct ipa_config {
 	char eim_addr[IPA_LEN_FQDN];
 	char eim_id[IPA_LEN_FQDN];
+
+	/*! current TAC (This struct member may be updated at any time after context creation.) */
 	uint8_t tac[IPA_LEN_TAC];
-	uint8_t allowed_ca[IPA_LEN_ALLOWED_CA];
+
+	/*! Must be set to true in order to be sepec conform. (The caller may choose to disable SSL in a test environment
+	 *  to simplify debugging) */
 	bool eim_use_ssl;
 
-	/* ID number of the cardreader that interfaces the eUICC */
+	/*! ID number of the cardreader that interfaces the eUICC */
 	unsigned int reader_num;
+
+	/*! Number of the logical channel that is used to communicate with the ISD-R */
 	uint8_t euicc_channel;
 };
 
