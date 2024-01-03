@@ -31,10 +31,10 @@ char *ipa_esipa_get_eim_url(struct ipa_context *ctx)
 	/* Make sure we have a reasonable minimum of space available */
 	assert(sizeof(eim_url) > 255);
 
-	if (ctx->cfg->eim_use_ssl)
-		strcpy(eim_url, PREFIX_HTTPS);
-	else
+	if (ctx->cfg->eim_disable_ssl)
 		strcpy(eim_url, PREFIX_HTTP);
+	else
+		strcpy(eim_url, PREFIX_HTTPS);
 
 	/* Be sure we don't accidentally overrun the buffer */
 	url_len = strlen(eim_url);

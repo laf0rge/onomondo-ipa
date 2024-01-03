@@ -19,9 +19,8 @@ struct ipa_config {
 	/*! current TAC (This struct member may be updated at any time after context creation.) */
 	uint8_t tac[IPA_LEN_TAC];
 
-	/*! Must be set to true in order to be sepec conform. (The caller may choose to disable SSL in a test environment
-	 *  to simplify debugging) */
-	bool eim_use_ssl;
+	/*! The caller may choose to disable SSL in a test environment to simplify debugging. */
+	bool eim_disable_ssl;
 
 	/*! ID number of the cardreader that interfaces the eUICC */
 	unsigned int reader_num;

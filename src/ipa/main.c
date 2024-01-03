@@ -19,7 +19,6 @@ int main(void)
 	/* Setup a basic configuration */
 	/* TODO: make those values user configurable */
 	cfg.preferred_eim_id = "myEIM";
-	cfg.eim_use_ssl = true;
 	cfg.reader_num = 0;
 	cfg.euicc_channel = 1;
 	memcpy(cfg.tac, "\x12\x34\x56\x78", IPA_LEN_TAC);
