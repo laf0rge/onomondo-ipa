@@ -18,11 +18,15 @@
 #include "es10c_get_eid.h"
 #include "proc_eim_pkg_retr.h"
 
+#include "es10b_get_eim_cfg_data.h"
+
 /*! Create a new ipa_context and prepare links towards eIM and eUICC.
  *  \param[in] cfg IPAd configuration.
  *  \returns ipa_context on success, NULL on failure. */
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 {
+	struct ipa_es10b_eim_cfg_data *eim_cfg_data = NULL;
+	struct EimConfigurationData *eim_cfg_data_item;
 	struct ipa_context *ctx;
 	int rc;
 
@@ -45,6 +49,24 @@ struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 	if (rc < 0)
 		goto error;
 
+	eim_cfg_data = ipa_es10b_get_eim_cfg_data(ctx);
+	if (!eim_cfg_data)
+		goto error;
+
+	/* Read the eIM configuration from the eUICC and store the configuration items that are necessary to initiate
+	 * the communication towards the eIM. */
+	eim_cfg_data_item = ipa_es10b_get_eim_cfg_data_filter(eim_cfg_data, ctx->cfg->preferred_eim_id);
+	if (!eim_cfg_data_item)
+		goto error;
+	ctx->eim_id = IPA_STR_FROM_ASN(&eim_cfg_data_item->eimId);
+	ctx->eim_fqdn = IPA_STR_FROM_ASN(eim_cfg_data_item->eimFqdn);
+	ctx->euicc_ci_pkid = IPA_BUF_FROM_ASN(eim_cfg_data_item->euiccCiPKId);
+	ipa_es10b_get_eim_cfg_data_free(eim_cfg_data);
+	if (!ctx->eim_id)
+		goto error;
+	if (!ctx->eim_fqdn)
+		goto error;
+
 	return ctx;
 error:
 	ipa_free_ctx(ctx);
@@ -65,6 +87,11 @@ void ipa_free_ctx(struct ipa_context *ctx)
 {
 	if (!ctx)
 		return;
+
+	IPA_FREE(ctx->eim_id);
+	IPA_FREE(ctx->eim_fqdn);
+	IPA_FREE(ctx->euicc_ci_pkid);
+
 	if (ctx->scard_ctx)
 		ipa_euicc_close_es10x(ctx);
 	ipa_http_free(ctx->http_ctx);

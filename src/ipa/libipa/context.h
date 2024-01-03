@@ -1,6 +1,8 @@
 #pragma once
 
 #include "length.h"
+#include <onomondo/ipa/ipad.h>
+#include <onomondo/ipa/utils.h>
 struct ipa_config;
 
 /*! Context for one IPAd instance. */
@@ -14,6 +16,15 @@ struct ipa_context {
 	/*! sub-context of the smartcard connection towards the eUICC, */
 	void *scard_ctx;
 
-	/*! cached eID of the eUICC. */
+	/*! cached eID (read from eUICC on context creation) */
 	uint8_t eid[IPA_LEN_EID];
+
+	/*! cached eimId (read from eUICC on context creation) */
+	char *eim_id;
+
+	/*! cached eIM address (read from eUICC on context creation) */
+	char *eim_fqdn;
+
+	/*! cached allowed CA (optional, read from eUICC on context creation) */
+	struct ipa_buf *euicc_ci_pkid;
 };

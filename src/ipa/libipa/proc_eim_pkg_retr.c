@@ -42,8 +42,6 @@ int ipa_proc_eim_pkg_retr(struct ipa_context *ctx)
 		ipa_proc_euicc_data_req(ctx, &euicc_data_req_pars);
 	} else if (get_eim_pkg_res->dwnld_trigger_request) {
 		struct ipa_proc_direct_prfle_dwnlod_pars direct_prfle_dwnlod_pars = { 0 };
-		struct ipa_buf allowed_ca;
-
 		if (!get_eim_pkg_res->dwnld_trigger_request->profileDownloadData) {
 			/* TODO: Perhaps there is a way to continue anyway. The ProfileDownloadTriggerRequest still
 			 * contains a eimTransactionId, which is also optional. Maybe this eimTransactionId can be
@@ -61,12 +59,11 @@ int ipa_proc_eim_pkg_retr(struct ipa_context *ctx)
 				 "the ProfileDownloadData does not contain an activationCode -- cannot continue!\n");
 			goto error;
 		}
-		ipa_buf_assign(&allowed_ca, ctx->cfg->allowed_ca, IPA_LEN_ALLOWED_CA);
-		direct_prfle_dwnlod_pars.allowed_ca = &allowed_ca;
+		direct_prfle_dwnlod_pars.allowed_ca = ctx->euicc_ci_pkid;
 		direct_prfle_dwnlod_pars.tac = ctx->cfg->tac;
 		direct_prfle_dwnlod_pars.ac =
-		    IPA_STR_FROM_ASN(&get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->choice.
-				     activationCode);
+		    IPA_STR_FROM_ASN(&get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->
+				     choice.activationCode);
 		ipa_proc_direct_prfle_dwnlod(ctx, &direct_prfle_dwnlod_pars);
 		IPA_FREE((void *)direct_prfle_dwnlod_pars.ac);
 	} else {

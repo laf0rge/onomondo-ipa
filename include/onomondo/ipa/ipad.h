@@ -11,8 +11,10 @@ struct ipa_context;
 
 /*! IPAd Configuration */
 struct ipa_config {
-	char eim_addr[IPA_LEN_FQDN];
-	char eim_id[IPA_LEN_FQDN];
+
+	/*! preferred eIM ID (optional. When set to NULL, the first eIM config item in the EimConfigurationData list is
+	 *  used.) */
+	char *preferred_eim_id;
 
 	/*! current TAC (This struct member may be updated at any time after context creation.) */
 	uint8_t tac[IPA_LEN_TAC];

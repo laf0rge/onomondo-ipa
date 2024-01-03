@@ -38,11 +38,11 @@ char *ipa_esipa_get_eim_url(struct ipa_context *ctx)
 
 	/* Be sure we don't accidentally overrun the buffer */
 	url_len = strlen(eim_url);
-	url_len += strlen(ctx->cfg->eim_addr);
+	url_len += strlen(ctx->eim_fqdn);
 	url_len += strlen(SUFFIX);
 	assert(url_len < sizeof(eim_url));
 
-	strcat(eim_url, ctx->cfg->eim_addr);
+	strcat(eim_url, ctx->eim_fqdn);
 	strcat(eim_url, SUFFIX);
 
 	return eim_url;
