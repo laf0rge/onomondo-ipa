@@ -146,3 +146,5 @@ static inline void ipa_buf_free(struct ipa_buf *buf)
 {
 	IPA_FREE(buf);
 }
+
+size_t ipa_binary_from_hexstr(uint8_t *binary, size_t binary_len, const char *hexstr);

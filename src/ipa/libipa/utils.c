@@ -203,3 +203,70 @@ bool ipa_tag_in_taglist(uint16_t tag, const struct ipa_buf *tag_list)
 
 	return false;
 }
+
+static bool is_hex(char hex_digit)
+{
+	switch (tolower(hex_digit)) {
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+	case '0':
+		return true;
+	}
+
+	return false;
+}
+
+/*! Convert a human readable hex string to its binary representation.
+ *  \param[in] binary pointer to binary data.
+ *  \param[in] binary_len length of binary data.
+ *  \param[in] hexstr string with human readable representation.
+ *  \returns number resulting bytes. */
+size_t ipa_binary_from_hexstr(uint8_t *binary, size_t binary_len, const char *hexstr)
+{
+	unsigned int i;
+	size_t hexstr_len;
+	char hex_digit[3];
+	unsigned int hex_digit_bin;
+	size_t binary_count = 0;
+	int rc;
+
+	hexstr_len = strlen(hexstr);
+
+	memset(binary, 0, binary_len);
+
+	for (i = 0; i < hexstr_len / 2; i++) {
+		hex_digit[0] = hexstr[0];
+		hex_digit[1] = hexstr[1];
+		hex_digit[2] = '\0';
+		hexstr += 2;
+
+		if (!is_hex(hex_digit[0]) || !is_hex(hex_digit[1]))
+			hex_digit_bin = 0xff;
+		else {
+			rc = sscanf(hex_digit, "%02x", &hex_digit_bin);
+			if (rc != 1)
+				hex_digit_bin = 0xff;
+		}
+
+		binary[binary_count] = (uint8_t) hex_digit_bin & 0xff;
+		binary_count++;
+
+		if (binary_count >= binary_len)
+			break;
+	}
+
+	return binary_count;
+}
