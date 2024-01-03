@@ -40,6 +40,12 @@ static const char *level_str[_NUM_LOG_LEVEL] = {
 	[LDEBUG] = "DEBUG",
 };
 
+/*! print a log line (called by IPA_LOGP, do not call directly).
+ *  \param[in] subsys log subsystem identifier.
+ *  \param[in] level log level identifier.
+ *  \param[in] file source file name.
+ *  \param[in] line source file line.
+ *  \param[in] format formtstring (followed by arguments). */
 void ipa_logp(uint32_t subsys, uint32_t level, const char *file, int line, const char *format, ...)
 {
 	va_list ap;

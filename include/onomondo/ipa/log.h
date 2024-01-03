@@ -3,6 +3,11 @@
 #include <stdio.h>
 #include <stdint.h>
 
+/*! macro to print a log line.
+ *  \param[in] subsys log subsystem identifier.
+ *  \param[in] level log level identifier.
+ *  \param[in] fmt formtstring.
+ *  \param[in] args formatstring arguments. */
 #define IPA_LOGP(subsys, level, fmt, args...) \
 	ipa_logp(subsys, level, __FILE__, __LINE__, fmt, ## args)
 
