@@ -135,7 +135,7 @@ static inline void ipa_buf_assign(struct ipa_buf *buf, const uint8_t *data, size
 	 *  is a valid ipa_buf struct, however it must not be freed using
 	 *  ipa_buf_free(). */
 	memset(buf, 0, sizeof(*buf));
-	buf->data = (uint8_t *)data;
+	buf->data = (uint8_t *) data;
 	buf->data_len = len;
 	buf->len = len;
 }
