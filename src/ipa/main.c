@@ -11,7 +11,7 @@
 
 int main(void)
 {
-	struct ipa_config cfg;
+	struct ipa_config cfg = { 0 };
 	struct ipa_context *ctx;
 
 	IPA_LOGP(SMAIN, LINFO, "ipa!\n");
