@@ -105,12 +105,12 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 		euicc_cfg_addr = ipa_es10a_get_euicc_cfg_addr(ctx);
 		if (!euicc_cfg_addr)
 			goto handle_error;
-		if (!euicc_cfg_addr->euicc_cfg_addr->defaultDpAddress) {
+		if (!euicc_cfg_addr->res->defaultDpAddress) {
 			IPA_LOGP(SIPA, LINFO, "eUICC did not return a defaultDpAddress!\n");
 			goto handle_error;
 		}
 		ipa_euicc_data_response.choice.ipaEuiccData.defaultSmdpAddress =
-		    euicc_cfg_addr->euicc_cfg_addr->defaultDpAddress;
+		    euicc_cfg_addr->res->defaultDpAddress;
 	}
 	if (ipa_tag_in_taglist(0xBF20, tag_list)) {
 		IPA_LOGP(SIPA, LINFO, "eIM asks for eUICCInfo1\n");
@@ -137,13 +137,13 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 				goto error;
 		}
 		ipa_euicc_data_response.choice.ipaEuiccData.rootSmdsAddress =
-		    &euicc_cfg_addr->euicc_cfg_addr->rootDsAddress;
+		    &euicc_cfg_addr->res->rootDsAddress;
 	}
 	if (ipa_tag_in_taglist(0x84, tag_list)) {
 		struct EimConfigurationData *eim_cfg_data_item;
 		IPA_LOGP(SIPA, LINFO, "eIM asks for Association token\n");
 		eim_cfg_data = ipa_es10b_get_eim_cfg_data(ctx);
-		if (!eim_cfg_data || !eim_cfg_data->eim_cfg_data)
+		if (!eim_cfg_data || !eim_cfg_data->res)
 			goto handle_error;
 		eim_cfg_data_item = ipa_es10b_get_eim_cfg_data_filter(eim_cfg_data, ctx->eim_id);
 		if (!eim_cfg_data_item)

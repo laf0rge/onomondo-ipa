@@ -160,14 +160,14 @@ struct ipa_es10b_euicc_info *ipa_es10b_get_euicc_info(struct ipa_context *ctx, b
 
 /*! Free eUICC info.
  *  \param[inout] euicc_info pointer to struct that holds the eUICC info. */
-void ipa_es10b_get_euicc_info_free(struct ipa_es10b_euicc_info *euicc_info)
+void ipa_es10b_get_euicc_info_free(struct ipa_es10b_euicc_info *res)
 {
-	if (!euicc_info)
+	if (!res)
 		return;
 
-	IPA_FREE(euicc_info->sgp32_euicc_info_2);
-	ASN_STRUCT_FREE(asn_DEF_EUICCInfo1, euicc_info->euicc_info_1);
-	ASN_STRUCT_FREE(asn_DEF_EUICCInfo2, euicc_info->euicc_info_2);
+	IPA_FREE(res->sgp32_euicc_info_2);
+	ASN_STRUCT_FREE(asn_DEF_EUICCInfo1, res->euicc_info_1);
+	ASN_STRUCT_FREE(asn_DEF_EUICCInfo2, res->euicc_info_2);
 
-	IPA_FREE(euicc_info);
+	IPA_FREE(res);
 }

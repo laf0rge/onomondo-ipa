@@ -13,4 +13,4 @@ struct ipa_es10b_euicc_info {
 };
 
 struct ipa_es10b_euicc_info *ipa_es10b_get_euicc_info(struct ipa_context *ctx, bool full);
-void ipa_es10b_get_euicc_info_free(struct ipa_es10b_euicc_info *euicc_info);
+void ipa_es10b_get_euicc_info_free(struct ipa_es10b_euicc_info *res);

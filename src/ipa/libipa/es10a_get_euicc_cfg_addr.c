@@ -27,7 +27,7 @@ static int dec_get_euicc_cfg_addr(struct ipa_es10a_euicc_cfg_addr *euicc_cfg_add
 	if (!asn)
 		return -EINVAL;
 
-	euicc_cfg_addr->euicc_cfg_addr = asn;
+	euicc_cfg_addr->res = asn;
 	return 0;
 }
 
@@ -68,7 +68,7 @@ error:
 	return NULL;
 }
 
-void ipa_es10a_get_euicc_cfg_addr_free(struct ipa_es10a_euicc_cfg_addr *euicc_cfg_addr)
+void ipa_es10a_get_euicc_cfg_addr_free(struct ipa_es10a_euicc_cfg_addr *res)
 {
-	IPA_ES10X_RES_FREE(asn_DEF_EuiccConfiguredAddressesResponse, euicc_cfg_addr);
+	IPA_ES10X_RES_FREE(asn_DEF_EuiccConfiguredAddressesResponse, res);
 }
