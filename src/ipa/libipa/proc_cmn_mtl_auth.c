@@ -132,6 +132,10 @@ static void gen_ctx_params_1(struct CtxParams1 *ctx_params_1, const uint8_t *tac
 	 * ctx_params_1->choice.ctxParamsForCommonAuthentication.deviceInfo.deviceCapabilities... = ?; */
 }
 
+/*! Perform Common Mutual Authentication Procedure.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] pars pointer to struct that holds the procedure parameters.
+ *  \returns pointer newly allocated struct with procedure result, NULL on error. */
 struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx,
 						      const struct ipa_proc_cmn_mtl_auth_pars *pars)
 {

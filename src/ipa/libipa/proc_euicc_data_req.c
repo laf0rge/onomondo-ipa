@@ -76,6 +76,10 @@ static struct DeviceInfo *make_device_info(struct ipa_context *ctx)
 	return &device_info;
 }
 
+/*! Perform IpaEuiccDataRequest Procedure.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] pars pointer to struct that holds the procedure parameters.
+ *  \returns 0 on success, negative on failure. */
 int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc_data_req_pars *pars)
 {
 	struct ipa_buf *tag_list = NULL;

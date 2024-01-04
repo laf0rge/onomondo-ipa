@@ -22,6 +22,9 @@
 #include "proc_euicc_data_req.h"
 #include "proc_eim_pkg_retr.h"
 
+/*! Perform eIM Package Retrieval Procedure.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \returns 0 on success, negative on failure. */
 int ipa_proc_eim_pkg_retr(struct ipa_context *ctx)
 {
 	struct ipa_esipa_get_eim_pkg_res *get_eim_pkg_res = NULL;

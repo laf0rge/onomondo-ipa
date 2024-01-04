@@ -73,6 +73,10 @@ static int handle_load_bnd_prfle_pkg_res(struct ipa_context *ctx, struct ipa_es1
 	return 1;
 }
 
+/*! Perform Sub-procedure Profile Installation.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] pars pointer to struct that holds the procedure parameters.
+ *  \returns 0 on success, negative on failure. */
 int ipa_proc_prfle_inst(struct ipa_context *ctx, const struct ipa_proc_prfle_inst_pars *pars)
 {
 	const struct InitialiseSecureChannelRequest *init_sec_chan_req = NULL;

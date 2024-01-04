@@ -17,6 +17,10 @@
 #include "esipa_cancel_session.h"
 #include "proc_cmn_cancel_sess.h"
 
+/*! Perform Common Cancel Session Procedure.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] pars pointer to struct that holds the procedure parameters.
+ *  \returns 0 on success, negative on failure. */
 int ipa_proc_cmn_cancel_sess(struct ipa_context *ctx, const struct ipa_proc_cmn_cancel_sess_pars *pars)
 {
 	struct ipa_es10b_cancel_session_req es10b_cancel_session_req = { 0 };

@@ -40,6 +40,10 @@ static int remove_notifications(struct ipa_context *ctx, struct EimAcknowledgeme
 	return 0;
 }
 
+/*! Perform Generic eUICC Package Download and Execution Procedure.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] euicc_package_request pointer to struct that holds the EuiccPackageRequest.
+ *  \returns 0 on success, negative on failure. */
 int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, const struct EuiccPackageRequest *euicc_package_request)
 {
 	struct ipa_esipa_get_eim_pkg_res *get_eim_pkg_res = NULL;

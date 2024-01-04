@@ -17,6 +17,10 @@
 #include "esipa_get_bnd_prfle_pkg.h"
 #include "proc_prfle_dwnld.h"
 
+/*! Perform Sub-procedure Profile Download and Installation – Download Confirmation.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] pars pointer to struct that holds the procedure parameters.
+ *  \returns pointer newly allocated struct with procedure result, NULL on error. */
 struct ipa_esipa_get_bnd_prfle_pkg_res *ipa_proc_prfle_dwnlod(struct ipa_context *ctx,
 							      const struct ipa_proc_prfle_dwnlod_pars *pars)
 {
