@@ -146,8 +146,8 @@ error:
 	return NULL;
 }
 
-/*! Request eUICC info from eUICC.
- *  \param[in] ctx pointer to IPA context.
+/*! Function (ES10b): GetEUICCInfo.
+ *  \param[inout] ctx pointer to ipa_context.
  *  \param[in] full set to true to request EUICCInfo2 instead of EUICCInfo1.
  *  \returns struct with parsed eUICC info on success, NULL on failure. */
 struct ipa_es10b_euicc_info *ipa_es10b_get_euicc_info(struct ipa_context *ctx, bool full)
@@ -158,8 +158,8 @@ struct ipa_es10b_euicc_info *ipa_es10b_get_euicc_info(struct ipa_context *ctx, b
 		return get_euicc_info1(ctx);
 }
 
-/*! Free eUICC info.
- *  \param[inout] euicc_info pointer to struct that holds the eUICC info. */
+/*! Free results of function (ES10b): GetEUICCInfo.
+ *  \param[in] res pointer to function result. */
 void ipa_es10b_get_euicc_info_free(struct ipa_es10b_euicc_info *res)
 {
 	if (!res)

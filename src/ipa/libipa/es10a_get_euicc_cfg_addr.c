@@ -31,6 +31,9 @@ static int dec_get_euicc_cfg_addr(struct ipa_es10a_euicc_cfg_addr *euicc_cfg_add
 	return 0;
 }
 
+/*! Function (ES10a): GetEuiccConfiguredAddresses.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_es10a_euicc_cfg_addr *ipa_es10a_get_euicc_cfg_addr(struct ipa_context *ctx)
 {
 	struct ipa_buf *es10a_req = NULL;
@@ -68,6 +71,8 @@ error:
 	return NULL;
 }
 
+/*! Free results of function (ES10a): GetEuiccConfiguredAddresses.
+ *  \param[in] res pointer to function result. */
 void ipa_es10a_get_euicc_cfg_addr_free(struct ipa_es10a_euicc_cfg_addr *res)
 {
 	IPA_ES10X_RES_FREE(asn_DEF_EuiccConfiguredAddressesResponse, res);

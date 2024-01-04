@@ -47,6 +47,10 @@ error:
 	return rc;
 }
 
+/*! Function (ES10c): GetEID.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[out] eid eID of the eUICC.
+ *  \returns 0 on success, negative on error. */
 int ipa_es10c_get_eid(struct ipa_context *ctx, uint8_t *eid)
 {
 	struct ipa_buf *es10b_req = NULL;

@@ -31,6 +31,9 @@ static int dec_get_eim_cfg_data(struct ipa_es10b_eim_cfg_data *eim_cfg_data, con
 	return 0;
 }
 
+/*! Function (ES10b): GetEimConfigurationData.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_es10b_eim_cfg_data *ipa_es10b_get_eim_cfg_data(struct ipa_context *ctx)
 {
 	struct ipa_buf *es10a_req = NULL;
@@ -68,11 +71,17 @@ error:
 	return NULL;
 }
 
+/*! Free results of function (ES10b): GetEimConfigurationData.
+ *  \param[in] res pointer to function result. */
 void ipa_es10b_get_eim_cfg_data_free(struct ipa_es10b_eim_cfg_data *res)
 {
 	IPA_ES10X_RES_FREE(asn_DEF_GetEimConfigurationDataResponse, res);
 }
 
+/*! Filter one EimConfigurationData list item from GetEimConfigurationDataResponse.
+ *  \param[in] res pointer to function result that contains the GetEimConfigurationDataResponse.
+ *  \param[in] eim_id eimId to look for. When set to NULL, the first item of the EimConfigurationData list is returned.
+ *  \returns pointer to EimConfigurationData item, NULL on error. */
 struct EimConfigurationData *ipa_es10b_get_eim_cfg_data_filter(struct ipa_es10b_eim_cfg_data *res, char *eim_id)
 {
 	unsigned int i;

@@ -31,6 +31,11 @@ static int dec_prfle_inst_res(struct ipa_es10b_load_bnd_prfle_pkg_res *res, cons
 	return 0;
 }
 
+/*! Function (ES10b): LoadBoundProfilePackage.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] segment pointer to (encrypted) ES8+ TLV segment.
+ *  \param[in] segment_len length of segment data.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_es10b_load_bnd_prfle_pkg_res *ipa_es10b_load_bnd_prfle_pkg(struct ipa_context *ctx, const uint8_t *segment,
 								      size_t segment_len)
 {
@@ -65,6 +70,8 @@ error:
 	return NULL;
 }
 
+/*! Free results of function (ES10b): LoadBoundProfilePackage.
+ *  \param[in] res pointer to function result. */
 void ipa_es10b_load_bnd_prfle_res_free(struct ipa_es10b_load_bnd_prfle_pkg_res *res)
 {
 	IPA_ES10X_RES_FREE(asn_DEF_ProfileInstallationResult, res);

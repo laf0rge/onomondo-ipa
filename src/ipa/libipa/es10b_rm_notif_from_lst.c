@@ -51,6 +51,10 @@ static int dec_notif_sent_resp(const struct ipa_buf *es10b_res)
 	return rc;
 }
 
+/*! Function (ES10b): RemoveNotificationFromList.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] seq_number sequence number to identify the notification.
+ *  \returns 0 on success, negative on error. */
 int ipa_es10b_rm_notif_from_lst(struct ipa_context *ctx, long seq_number)
 {
 	struct ipa_buf *es10b_req = NULL;

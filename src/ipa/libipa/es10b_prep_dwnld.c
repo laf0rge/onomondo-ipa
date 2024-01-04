@@ -55,6 +55,10 @@ static int dec_prep_dwnld_res(struct ipa_es10b_prep_dwnld_res *res, const struct
 	return 0;
 }
 
+/*! Function (ES10b): PrepareDownload.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] req pointer to struct that holds the function parameters.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_es10b_prep_dwnld_res *ipa_es10b_prep_dwnld(struct ipa_context *ctx,
 						      const struct ipa_es10b_prep_dwnld_req *req)
 {
@@ -89,6 +93,8 @@ error:
 	return NULL;
 }
 
+/*! Free results of function (ES10b): PrepareDownload.
+ *  \param[in] res pointer to function result. */
 void ipa_es10b_prep_dwnld_res_free(struct ipa_es10b_prep_dwnld_res *res)
 {
 	IPA_ES10X_RES_FREE(asn_DEF_PrepareDownloadResponse, res);

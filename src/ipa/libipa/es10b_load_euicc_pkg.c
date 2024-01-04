@@ -30,6 +30,10 @@ static int dec_load_euicc_pkg_res(struct ipa_es10b_load_euicc_pkg_res *res, cons
 	return 0;
 }
 
+/*! Function (ES10b): LoadEuiccPackage.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] req pointer to struct that holds the function parameters.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_es10b_load_euicc_pkg_res *ipa_es10b_load_euicc_pkg(struct ipa_context *ctx,
 							      const struct ipa_es10b_load_euicc_pkg_req *req)
 {
@@ -64,6 +68,8 @@ error:
 	return NULL;
 }
 
+/*! Free results of function (ES10b): LoadEuiccPackage.
+ *  \param[in] res pointer to function result. */
 void ipa_es10b_load_euicc_pkg_res_free(struct ipa_es10b_load_euicc_pkg_res *res)
 {
 	IPA_ES10X_RES_FREE(asn_DEF_EuiccPackageResult, res);

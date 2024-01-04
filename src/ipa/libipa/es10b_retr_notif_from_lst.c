@@ -102,6 +102,10 @@ static struct ipa_buf *enc_retr_notif_from_lst_req(const struct ipa_es10b_retr_n
 	return es10b_req;
 }
 
+/*! Function (ES10b): RetrieveNotificationsList.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] req pointer to struct that holds the function parameters.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_es10b_retr_notif_from_lst_res *ipa_es10b_retr_notif_from_lst(struct ipa_context *ctx, const struct ipa_es10b_retr_notif_from_lst_req
 									*req)
 {

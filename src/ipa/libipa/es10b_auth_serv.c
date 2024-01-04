@@ -57,10 +57,10 @@ static int dec_auth_serv_res(struct ipa_es10b_auth_serv_res *res, const struct i
 	return 0;
 }
 
-/*! Send an Authenticate Server request to eUICC.
- *  \param[in] ctx pointer to IPA context.
- *  \param[in] req pointer to struct that holds the request.
- *  \returns struct with parsed AuthenticateServer reponse info on success, NULL on failure. */
+/*! Function (ES10b): AuthenticateServer.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] req pointer to struct that holds the function parameters.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_es10b_auth_serv_res *ipa_es10b_auth_serv(struct ipa_context *ctx, const struct ipa_es10b_auth_serv_req *req)
 {
 	struct ipa_buf *es10b_req = NULL;
@@ -94,8 +94,8 @@ error:
 	return NULL;
 }
 
-/*! Free AuthenticateServer response.
- *  \param[inout] res pointer to struct that holds the AuthenticateServer response. */
+/*! Free results of function (ES10b): AuthenticateServer.
+ *  \param[in] res pointer to function result. */
 void ipa_es10b_auth_serv_res_free(struct ipa_es10b_auth_serv_res *res)
 {
 	IPA_ES10X_RES_FREE(asn_DEF_AuthenticateServerResponse, res);

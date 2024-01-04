@@ -52,6 +52,10 @@ static int dec_get_certs_res(struct ipa_es10b_get_certs_res *res, const struct i
 	return 0;
 }
 
+/*! Function (ES10b): GetCerts.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] req pointer to struct that holds the function parameters.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_es10b_get_certs_res *ipa_es10b_get_certs(struct ipa_context *ctx, const struct ipa_es10b_get_certs_req *req)
 {
 	struct ipa_buf *es10b_req = NULL;
@@ -85,6 +89,8 @@ error:
 	return NULL;
 }
 
+/*! Free results of function (ES10b): GetCerts.
+ *  \param[in] res pointer to function result. */
 void ipa_es10b_get_certs_res_free(struct ipa_es10b_get_certs_res *res)
 {
 	IPA_ES10X_RES_FREE(asn_DEF_GetCertsResponse, res);
