@@ -60,7 +60,7 @@ static int dec_retr_notif_from_lst_res(struct ipa_es10b_retr_notif_from_lst_res 
 	return 0;
 }
 
-struct ipa_buf *enc_retr_notif_from_lst_req(const struct ipa_es10b_retr_notif_from_lst_req *req)
+static struct ipa_buf *enc_retr_notif_from_lst_req(const struct ipa_es10b_retr_notif_from_lst_req *req)
 {
 	struct RetrieveNotificationsListRequest asn = { 0 };
 	struct RetrieveNotificationsListRequest__searchCriteria search_criteria = { 0 };
