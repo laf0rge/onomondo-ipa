@@ -66,6 +66,10 @@ static struct ipa_esipa_auth_clnt_res *dec_auth_clnt_res(const struct ipa_buf *m
 	return res;
 }
 
+/*! Function: (Esipa) AuthenticateClient.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] req pointer to struct that holds the function parameters.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_esipa_auth_clnt_res *ipa_esipa_auth_clnt(struct ipa_context *ctx, const struct ipa_esipa_auth_clnt_req *req)
 {
 	struct ipa_buf *esipa_req = NULL;
@@ -96,6 +100,8 @@ error:
 	return res;
 }
 
+/*! Free results of function: (Esipa) AuthenticateClient.
+ *  \param[in] res pointer to function result. */
 void ipa_esipa_auth_clnt_res_free(struct ipa_esipa_auth_clnt_res *res)
 {
 	IPA_ESIPA_RES_FREE(res);

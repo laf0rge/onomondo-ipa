@@ -51,6 +51,10 @@ static int dec_handle_notif_res(const struct ipa_buf *msg_to_ipa_encoded)
 	return 0;
 }
 
+/*! Function (ESipa): HandleNotification.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] req pointer to struct that holds the function parameters.
+ *  \returns 0 on success, negative on error. */
 int ipa_esipa_handle_notif(struct ipa_context *ctx, const struct ipa_esipa_handle_notif_req *req)
 {
 	struct ipa_buf *esipa_req = NULL;

@@ -72,6 +72,10 @@ struct ipa_esipa_get_eim_pkg_res *dec_get_eim_pkg_req(const struct ipa_buf *msg_
 	return res;
 }
 
+/*! Function (ESipa): GetEimPackage.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] req pointer to struct that holds the function parameters.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_esipa_get_eim_pkg_res *ipa_esipa_get_eim_pkg(struct ipa_context *ctx, const uint8_t *eid)
 {
 	struct ipa_buf *esipa_req = NULL;
@@ -98,6 +102,8 @@ error:
 	return res;
 }
 
+/*! Free results of function (ESipa): GetEimPackage.
+ *  \param[in] res pointer to function result. */
 void ipa_esipa_get_eim_pkg_free(struct ipa_esipa_get_eim_pkg_res *res)
 {
 	IPA_ESIPA_RES_FREE(res);

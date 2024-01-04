@@ -90,6 +90,10 @@ struct ipa_esipa_prvde_eim_pkg_rslt_res *dec_prvde_eim_pkg_rslt_res(const struct
 	return res;
 }
 
+/*! Function (ESipa): ProvideEimPackageResult.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] req pointer to struct that holds the function parameters.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_esipa_prvde_eim_pkg_rslt_res *ipa_esipa_prvde_eim_pkg_rslt(struct ipa_context *ctx, const struct ipa_esipa_prvde_eim_pkg_rslt_req
 								      *req)
 {
@@ -118,6 +122,8 @@ error:
 	return res;
 }
 
+/*! Free results of function (ESipa): ProvideEimPackageResult.
+ *  \param[in] res pointer to function result. */
 void ipa_esipa_prvde_eim_pkg_rslt_free(struct ipa_esipa_prvde_eim_pkg_rslt_res *res)
 {
 	IPA_ESIPA_RES_FREE(res);

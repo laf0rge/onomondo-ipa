@@ -90,6 +90,10 @@ static struct ipa_esipa_init_auth_res *dec_init_auth_res(const struct ipa_buf *m
 	return res;
 }
 
+/*! Function (ESipa): InitiateAuthentication.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] req pointer to struct that holds the function parameters.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_esipa_init_auth_res *ipa_esipa_init_auth(struct ipa_context *ctx, const struct ipa_esipa_init_auth_req *req)
 {
 	struct ipa_buf *esipa_req = NULL;
@@ -138,6 +142,8 @@ error:
 	return res;
 }
 
+/*! Free results of function (ESipa): InitiateAuthentication.
+ *  \param[in] res pointer to function result. */
 void ipa_esipa_init_auth_res_free(struct ipa_esipa_init_auth_res *res)
 {
 	IPA_ESIPA_RES_FREE(res);

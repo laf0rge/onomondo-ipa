@@ -81,6 +81,10 @@ static struct ipa_esipa_cancel_session_res *dec_cancel_session_res(const struct 
 	return res;
 }
 
+/*! Function (ESipa): CancelSession.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] req pointer to struct that holds the function parameters.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_esipa_cancel_session_res *ipa_esipa_cancel_session(struct ipa_context *ctx,
 							      const struct ipa_esipa_cancel_session_req *req)
 {
@@ -106,6 +110,8 @@ error:
 	return res;
 }
 
+/*! Free results of function (ESipa): CancelSession.
+ *  \param[in] res pointer to function result. */
 void ipa_esipa_cancel_session_res_free(struct ipa_esipa_cancel_session_res *res)
 {
 	IPA_ESIPA_RES_FREE(res);

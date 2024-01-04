@@ -108,6 +108,10 @@ static struct ipa_esipa_get_bnd_prfle_pkg_res *dec_get_bnd_prfle_pkg_res(const s
 	return res;
 }
 
+/*! Function: (ESipa) GetBoundProfilePackage.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] req pointer to struct that holds the function parameters.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
 struct ipa_esipa_get_bnd_prfle_pkg_res *ipa_esipa_get_bnd_prfle_pkg(struct ipa_context *ctx,
 								    const struct ipa_esipa_get_bnd_prfle_pkg_req *req)
 {
@@ -135,6 +139,8 @@ error:
 	return res;
 }
 
+/*! Free results of function: (ESipa) GetBoundProfilePackage.
+ *  \param[in] res pointer to function result. */
 void ipa_esipa_get_bnd_prfle_pkg_res_free(struct ipa_esipa_get_bnd_prfle_pkg_res *res)
 {
 	IPA_ESIPA_RES_FREE(res);
