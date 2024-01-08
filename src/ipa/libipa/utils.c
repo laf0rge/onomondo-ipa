@@ -32,6 +32,7 @@ const char *ipa_str_from_num(const struct num_str_map *map, long num, const char
 
 /*! Generate a hexdump string from the input data.
  *  \param[in] data pointer to binary data.
+ *  \param[in] len length of binary data.
  *  \returns pointer to generated human readable string. */
 #define IPA_HEXDUMP_MAX 4
 #define IPA_HEXDUMP_BUFSIZE 1024
