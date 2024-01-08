@@ -65,6 +65,58 @@ char *ipa_hexdump(const uint8_t *data, size_t len)
 	return out[idx];
 }
 
+/*! Log binary data as multiple lines of hex strings (useful for large amounts of data).
+ *  \param[in] data pointer to binary data.
+ *  \param[in] len length of binary data.
+ *  \param[in] indent indentation level of the generated output.
+ *  \param[in] log_subsys log subsystem to generate the output for.
+ *  \param[in] log_level log level to generate the output for. */
+void ipa_hexdump_multiline(const uint8_t *data, size_t len, size_t width, uint8_t indent, enum log_subsys log_subsys,
+			   enum log_level log_level)
+{
+	size_t l;
+	size_t bsize;
+	char indent_str[256];
+
+	memset(indent_str, ' ', indent);
+	indent_str[indent] = '\0';
+
+	if (!data) {
+		IPA_LOGP(log_subsys, log_level, "%s(none)\n", indent_str);
+		return;
+	}
+
+	l = 0;
+	do {
+		bsize = width;
+		if (len < l + bsize)
+			bsize = len - l;
+		IPA_LOGP(log_subsys, log_level, "%s%s\n", indent_str, ipa_hexdump(data + l, bsize));
+		l += bsize;
+	} while (len - l > 0);
+}
+
+/*! Log binary data contents of an ipa_buf as multiple lines of hex strings (useful for large amounts of data).
+ *  \param[in] buf pointer to an ipa_buf that contains the binary data.
+ *  \param[in] indent indentation level of the generated output.
+ *  \param[in] log_subsys log subsystem to generate the output for.
+ *  \param[in] log_level log level to generate the output for. */
+void ipa_buf_hexdump_multiline(struct ipa_buf *buf, size_t width, uint8_t indent, enum log_subsys log_subsys,
+			       enum log_level log_level)
+{
+	char indent_str[256];
+
+	memset(indent_str, ' ', indent);
+	indent_str[indent] = '\0';
+
+	if (!buf) {
+		IPA_LOGP(log_subsys, log_level, "%s(none)\n", indent_str);
+		return;
+	}
+
+	ipa_hexdump_multiline(buf->data, buf->len, width, indent, log_subsys, log_level);
+}
+
 /*! Generate a hexdump string from the input data.
  *  \param[in] buffer pointer to chunk with encoded data.
  *  \param[in] size length of encoded data chunk.
