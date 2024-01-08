@@ -10,32 +10,7 @@
 int
 CertificateSerialNumber_constraint(const asn_TYPE_descriptor_t *td, const void *sptr,
 			asn_app_constraint_failed_f *ctfailcb, void *app_key) {
-	const INTEGER_t *st = (const INTEGER_t *)sptr;
-	long value;
-	
-	if(!sptr) {
-		ASN__CTFAIL(app_key, td, sptr,
-			"%s: value not given (%s:%d)",
-			td->name, __FILE__, __LINE__);
-		return -1;
-	}
-	
-	if(asn_INTEGER2long(st, &value)) {
-		ASN__CTFAIL(app_key, td, sptr,
-			"%s: value too large (%s:%d)",
-			td->name, __FILE__, __LINE__);
-		return -1;
-	}
-	
-	if((value >= 0 && value <= 999999999999999999999999999999999999)) {
-		/* Constraint check succeeded */
-		return 0;
-	} else {
-		ASN__CTFAIL(app_key, td, sptr,
-			"%s: constraint failed (%s:%d)",
-			td->name, __FILE__, __LINE__);
-		return -1;
-	}
+	return 0;
 }
 
 /*
@@ -46,7 +21,7 @@ static asn_oer_constraints_t asn_OER_type_CertificateSerialNumber_constr_1 CC_NO
 	{ 8, 1 }	/* (0..999999999999999999999999999999999999) */,
 	-1};
 asn_per_constraints_t asn_PER_type_CertificateSerialNumber_constr_1 CC_NOTUSED = {
-	{ APC_CONSTRAINED,	 120, -1,  0,  999999999999999999999999999999999999 }	/* (0..999999999999999999999999999999999999) */,
+	{ APC_CONSTRAINED,	 120, -1,  0,  0 },
 	{ APC_UNCONSTRAINED,	-1, -1,  0,  0 },
 	0, 0	/* No PER value map */
 };
