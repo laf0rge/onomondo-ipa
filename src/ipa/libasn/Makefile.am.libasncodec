@@ -125,6 +125,66 @@ ASN_MODULE_SRCS=	\
 	CertificateIssuer.c	\
 	HoldInstructionCode.c	\
 	InvalidityDate.c	\
+	UInt8.c	\
+	UInt15.c	\
+	UInt16.c	\
+	UInt31.c	\
+	ApplicationIdentifier.c	\
+	PEHeader.c	\
+	ProfileElement.c	\
+	PE-Dummy.c	\
+	ProfileHeader.c	\
+	IotOptions.c	\
+	ServicesList.c	\
+	UICCCapability.c	\
+	ProprietaryInfo.c	\
+	Fcp.c	\
+	File.c	\
+	PE-MF.c	\
+	PE-CD.c	\
+	PE-TELECOM.c	\
+	PE-USIM.c	\
+	PE-OPT-USIM.c	\
+	PE-PHONEBOOK.c	\
+	PE-GSM-ACCESS.c	\
+	PE-DF-5GS.c	\
+	PE-DF-SAIP.c	\
+	PE-DF-SNPN.c	\
+	PE-DF-5GPROSE.c	\
+	PE-ISIM.c	\
+	PE-OPT-ISIM.c	\
+	PE-CSIM.c	\
+	PE-OPT-CSIM.c	\
+	PE-EAP.c	\
+	PE-IoT.c	\
+	PE-OPT-IoT.c	\
+	PE-GenericFileManagement.c	\
+	FileManagement.c	\
+	MappingParameter.c	\
+	AlgoParameter.c	\
+	PE-AKAParameter.c	\
+	PE-CDMAParameter.c	\
+	PINKeyReferenceValue.c	\
+	PINConfiguration.c	\
+	PE-PINCodes.c	\
+	PUKKeyReferenceValue.c	\
+	PUKConfiguration.c	\
+	PE-PUKCodes.c	\
+	PE-SecurityDomain.c	\
+	KeyObject.c	\
+	PE-Application.c	\
+	ApplicationLoadPackage.c	\
+	ApplicationInstance.c	\
+	ApplicationSystemParameters.c	\
+	UICCApplicationParameters.c	\
+	TS102226AdditionalContactlessParameters.c	\
+	ControlReferenceTemplate.c	\
+	PE-RFM.c	\
+	ADFRFMAccess.c	\
+	PE-NonStandard.c	\
+	PE-End.c	\
+	PEStatus.c	\
+	EUICCResponse.c	\
 	Octet8.c	\
 	Octet4.c	\
 	Octet16.c	\
@@ -143,9 +203,11 @@ ASN_MODULE_SRCS=	\
 	RspCapability.c	\
 	CertificationDataObject.c	\
 	CertificateInfo.c	\
-	UICCCapability.c	\
 	DeviceInfo.c	\
 	DeviceCapabilities.c	\
+	DeviceAdditionalFeatureSupport.c	\
+	CatSupportedClasses.c	\
+	EuiccFormFactorType.c	\
 	ProfileInfoListRequest.c	\
 	ProfileInfoListResponse.c	\
 	ProfileInfo.c	\
@@ -155,6 +217,7 @@ ASN_MODULE_SRCS=	\
 	StoreMetadataRequest.c	\
 	NotificationEvent.c	\
 	NotificationConfigurationInformation.c	\
+	VendorSpecificExtension.c	\
 	IconType.c	\
 	ProfileState.c	\
 	ProfileClass.c	\
@@ -472,6 +535,66 @@ ASN_MODULE_HDRS=	\
 	CertificateIssuer.h	\
 	HoldInstructionCode.h	\
 	InvalidityDate.h	\
+	UInt8.h	\
+	UInt15.h	\
+	UInt16.h	\
+	UInt31.h	\
+	ApplicationIdentifier.h	\
+	PEHeader.h	\
+	ProfileElement.h	\
+	PE-Dummy.h	\
+	ProfileHeader.h	\
+	IotOptions.h	\
+	ServicesList.h	\
+	UICCCapability.h	\
+	ProprietaryInfo.h	\
+	Fcp.h	\
+	File.h	\
+	PE-MF.h	\
+	PE-CD.h	\
+	PE-TELECOM.h	\
+	PE-USIM.h	\
+	PE-OPT-USIM.h	\
+	PE-PHONEBOOK.h	\
+	PE-GSM-ACCESS.h	\
+	PE-DF-5GS.h	\
+	PE-DF-SAIP.h	\
+	PE-DF-SNPN.h	\
+	PE-DF-5GPROSE.h	\
+	PE-ISIM.h	\
+	PE-OPT-ISIM.h	\
+	PE-CSIM.h	\
+	PE-OPT-CSIM.h	\
+	PE-EAP.h	\
+	PE-IoT.h	\
+	PE-OPT-IoT.h	\
+	PE-GenericFileManagement.h	\
+	FileManagement.h	\
+	MappingParameter.h	\
+	AlgoParameter.h	\
+	PE-AKAParameter.h	\
+	PE-CDMAParameter.h	\
+	PINKeyReferenceValue.h	\
+	PINConfiguration.h	\
+	PE-PINCodes.h	\
+	PUKKeyReferenceValue.h	\
+	PUKConfiguration.h	\
+	PE-PUKCodes.h	\
+	PE-SecurityDomain.h	\
+	KeyObject.h	\
+	PE-Application.h	\
+	ApplicationLoadPackage.h	\
+	ApplicationInstance.h	\
+	ApplicationSystemParameters.h	\
+	UICCApplicationParameters.h	\
+	TS102226AdditionalContactlessParameters.h	\
+	ControlReferenceTemplate.h	\
+	PE-RFM.h	\
+	ADFRFMAccess.h	\
+	PE-NonStandard.h	\
+	PE-End.h	\
+	PEStatus.h	\
+	EUICCResponse.h	\
 	Octet8.h	\
 	Octet4.h	\
 	Octet16.h	\
@@ -490,9 +613,11 @@ ASN_MODULE_HDRS=	\
 	RspCapability.h	\
 	CertificationDataObject.h	\
 	CertificateInfo.h	\
-	UICCCapability.h	\
 	DeviceInfo.h	\
 	DeviceCapabilities.h	\
+	DeviceAdditionalFeatureSupport.h	\
+	CatSupportedClasses.h	\
+	EuiccFormFactorType.h	\
 	ProfileInfoListRequest.h	\
 	ProfileInfoListResponse.h	\
 	ProfileInfo.h	\
@@ -502,6 +627,7 @@ ASN_MODULE_HDRS=	\
 	StoreMetadataRequest.h	\
 	NotificationEvent.h	\
 	NotificationConfigurationInformation.h	\
+	VendorSpecificExtension.h	\
 	IconType.h	\
 	ProfileState.h	\
 	ProfileClass.h	\

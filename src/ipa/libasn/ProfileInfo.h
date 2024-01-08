@@ -31,6 +31,7 @@ extern "C" {
 /* Forward declarations */
 struct OperatorId;
 struct DpProprietaryData;
+struct VendorSpecificExtension;
 struct NotificationConfigurationInformation;
 
 /* ProfileInfo */
@@ -53,6 +54,7 @@ typedef struct ProfileInfo {
 	struct OperatorId	*profileOwner	/* OPTIONAL */;
 	struct DpProprietaryData	*dpProprietaryData	/* OPTIONAL */;
 	PprIds_t	*profilePolicyRules	/* OPTIONAL */;
+	struct VendorSpecificExtension	*serviceSpecificDataStoredInEuicc	/* OPTIONAL */;
 	/*
 	 * This type is extensible,
 	 * possible extensions are below.
@@ -65,7 +67,7 @@ typedef struct ProfileInfo {
 /* Implementation */
 extern asn_TYPE_descriptor_t asn_DEF_ProfileInfo;
 extern asn_SEQUENCE_specifics_t asn_SPC_ProfileInfo_specs_1;
-extern asn_TYPE_member_t asn_MBR_ProfileInfo_1[13];
+extern asn_TYPE_member_t asn_MBR_ProfileInfo_1[14];
 
 #ifdef __cplusplus
 }
@@ -74,6 +76,7 @@ extern asn_TYPE_member_t asn_MBR_ProfileInfo_1[13];
 /* Referred external types */
 #include "OperatorId.h"
 #include "DpProprietaryData.h"
+#include "VendorSpecificExtension.h"
 #include "NotificationConfigurationInformation.h"
 
 #endif	/* _ProfileInfo_H_ */

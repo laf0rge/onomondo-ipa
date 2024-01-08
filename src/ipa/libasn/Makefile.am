@@ -24,6 +24,7 @@ regen:
 	asn1c -fcompound-names \
 	$(top_srcdir)/asn1/PKIX1Explicit88.asn \
 	$(top_srcdir)/asn1/PKIX1Implicit88.asn \
+	$(top_srcdir)/asn1/PEDefinitions.asn \
 	$(top_srcdir)/asn1/RSPDefinitions.asn \
 	$(top_srcdir)/asn1/SGP32Definitions.asn
 	sed -i '/ASN_MODULE_CFLAGS=/Q' Makefile.am.libasncodec

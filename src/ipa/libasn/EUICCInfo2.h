@@ -19,6 +19,7 @@
 #include <NativeInteger.h>
 #include "PprIds.h"
 #include <UTF8String.h>
+#include <BIT_STRING.h>
 #include "SubjectKeyIdentifier.h"
 #include <asn_SEQUENCE_OF.h>
 #include <constr_SEQUENCE_OF.h>
@@ -35,6 +36,11 @@ typedef enum EUICCInfo2__euiccCategory {
 	EUICCInfo2__euiccCategory_mediumEuicc	= 2,
 	EUICCInfo2__euiccCategory_contactlessEuicc	= 3
 } e_EUICCInfo2__euiccCategory;
+typedef enum EUICCInfo2__treProperties {
+	EUICCInfo2__treProperties_isDiscrete	= 0,
+	EUICCInfo2__treProperties_isIntegrated	= 1,
+	EUICCInfo2__treProperties_usesRemoteMemory	= 2
+} e_EUICCInfo2__treProperties;
 
 /* Forward declarations */
 struct CertificationDataObject;
@@ -66,6 +72,14 @@ typedef struct EUICCInfo2 {
 	VersionType_t	 ppVersion;
 	UTF8String_t	 sasAcreditationNumber;
 	struct CertificationDataObject	*certificationDataObject	/* OPTIONAL */;
+	BIT_STRING_t	*treProperties	/* OPTIONAL */;
+	UTF8String_t	*treProductReference	/* OPTIONAL */;
+	struct EUICCInfo2__additionalEuiccProfilePackageVersions {
+		A_SEQUENCE_OF(VersionType_t) list;
+		
+		/* Context for parsing across buffer boundaries */
+		asn_struct_ctx_t _asn_ctx;
+	} *additionalEuiccProfilePackageVersions;
 	/*
 	 * This type is extensible,
 	 * possible extensions are below.
@@ -78,7 +92,7 @@ typedef struct EUICCInfo2 {
 /* Implementation */
 extern asn_TYPE_descriptor_t asn_DEF_EUICCInfo2;
 extern asn_SEQUENCE_specifics_t asn_SPC_EUICCInfo2_specs_1;
-extern asn_TYPE_member_t asn_MBR_EUICCInfo2_1[15];
+extern asn_TYPE_member_t asn_MBR_EUICCInfo2_1[18];
 
 #ifdef __cplusplus
 }

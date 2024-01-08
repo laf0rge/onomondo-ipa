@@ -122,7 +122,7 @@ static asn_per_constraints_t asn_PER_memb_icon_constr_5 CC_NOTUSED = {
 	0, 0	/* No PER value map */
 };
 static asn_TYPE_member_t asn_MBR_UpdateMetadataRequest_1[] = {
-	{ ATF_POINTER, 5, offsetof(struct UpdateMetadataRequest, serviceProviderName),
+	{ ATF_POINTER, 6, offsetof(struct UpdateMetadataRequest, serviceProviderName),
 		(ASN_TAG_CLASS_CONTEXT | (17 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_UTF8String,
@@ -131,7 +131,7 @@ static asn_TYPE_member_t asn_MBR_UpdateMetadataRequest_1[] = {
 		0, 0, /* No default value */
 		"serviceProviderName"
 		},
-	{ ATF_POINTER, 4, offsetof(struct UpdateMetadataRequest, profileName),
+	{ ATF_POINTER, 5, offsetof(struct UpdateMetadataRequest, profileName),
 		(ASN_TAG_CLASS_CONTEXT | (18 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_UTF8String,
@@ -140,7 +140,7 @@ static asn_TYPE_member_t asn_MBR_UpdateMetadataRequest_1[] = {
 		0, 0, /* No default value */
 		"profileName"
 		},
-	{ ATF_POINTER, 3, offsetof(struct UpdateMetadataRequest, iconType),
+	{ ATF_POINTER, 4, offsetof(struct UpdateMetadataRequest, iconType),
 		(ASN_TAG_CLASS_CONTEXT | (19 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_IconType,
@@ -149,7 +149,7 @@ static asn_TYPE_member_t asn_MBR_UpdateMetadataRequest_1[] = {
 		0, 0, /* No default value */
 		"iconType"
 		},
-	{ ATF_POINTER, 2, offsetof(struct UpdateMetadataRequest, icon),
+	{ ATF_POINTER, 3, offsetof(struct UpdateMetadataRequest, icon),
 		(ASN_TAG_CLASS_CONTEXT | (20 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_OCTET_STRING,
@@ -158,7 +158,7 @@ static asn_TYPE_member_t asn_MBR_UpdateMetadataRequest_1[] = {
 		0, 0, /* No default value */
 		"icon"
 		},
-	{ ATF_POINTER, 1, offsetof(struct UpdateMetadataRequest, profilePolicyRules),
+	{ ATF_POINTER, 2, offsetof(struct UpdateMetadataRequest, profilePolicyRules),
 		(ASN_TAG_CLASS_CONTEXT | (25 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_PprIds,
@@ -167,8 +167,17 @@ static asn_TYPE_member_t asn_MBR_UpdateMetadataRequest_1[] = {
 		0, 0, /* No default value */
 		"profilePolicyRules"
 		},
+	{ ATF_POINTER, 1, offsetof(struct UpdateMetadataRequest, serviceSpecificDataStoredInEuicc),
+		(ASN_TAG_CLASS_CONTEXT | (34 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_VendorSpecificExtension,
+		0,
+		{ 0, 0, 0 },
+		0, 0, /* No default value */
+		"serviceSpecificDataStoredInEuicc"
+		},
 };
-static const int asn_MAP_UpdateMetadataRequest_oms_1[] = { 0, 1, 2, 3, 4 };
+static const int asn_MAP_UpdateMetadataRequest_oms_1[] = { 0, 1, 2, 3, 4, 5 };
 static const ber_tlv_tag_t asn_DEF_UpdateMetadataRequest_tags_1[] = {
 	(ASN_TAG_CLASS_CONTEXT | (42 << 2)),
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
@@ -178,16 +187,17 @@ static const asn_TYPE_tag2member_t asn_MAP_UpdateMetadataRequest_tag2el_1[] = {
     { (ASN_TAG_CLASS_CONTEXT | (18 << 2)), 1, 0, 0 }, /* profileName */
     { (ASN_TAG_CLASS_CONTEXT | (19 << 2)), 2, 0, 0 }, /* iconType */
     { (ASN_TAG_CLASS_CONTEXT | (20 << 2)), 3, 0, 0 }, /* icon */
-    { (ASN_TAG_CLASS_CONTEXT | (25 << 2)), 4, 0, 0 } /* profilePolicyRules */
+    { (ASN_TAG_CLASS_CONTEXT | (25 << 2)), 4, 0, 0 }, /* profilePolicyRules */
+    { (ASN_TAG_CLASS_CONTEXT | (34 << 2)), 5, 0, 0 } /* serviceSpecificDataStoredInEuicc */
 };
 static asn_SEQUENCE_specifics_t asn_SPC_UpdateMetadataRequest_specs_1 = {
 	sizeof(struct UpdateMetadataRequest),
 	offsetof(struct UpdateMetadataRequest, _asn_ctx),
 	asn_MAP_UpdateMetadataRequest_tag2el_1,
-	5,	/* Count of tags in the map */
+	6,	/* Count of tags in the map */
 	asn_MAP_UpdateMetadataRequest_oms_1,	/* Optional members */
-	5, 0,	/* Root/Additions */
-	5,	/* First extension addition */
+	6, 0,	/* Root/Additions */
+	6,	/* First extension addition */
 };
 asn_TYPE_descriptor_t asn_DEF_UpdateMetadataRequest = {
 	"UpdateMetadataRequest",
@@ -201,7 +211,7 @@ asn_TYPE_descriptor_t asn_DEF_UpdateMetadataRequest = {
 		/sizeof(asn_DEF_UpdateMetadataRequest_tags_1[0]), /* 2 */
 	{ 0, 0, SEQUENCE_constraint },
 	asn_MBR_UpdateMetadataRequest_1,
-	5,	/* Elements count */
+	6,	/* Elements count */
 	&asn_SPC_UpdateMetadataRequest_specs_1	/* Additional specs */
 };
 

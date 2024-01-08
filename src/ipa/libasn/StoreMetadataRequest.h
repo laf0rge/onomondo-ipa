@@ -28,6 +28,7 @@ extern "C" {
 
 /* Forward declarations */
 struct OperatorId;
+struct VendorSpecificExtension;
 struct NotificationConfigurationInformation;
 
 /* StoreMetadataRequest */
@@ -46,6 +47,8 @@ typedef struct StoreMetadataRequest {
 	} *notificationConfigurationInfo;
 	struct OperatorId	*profileOwner	/* OPTIONAL */;
 	PprIds_t	*profilePolicyRules	/* OPTIONAL */;
+	struct VendorSpecificExtension	*serviceSpecificDataStoredInEuicc	/* OPTIONAL */;
+	struct VendorSpecificExtension	*serviceSpecificDataNotStoredInEuicc	/* OPTIONAL */;
 	/*
 	 * This type is extensible,
 	 * possible extensions are below.
@@ -58,7 +61,7 @@ typedef struct StoreMetadataRequest {
 /* Implementation */
 extern asn_TYPE_descriptor_t asn_DEF_StoreMetadataRequest;
 extern asn_SEQUENCE_specifics_t asn_SPC_StoreMetadataRequest_specs_1;
-extern asn_TYPE_member_t asn_MBR_StoreMetadataRequest_1[9];
+extern asn_TYPE_member_t asn_MBR_StoreMetadataRequest_1[11];
 
 #ifdef __cplusplus
 }
@@ -66,6 +69,7 @@ extern asn_TYPE_member_t asn_MBR_StoreMetadataRequest_1[9];
 
 /* Referred external types */
 #include "OperatorId.h"
+#include "VendorSpecificExtension.h"
 #include "NotificationConfigurationInformation.h"
 
 #endif	/* _StoreMetadataRequest_H_ */

@@ -65,6 +65,8 @@ extern struct asn_TYPE_descriptor_s asn_DEF_CRLReason;
 extern struct asn_TYPE_descriptor_s asn_DEF_CertificateIssuer;
 extern struct asn_TYPE_descriptor_s asn_DEF_HoldInstructionCode;
 extern struct asn_TYPE_descriptor_s asn_DEF_InvalidityDate;
+extern struct asn_TYPE_descriptor_s asn_DEF_ProfileElement;
+extern struct asn_TYPE_descriptor_s asn_DEF_EUICCResponse;
 extern struct asn_TYPE_descriptor_s asn_DEF_Octet2;
 extern struct asn_TYPE_descriptor_s asn_DEF_GetEuiccInfo1Request;
 extern struct asn_TYPE_descriptor_s asn_DEF_GetEuiccInfo2Request;
@@ -194,6 +196,9 @@ struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
 	&asn_DEF_CertificateIssuer,	
 	&asn_DEF_HoldInstructionCode,	
 	&asn_DEF_InvalidityDate,	
+	/* From module PEDefinitions in ../../../asn1/PEDefinitions.asn */
+	&asn_DEF_ProfileElement,	
+	&asn_DEF_EUICCResponse,	
 	/* From module RSPDefinitions in ../../../asn1/RSPDefinitions.asn */
 	&asn_DEF_Octet2,	
 	&asn_DEF_GetEuiccInfo1Request,	

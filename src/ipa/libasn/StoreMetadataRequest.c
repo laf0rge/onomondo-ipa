@@ -208,7 +208,7 @@ asn_TYPE_member_t asn_MBR_StoreMetadataRequest_1[] = {
 		0, 0, /* No default value */
 		"profileName"
 		},
-	{ ATF_POINTER, 6, offsetof(struct StoreMetadataRequest, iconType),
+	{ ATF_POINTER, 8, offsetof(struct StoreMetadataRequest, iconType),
 		(ASN_TAG_CLASS_CONTEXT | (19 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_IconType,
@@ -217,7 +217,7 @@ asn_TYPE_member_t asn_MBR_StoreMetadataRequest_1[] = {
 		0, 0, /* No default value */
 		"iconType"
 		},
-	{ ATF_POINTER, 5, offsetof(struct StoreMetadataRequest, icon),
+	{ ATF_POINTER, 7, offsetof(struct StoreMetadataRequest, icon),
 		(ASN_TAG_CLASS_CONTEXT | (20 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_OCTET_STRING,
@@ -226,7 +226,7 @@ asn_TYPE_member_t asn_MBR_StoreMetadataRequest_1[] = {
 		0, 0, /* No default value */
 		"icon"
 		},
-	{ ATF_POINTER, 4, offsetof(struct StoreMetadataRequest, profileClass),
+	{ ATF_POINTER, 6, offsetof(struct StoreMetadataRequest, profileClass),
 		(ASN_TAG_CLASS_CONTEXT | (21 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_ProfileClass,
@@ -236,7 +236,7 @@ asn_TYPE_member_t asn_MBR_StoreMetadataRequest_1[] = {
 		&asn_DFL_7_set_2,	/* Set DEFAULT 2 */
 		"profileClass"
 		},
-	{ ATF_POINTER, 3, offsetof(struct StoreMetadataRequest, notificationConfigurationInfo),
+	{ ATF_POINTER, 5, offsetof(struct StoreMetadataRequest, notificationConfigurationInfo),
 		(ASN_TAG_CLASS_CONTEXT | (22 << 2)),
 		0,
 		&asn_DEF_notificationConfigurationInfo_8,
@@ -245,7 +245,7 @@ asn_TYPE_member_t asn_MBR_StoreMetadataRequest_1[] = {
 		0, 0, /* No default value */
 		"notificationConfigurationInfo"
 		},
-	{ ATF_POINTER, 2, offsetof(struct StoreMetadataRequest, profileOwner),
+	{ ATF_POINTER, 4, offsetof(struct StoreMetadataRequest, profileOwner),
 		(ASN_TAG_CLASS_CONTEXT | (23 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_OperatorId,
@@ -254,7 +254,7 @@ asn_TYPE_member_t asn_MBR_StoreMetadataRequest_1[] = {
 		0, 0, /* No default value */
 		"profileOwner"
 		},
-	{ ATF_POINTER, 1, offsetof(struct StoreMetadataRequest, profilePolicyRules),
+	{ ATF_POINTER, 3, offsetof(struct StoreMetadataRequest, profilePolicyRules),
 		(ASN_TAG_CLASS_CONTEXT | (25 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_PprIds,
@@ -263,8 +263,26 @@ asn_TYPE_member_t asn_MBR_StoreMetadataRequest_1[] = {
 		0, 0, /* No default value */
 		"profilePolicyRules"
 		},
+	{ ATF_POINTER, 2, offsetof(struct StoreMetadataRequest, serviceSpecificDataStoredInEuicc),
+		(ASN_TAG_CLASS_CONTEXT | (34 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_VendorSpecificExtension,
+		0,
+		{ 0, 0, 0 },
+		0, 0, /* No default value */
+		"serviceSpecificDataStoredInEuicc"
+		},
+	{ ATF_POINTER, 1, offsetof(struct StoreMetadataRequest, serviceSpecificDataNotStoredInEuicc),
+		(ASN_TAG_CLASS_CONTEXT | (35 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_VendorSpecificExtension,
+		0,
+		{ 0, 0, 0 },
+		0, 0, /* No default value */
+		"serviceSpecificDataNotStoredInEuicc"
+		},
 };
-static const int asn_MAP_StoreMetadataRequest_oms_1[] = { 3, 4, 5, 6, 7, 8 };
+static const int asn_MAP_StoreMetadataRequest_oms_1[] = { 3, 4, 5, 6, 7, 8, 9, 10 };
 static const ber_tlv_tag_t asn_DEF_StoreMetadataRequest_tags_1[] = {
 	(ASN_TAG_CLASS_CONTEXT | (37 << 2)),
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
@@ -278,16 +296,18 @@ static const asn_TYPE_tag2member_t asn_MAP_StoreMetadataRequest_tag2el_1[] = {
     { (ASN_TAG_CLASS_CONTEXT | (21 << 2)), 5, 0, 0 }, /* profileClass */
     { (ASN_TAG_CLASS_CONTEXT | (22 << 2)), 6, 0, 0 }, /* notificationConfigurationInfo */
     { (ASN_TAG_CLASS_CONTEXT | (23 << 2)), 7, 0, 0 }, /* profileOwner */
-    { (ASN_TAG_CLASS_CONTEXT | (25 << 2)), 8, 0, 0 } /* profilePolicyRules */
+    { (ASN_TAG_CLASS_CONTEXT | (25 << 2)), 8, 0, 0 }, /* profilePolicyRules */
+    { (ASN_TAG_CLASS_CONTEXT | (34 << 2)), 9, 0, 0 }, /* serviceSpecificDataStoredInEuicc */
+    { (ASN_TAG_CLASS_CONTEXT | (35 << 2)), 10, 0, 0 } /* serviceSpecificDataNotStoredInEuicc */
 };
 asn_SEQUENCE_specifics_t asn_SPC_StoreMetadataRequest_specs_1 = {
 	sizeof(struct StoreMetadataRequest),
 	offsetof(struct StoreMetadataRequest, _asn_ctx),
 	asn_MAP_StoreMetadataRequest_tag2el_1,
-	9,	/* Count of tags in the map */
+	11,	/* Count of tags in the map */
 	asn_MAP_StoreMetadataRequest_oms_1,	/* Optional members */
-	6, 0,	/* Root/Additions */
-	9,	/* First extension addition */
+	8, 0,	/* Root/Additions */
+	11,	/* First extension addition */
 };
 asn_TYPE_descriptor_t asn_DEF_StoreMetadataRequest = {
 	"StoreMetadataRequest",
@@ -301,7 +321,7 @@ asn_TYPE_descriptor_t asn_DEF_StoreMetadataRequest = {
 		/sizeof(asn_DEF_StoreMetadataRequest_tags_1[0]), /* 2 */
 	{ 0, 0, SEQUENCE_constraint },
 	asn_MBR_StoreMetadataRequest_1,
-	9,	/* Elements count */
+	11,	/* Elements count */
 	&asn_SPC_StoreMetadataRequest_specs_1	/* Additional specs */
 };
 

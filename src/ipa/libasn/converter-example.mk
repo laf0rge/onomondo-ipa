@@ -29,5 +29,5 @@ clean:
 regen: regenerate-from-asn1-source
 
 regenerate-from-asn1-source:
-	asn1c -fcompound-names ../../../asn1/PKIX1Explicit88.asn ../../../asn1/PKIX1Implicit88.asn ../../../asn1/RSPDefinitions.asn ../../../asn1/SGP32Definitions.asn
+	asn1c -fcompound-names ../../../asn1/PKIX1Explicit88.asn ../../../asn1/PKIX1Implicit88.asn ../../../asn1/PEDefinitions.asn ../../../asn1/RSPDefinitions.asn ../../../asn1/SGP32Definitions.asn
 

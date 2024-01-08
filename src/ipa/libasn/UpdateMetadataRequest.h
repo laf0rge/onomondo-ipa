@@ -22,6 +22,9 @@
 extern "C" {
 #endif
 
+/* Forward declarations */
+struct VendorSpecificExtension;
+
 /* UpdateMetadataRequest */
 typedef struct UpdateMetadataRequest {
 	UTF8String_t	*serviceProviderName	/* OPTIONAL */;
@@ -29,6 +32,7 @@ typedef struct UpdateMetadataRequest {
 	IconType_t	*iconType	/* OPTIONAL */;
 	OCTET_STRING_t	*icon	/* OPTIONAL */;
 	PprIds_t	*profilePolicyRules	/* OPTIONAL */;
+	struct VendorSpecificExtension	*serviceSpecificDataStoredInEuicc	/* OPTIONAL */;
 	/*
 	 * This type is extensible,
 	 * possible extensions are below.
@@ -44,6 +48,9 @@ extern asn_TYPE_descriptor_t asn_DEF_UpdateMetadataRequest;
 #ifdef __cplusplus
 }
 #endif
+
+/* Referred external types */
+#include "VendorSpecificExtension.h"
 
 #endif	/* _UpdateMetadataRequest_H_ */
 #include <asn_internal.h>

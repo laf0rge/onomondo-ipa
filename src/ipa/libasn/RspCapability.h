@@ -23,7 +23,9 @@ typedef enum RspCapability {
 	RspCapability_additionalProfile	= 0,
 	RspCapability_crlSupport	= 1,
 	RspCapability_rpmSupport	= 2,
-	RspCapability_testProfileSupport	= 3
+	RspCapability_testProfileSupport	= 3,
+	RspCapability_deviceInfoExtensibilitySupport	= 4,
+	RspCapability_serviceSpecificDataSupport	= 5
 } e_RspCapability;
 
 /* RspCapability */

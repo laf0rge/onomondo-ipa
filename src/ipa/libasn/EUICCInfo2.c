@@ -121,6 +121,43 @@ asn_TYPE_descriptor_t asn_DEF_euiccCiPKIdListForSigning_12 = {
 	&asn_SPC_euiccCiPKIdListForSigning_specs_12	/* Additional specs */
 };
 
+static asn_TYPE_member_t asn_MBR_additionalEuiccProfilePackageVersions_28[] = {
+	{ ATF_POINTER, 0, 0,
+		(ASN_TAG_CLASS_UNIVERSAL | (4 << 2)),
+		0,
+		&asn_DEF_VersionType,
+		0,
+		{ 0, 0, 0 },
+		0, 0, /* No default value */
+		""
+		},
+};
+static const ber_tlv_tag_t asn_DEF_additionalEuiccProfilePackageVersions_tags_28[] = {
+	(ASN_TAG_CLASS_CONTEXT | (15 << 2)),
+	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
+};
+static asn_SET_OF_specifics_t asn_SPC_additionalEuiccProfilePackageVersions_specs_28 = {
+	sizeof(struct EUICCInfo2__additionalEuiccProfilePackageVersions),
+	offsetof(struct EUICCInfo2__additionalEuiccProfilePackageVersions, _asn_ctx),
+	0,	/* XER encoding is XMLDelimitedItemList */
+};
+static /* Use -fall-defs-global to expose */
+asn_TYPE_descriptor_t asn_DEF_additionalEuiccProfilePackageVersions_28 = {
+	"additionalEuiccProfilePackageVersions",
+	"additionalEuiccProfilePackageVersions",
+	&asn_OP_SEQUENCE_OF,
+	asn_DEF_additionalEuiccProfilePackageVersions_tags_28,
+	sizeof(asn_DEF_additionalEuiccProfilePackageVersions_tags_28)
+		/sizeof(asn_DEF_additionalEuiccProfilePackageVersions_tags_28[0]) - 1, /* 1 */
+	asn_DEF_additionalEuiccProfilePackageVersions_tags_28,	/* Same as above */
+	sizeof(asn_DEF_additionalEuiccProfilePackageVersions_tags_28)
+		/sizeof(asn_DEF_additionalEuiccProfilePackageVersions_tags_28[0]), /* 2 */
+	{ 0, 0, SEQUENCE_OF_constraint },
+	asn_MBR_additionalEuiccProfilePackageVersions_28,
+	1,	/* Single element */
+	&asn_SPC_additionalEuiccProfilePackageVersions_specs_28	/* Additional specs */
+};
+
 asn_TYPE_member_t asn_MBR_EUICCInfo2_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct EUICCInfo2, profileVersion),
 		(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
@@ -248,7 +285,7 @@ asn_TYPE_member_t asn_MBR_EUICCInfo2_1[] = {
 		0, 0, /* No default value */
 		"sasAcreditationNumber"
 		},
-	{ ATF_POINTER, 1, offsetof(struct EUICCInfo2, certificationDataObject),
+	{ ATF_POINTER, 4, offsetof(struct EUICCInfo2, certificationDataObject),
 		(ASN_TAG_CLASS_CONTEXT | (12 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_CertificationDataObject,
@@ -257,8 +294,35 @@ asn_TYPE_member_t asn_MBR_EUICCInfo2_1[] = {
 		0, 0, /* No default value */
 		"certificationDataObject"
 		},
+	{ ATF_POINTER, 3, offsetof(struct EUICCInfo2, treProperties),
+		(ASN_TAG_CLASS_CONTEXT | (13 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_BIT_STRING,
+		0,
+		{ 0, 0, 0 },
+		0, 0, /* No default value */
+		"treProperties"
+		},
+	{ ATF_POINTER, 2, offsetof(struct EUICCInfo2, treProductReference),
+		(ASN_TAG_CLASS_CONTEXT | (14 << 2)),
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_UTF8String,
+		0,
+		{ 0, 0, 0 },
+		0, 0, /* No default value */
+		"treProductReference"
+		},
+	{ ATF_POINTER, 1, offsetof(struct EUICCInfo2, additionalEuiccProfilePackageVersions),
+		(ASN_TAG_CLASS_CONTEXT | (15 << 2)),
+		0,
+		&asn_DEF_additionalEuiccProfilePackageVersions_28,
+		0,
+		{ 0, 0, 0 },
+		0, 0, /* No default value */
+		"additionalEuiccProfilePackageVersions"
+		},
 };
-static const int asn_MAP_EUICCInfo2_oms_1[] = { 5, 6, 10, 11, 14 };
+static const int asn_MAP_EUICCInfo2_oms_1[] = { 5, 6, 10, 11, 14, 15, 16, 17 };
 static const ber_tlv_tag_t asn_DEF_EUICCInfo2_tags_1[] = {
 	(ASN_TAG_CLASS_CONTEXT | (34 << 2)),
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
@@ -278,16 +342,19 @@ static const asn_TYPE_tag2member_t asn_MAP_EUICCInfo2_tag2el_1[] = {
     { (ASN_TAG_CLASS_CONTEXT | (10 << 2)), 9, 0, 0 }, /* euiccCiPKIdListForSigning */
     { (ASN_TAG_CLASS_CONTEXT | (11 << 2)), 10, 0, 0 }, /* euiccCategory */
     { (ASN_TAG_CLASS_CONTEXT | (12 << 2)), 14, 0, 0 }, /* certificationDataObject */
+    { (ASN_TAG_CLASS_CONTEXT | (13 << 2)), 15, 0, 0 }, /* treProperties */
+    { (ASN_TAG_CLASS_CONTEXT | (14 << 2)), 16, 0, 0 }, /* treProductReference */
+    { (ASN_TAG_CLASS_CONTEXT | (15 << 2)), 17, 0, 0 }, /* additionalEuiccProfilePackageVersions */
     { (ASN_TAG_CLASS_CONTEXT | (25 << 2)), 11, 0, 0 } /* forbiddenProfilePolicyRules */
 };
 asn_SEQUENCE_specifics_t asn_SPC_EUICCInfo2_specs_1 = {
 	sizeof(struct EUICCInfo2),
 	offsetof(struct EUICCInfo2, _asn_ctx),
 	asn_MAP_EUICCInfo2_tag2el_1,
-	15,	/* Count of tags in the map */
+	18,	/* Count of tags in the map */
 	asn_MAP_EUICCInfo2_oms_1,	/* Optional members */
-	5, 0,	/* Root/Additions */
-	15,	/* First extension addition */
+	8, 0,	/* Root/Additions */
+	18,	/* First extension addition */
 };
 asn_TYPE_descriptor_t asn_DEF_EUICCInfo2 = {
 	"EUICCInfo2",
@@ -301,7 +368,7 @@ asn_TYPE_descriptor_t asn_DEF_EUICCInfo2 = {
 		/sizeof(asn_DEF_EUICCInfo2_tags_1[0]), /* 2 */
 	{ 0, 0, SEQUENCE_constraint },
 	asn_MBR_EUICCInfo2_1,
-	15,	/* Elements count */
+	18,	/* Elements count */
 	&asn_SPC_EUICCInfo2_specs_1	/* Additional specs */
 };
 

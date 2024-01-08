@@ -13,11 +13,16 @@
 
 /* Including external dependencies */
 #include "VersionType.h"
+#include "CatSupportedClasses.h"
+#include "EuiccFormFactorType.h"
 #include <constr_SEQUENCE.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* Forward declarations */
+struct DeviceAdditionalFeatureSupport;
 
 /* DeviceCapabilities */
 typedef struct DeviceCapabilities {
@@ -26,9 +31,16 @@ typedef struct DeviceCapabilities {
 	VersionType_t	*cdma2000onexSupportedRelease	/* OPTIONAL */;
 	VersionType_t	*cdma2000hrpdSupportedRelease	/* OPTIONAL */;
 	VersionType_t	*cdma2000ehrpdSupportedRelease	/* OPTIONAL */;
-	VersionType_t	*eutranSupportedRelease	/* OPTIONAL */;
+	VersionType_t	*eutranEpcSupportedRelease	/* OPTIONAL */;
 	VersionType_t	*contactlessSupportedRelease	/* OPTIONAL */;
 	VersionType_t	*rspCrlSupportedVersion	/* OPTIONAL */;
+	VersionType_t	*nrEpcSupportedRelease	/* OPTIONAL */;
+	VersionType_t	*nr5gcSupportedRelease	/* OPTIONAL */;
+	VersionType_t	*eutran5gcSupportedRelease	/* OPTIONAL */;
+	VersionType_t	*lpaSvn	/* OPTIONAL */;
+	CatSupportedClasses_t	*catSupportedClasses	/* OPTIONAL */;
+	EuiccFormFactorType_t	*euiccFormFactorType	/* OPTIONAL */;
+	struct DeviceAdditionalFeatureSupport	*deviceAdditionalFeatureSupport	/* OPTIONAL */;
 	/*
 	 * This type is extensible,
 	 * possible extensions are below.
@@ -41,11 +53,14 @@ typedef struct DeviceCapabilities {
 /* Implementation */
 extern asn_TYPE_descriptor_t asn_DEF_DeviceCapabilities;
 extern asn_SEQUENCE_specifics_t asn_SPC_DeviceCapabilities_specs_1;
-extern asn_TYPE_member_t asn_MBR_DeviceCapabilities_1[8];
+extern asn_TYPE_member_t asn_MBR_DeviceCapabilities_1[15];
 
 #ifdef __cplusplus
 }
 #endif
+
+/* Referred external types */
+#include "DeviceAdditionalFeatureSupport.h"
 
 #endif	/* _DeviceCapabilities_H_ */
 #include <asn_internal.h>
