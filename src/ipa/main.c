@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 
 	/* Overwrite configuration values with user defined parameters */
 	while (1) {
-		opt = getopt(argc, argv, "ht:e:r:c:");
+		opt = getopt(argc, argv, "ht:e:r:c:S");
 		if (opt == -1)
 			break;
 
@@ -62,6 +62,9 @@ int main(int argc, char **argv)
 		case 'c':
 			cfg.euicc_channel = atoi(optarg);
 			break;
+		case 'S':
+			cfg.eim_disable_ssl = true;
+			break;
 		default:
 			printf("unhandled option: %c!\n", opt);
 			break;
@@ -73,6 +76,7 @@ int main(int argc, char **argv)
 	printf(" preferred_eim_id = %s\n", cfg.preferred_eim_id ? cfg.preferred_eim_id : "(first configured eIM)" );
 	printf(" reader_num = %d\n", cfg.reader_num);
 	printf(" euicc_channel = %d\n", cfg.euicc_channel);
+	printf(" eim_disable_ssl = %d\n", cfg.eim_disable_ssl);
 	printf(" tac = %s\n", ipa_hexdump(cfg.tac, sizeof(cfg.tac)));
 
 	/* Create a new IPA context */
