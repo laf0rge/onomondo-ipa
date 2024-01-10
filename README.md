@@ -3,6 +3,10 @@
 This repository contains the [current state of work towards] an IPAd
 implementation.
 
+The IPAd (IoT Profile Assistance [device]) is an element in the 3GPP IoT eSIM
+system as described in SGP.31 and SGP.32.  It interfaces between the eUICC
+on the one hand side, and the eIM (via HTTPS) on the other side.
+
 ## Dependencies
 
 The IPAd core implementation (libasn, libipa) written in a way so that it has
