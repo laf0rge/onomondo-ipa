@@ -131,11 +131,6 @@ int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv)
 	assert(buffer);
 	assert(buf_encoded->len <= buf_encoded->data_len);
 
-#ifdef IPA_DEBUG_ASN1
-	IPA_LOGP(SIPA, LDEBUG, "ASN.1 encoder output: offset=%zu, size=%zu, buffer=%s\n", buf_encoded->len, size,
-		 ipa_hexdump(buffer, size));
-#endif
-
 	/* Check whether we still have enough space to store the encoding
 	 * results. */
 	if (buf_encoded->data_len < buf_encoded->len + size) {

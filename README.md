@@ -24,8 +24,7 @@ On a Debian GNU/Linux system the following packages must be installed:
 * libcurl4-gnutls-dev
 * libpcsclite-dev
 * build-essential
-* autoconf
-* automake
+* cmake
 
 you can use the standard `apt-get install ...` command to install those dependencies.
 
@@ -40,19 +39,18 @@ presented in `onomondo/ipad.h`.
 
 ## Building from source
 
-To compile the IPAd the run the following three steps. It is recommended to
-enable at least --enable-asn1-debug so that the input and output of the ASN.1
-encoder/decoder can be seen in the log.
-
-The `--enable-sanitize` flag is entirely optional and results in a build
-with AddressSanitizer which helps to find out-of-bounds memory accesses
-during development and testing.
+To compile the IPAd the run the following four steps:
 
 ```
-autoreconf -fi
-./configure --enable-asn1-debug --enable-sanitize
+mkdir build
+cd build
+cmake -DENABLE_SANITIZE=ON ../
 make
 ```
+
+The option `-DENABLE_SANITIZE` is entirely optional and results in a build
+with AddressSanitizer which helps to find out-of-bounds memory accesses
+during development and testing.
 
 ## Running
 

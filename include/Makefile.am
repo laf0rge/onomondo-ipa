@@ -1,3 +1,0 @@
-SUBDIRS = \
-	onomondo \
-	$(NULL)

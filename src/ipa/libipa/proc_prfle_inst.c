@@ -25,10 +25,8 @@ static struct ipa_buf *enc_init_sec_chan_req(const struct InitialiseSecureChanne
 	struct ipa_buf *init_sec_chan_req_encoded = ipa_buf_alloc(IPA_ES10X_ASN_ENCODER_BUF_SIZE);
 	asn_enc_rval_t rc;
 
-#ifdef IPA_DEBUG_ASN1
 	IPA_LOGP(SIPA, LDEBUG, "encoding Initialise Secure Channel Request:\n");
 	ipa_asn1c_dump(&asn_DEF_InitialiseSecureChannelRequest, init_sec_chan_req, 1, SIPA, LDEBUG);
-#endif
 
 	assert(init_sec_chan_req_encoded);
 	rc = der_encode(&asn_DEF_InitialiseSecureChannelRequest, init_sec_chan_req, ipa_asn1c_consume_bytes_cb,

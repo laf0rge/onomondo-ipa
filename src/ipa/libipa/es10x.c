@@ -44,10 +44,9 @@ void *ipa_es10x_res_dec(const struct asn_TYPE_descriptor_s *td, const struct ipa
 		ASN_STRUCT_FREE(*td, es10x_res_decoded);
 		return NULL;
 	}
-#ifdef IPA_DEBUG_ASN1
+
 	IPA_LOGP_ES10X(function_name, LDEBUG, "ES10x message received from eUICC:\n");
 	ipa_asn1c_dump(td, es10x_res_decoded, 1, SES10X, LDEBUG);
-#endif
 
 	return es10x_res_decoded;
 }
@@ -65,10 +64,8 @@ struct ipa_buf *ipa_es10x_req_enc(const struct asn_TYPE_descriptor_s *td, const 
 
 	assert(es10x_req_decoded);
 
-#ifdef IPA_DEBUG_ASN1
 	IPA_LOGP_ES10X(function_name, LDEBUG, "ES10x message that will be sent to eUICC:\n");
 	ipa_asn1c_dump(td, es10x_req_decoded, 1, SES10X, LDEBUG);
-#endif
 
 	assert(es10x_req_encoded);
 	rc = der_encode(td, es10x_req_decoded, ipa_asn1c_consume_bytes_cb, es10x_req_encoded);
