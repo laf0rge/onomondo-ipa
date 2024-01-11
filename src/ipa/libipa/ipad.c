@@ -17,7 +17,7 @@
 #include "euicc.h"
 #include "es10c_get_eid.h"
 #include "proc_eim_pkg_retr.h"
-#include "proc_add_init_eim_cfg.h"
+
 #include "es10b_get_eim_cfg_data.h"
 
 /*! Create a new ipa_context and prepare links towards eIM and eUICC.
@@ -79,13 +79,6 @@ error:
 int ipa_poll(struct ipa_context *ctx)
 {
 	return ipa_proc_eim_pkg_retr(ctx);
-}
-
-int ipa_read_eim_cfg(struct ipa_context *ctx)
-{
-	printf("===========> HELLO!\n");
-	ipa_proc_add_init_eim_cfg_readback(ctx);
-	return 0;
 }
 
 /*! close links towards eIM and eUICC and free an ipa_context.

@@ -42,7 +42,6 @@ libipa_a_SOURCES = \
 	euicc.c \
 	ipad.c \
 	log.c \
-	proc_add_init_eim_cfg.c \
 	proc_cmn_cancel_sess.c \
 	proc_cmn_mtl_auth.c \
 	proc_direct_prfle_dwnld.c \
@@ -81,7 +80,6 @@ noinst_HEADERS = \
 	esipa_prvde_eim_pkg_rslt.h \
 	euicc.h \
 	length.h \
-	proc_add_init_eim_cfg.h \
 	proc_cmn_cancel_sess.h \
 	proc_cmn_mtl_auth.h \
 	proc_direct_prfle_dwnld.h \
