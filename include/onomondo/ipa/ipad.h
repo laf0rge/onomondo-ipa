@@ -12,7 +12,7 @@ struct ipa_context;
 /*! IPAd Configuration */
 struct ipa_config {
 
-	/*! preferred eIM ID (optional. When set to NULL, the first eIM config item in the EimConfigurationData list is
+	/*! preferred eimId (optional. When set to NULL, the first eIM config item in the EimConfigurationData list is
 	 *  used.) */
 	char *preferred_eim_id;
 
