@@ -24,6 +24,8 @@ static void print_help(void)
 	printf(" -e eimId ............ set preferred eIM (in case the eUICC has multiple)\n");
 	printf(" -r N ................ set reader number (default: %d)\n", DEFAULT_READER_NUMBER);
 	printf(" -c N ................ set logical channel number (default: %d)\n", DEFAULT_CHANNEL_NUMBER);
+	printf
+	    (" -F N ................ set logical a fallback eimFqdn (used in case the eimFqdn cannot be read from the eUICC)\n");
 }
 
 int main(int argc, char **argv)
@@ -41,7 +43,7 @@ int main(int argc, char **argv)
 
 	/* Overwrite configuration values with user defined parameters */
 	while (1) {
-		opt = getopt(argc, argv, "ht:e:r:c:S");
+		opt = getopt(argc, argv, "ht:e:r:c:SF:");
 		if (opt == -1)
 			break;
 
@@ -55,6 +57,7 @@ int main(int argc, char **argv)
 			break;
 		case 'e':
 			cfg.preferred_eim_id = optarg;
+			cfg.fallback_eim_id = optarg;
 			break;
 		case 'r':
 			cfg.reader_num = atoi(optarg);
@@ -65,6 +68,9 @@ int main(int argc, char **argv)
 		case 'S':
 			cfg.eim_disable_ssl = true;
 			break;
+		case 'F':
+			cfg.fallback_eim_fqdn = optarg;
+			break;
 		default:
 			printf("unhandled option: %c!\n", opt);
 			break;
@@ -73,7 +79,9 @@ int main(int argc, char **argv)
 
 	/* Display current config */
 	printf("config:\n");
-	printf(" preferred_eim_id = %s\n", cfg.preferred_eim_id ? cfg.preferred_eim_id : "(first configured eIM)" );
+	printf(" preferred_eim_id = %s\n", cfg.preferred_eim_id ? cfg.preferred_eim_id : "(first configured eIM)");
+	printf(" fallback_eim_id = %s\n", cfg.fallback_eim_id ? cfg.fallback_eim_id : "(none)");
+	printf(" fallback_eim_fqdn = %s\n", cfg.fallback_eim_fqdn ? cfg.fallback_eim_fqdn : "(none)");
 	printf(" reader_num = %d\n", cfg.reader_num);
 	printf(" euicc_channel = %d\n", cfg.euicc_channel);
 	printf(" eim_disable_ssl = %d\n", cfg.eim_disable_ssl);

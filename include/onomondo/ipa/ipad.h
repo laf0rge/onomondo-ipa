@@ -16,6 +16,19 @@ struct ipa_config {
 	 *  used.) */
 	char *preferred_eim_id;
 
+	/* TODO: SYS#6742: The mechanism that allows the configuration of fallback that should be used in case
+	 * GetEimConfigurationData fails is not very elegant. This machanism should be replaced with a more
+	 * elegant solution. */
+
+	/*! fallback eimId (optional, will be used in case GetEimConfigurationData fails) */
+	char *fallback_eim_id;
+
+	/*! fallback eimFqdn (optional, will be used in case GetEimConfigurationData fails) */
+	char *fallback_eim_fqdn;
+
+	/*! fallback euiccCiPKId (optional, will be used in case GetEimConfigurationData fails) */
+	struct ipa_buf *fallback_euicc_ci_pkid;
+
 	/*! current TAC (This struct member may be updated at any time after context creation.) */
 	uint8_t tac[IPA_LEN_TAC];
 
