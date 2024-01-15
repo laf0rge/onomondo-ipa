@@ -24,6 +24,7 @@ static void print_help(void)
 	printf(" -e eimId ............ set preferred eIM (in case the eUICC has multiple)\n");
 	printf(" -r N ................ set reader number (default: %d)\n", DEFAULT_READER_NUMBER);
 	printf(" -c N ................ set logical channel number (default: %d)\n", DEFAULT_CHANNEL_NUMBER);
+	printf(" -S .................. disable HTTPS\n");
 	printf
 	    (" -F N ................ set logical a fallback eimFqdn (used in case the eimFqdn cannot be read from the eUICC)\n");
 }
