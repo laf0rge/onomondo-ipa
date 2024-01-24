@@ -57,7 +57,6 @@ struct ipa_es10a_euicc_cfg_addr *ipa_es10a_get_euicc_cfg_addr(struct ipa_context
 	}
 
 	rc = dec_get_euicc_cfg_addr(euicc_cfg_addr, es10a_res);
-
 	if (rc < 0)
 		goto error;
 

@@ -132,7 +132,6 @@ static struct ipa_es10b_euicc_info *get_euicc_info2(struct ipa_context *ctx)
 	}
 
 	rc = dec_get_euicc_info2(euicc_info, es10b_res);
-
 	if (rc < 0)
 		goto error;
 
