@@ -150,6 +150,8 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx,
 	struct ipa_proc_cmn_cancel_sess_pars cmn_cancel_sess_pars = { 0 };
 	int rc;
 	bool exec_cmn_cancel_sess = false;
+	struct ipa_buf *euicc_ci_pkid_to_be_used = NULL;
+	struct ipa_buf *server_signature_1 = NULL;
 
 	/* Step #1 */
 	euicc_info = ipa_es10b_get_euicc_info(ctx, false);
@@ -183,8 +185,12 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx,
 
 	/* Step #11-#14 */
 	auth_serv_req.req.serverSigned1 = init_auth_res->init_auth_ok->serverSigned1;
-	auth_serv_req.req.serverSignature1 = init_auth_res->init_auth_ok->serverSignature1;
-	auth_serv_req.req.euiccCiPKIdToBeUsed = init_auth_res->init_auth_ok->euiccCiPKIdToBeUsed;
+	server_signature_1 = IPA_BUF_FROM_ASN(&init_auth_res->init_auth_ok->serverSignature1);
+	ipa_strip_tlv_envelope(server_signature_1, 0x5f37);
+	IPA_ASSIGN_IPA_BUF_TO_ASN(auth_serv_req.req.serverSignature1, server_signature_1);
+	euicc_ci_pkid_to_be_used = IPA_BUF_FROM_ASN(&init_auth_res->init_auth_ok->euiccCiPKIdToBeUsed);
+	ipa_strip_tlv_envelope(euicc_ci_pkid_to_be_used, 0x04);
+	IPA_ASSIGN_IPA_BUF_TO_ASN(auth_serv_req.req.euiccCiPKIdToBeUsed, euicc_ci_pkid_to_be_used);
 	auth_serv_req.req.serverCertificate = init_auth_res->init_auth_ok->serverCertificate;
 	gen_ctx_params_1(&auth_serv_req.req.ctxParams1, pars->tac);
 	auth_serv_res = ipa_es10b_auth_serv(ctx, &auth_serv_req);
@@ -221,6 +227,8 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx,
 	ipa_esipa_init_auth_res_free(init_auth_res);
 	ipa_es10b_get_euicc_info_free(euicc_info);
 	ipa_es10b_auth_serv_res_free(auth_serv_res);
+	IPA_FREE(euicc_ci_pkid_to_be_used);
+	IPA_FREE(server_signature_1);
 	IPA_LOGP(SIPA, LINFO, "mutual authentication succeded!\n");
 	return auth_clnt_res;
 error:
@@ -234,6 +242,8 @@ error:
 	ipa_es10b_get_euicc_info_free(euicc_info);
 	ipa_es10b_auth_serv_res_free(auth_serv_res);
 	ipa_esipa_auth_clnt_res_free(auth_clnt_res);
+	IPA_FREE(euicc_ci_pkid_to_be_used);
+	IPA_FREE(server_signature_1);
 	IPA_LOGP(SIPA, LERROR, "mutual authentication failed!\n");
 	return NULL;
 }

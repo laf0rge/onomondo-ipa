@@ -252,6 +252,37 @@ bool ipa_tag_in_taglist(uint16_t tag, const struct ipa_buf *tag_list)
 	return false;
 }
 
+/*! Strip a TLV envelope (if it is present) from an ipa_buf.
+ *  \param[inout] buf ipa_buf that contains the data to be stripped
+ *  \param[in] envelope_tag tag of the envelope (to check if the envelope is present). */
+void ipa_strip_tlv_envelope(struct ipa_buf *buf, uint16_t envelope_tag)
+{
+	uint8_t tag_len = 1;
+	uint8_t chop_bytes = 0;
+
+	if (envelope_tag & 0x1f == 0x1f)
+		tag_len = 2;
+
+	if (tag_len == 1 && buf->len > 1 && buf->data[0] == (uint8_t) (envelope_tag & 0xff))
+		chop_bytes++;
+	else if (tag_len == 2 && buf->len > 2 && buf->data[0] == (uint8_t) (envelope_tag >> 8 & 0xff)
+		 && buf->data[1] == (uint8_t) (envelope_tag & 0xff))
+		chop_bytes += 2;
+	else
+		return;
+
+	if (buf->len > chop_bytes + 1 && buf->data[chop_bytes] & 0x1f == 0x1f) {
+		chop_bytes++;
+		if (buf->len > chop_bytes + 1 && buf->data[chop_bytes] & 0x80 == 0x80) {
+			chop_bytes++;
+		}
+	} else
+		chop_bytes++;
+
+	buf->len -= chop_bytes;
+	buf->data += chop_bytes;
+}
+
 static bool is_hex(char hex_digit)
 {
 	switch (tolower(hex_digit)) {
