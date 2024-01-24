@@ -103,6 +103,8 @@ struct ipa_esipa_cancel_session_res *ipa_esipa_cancel_session(struct ipa_context
 		goto error;
 
 	res = dec_cancel_session_res(esipa_res);
+	if (!res)
+		goto error;
 
 error:
 	IPA_FREE(esipa_req);
