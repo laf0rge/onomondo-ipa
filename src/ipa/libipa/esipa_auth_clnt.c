@@ -87,6 +87,8 @@ struct ipa_esipa_auth_clnt_res *ipa_esipa_auth_clnt(struct ipa_context *ctx, con
 		goto error;
 
 	res = dec_auth_clnt_res(esipa_res);
+	if (!res)
+		goto error;
 
 	if (!IPA_ASN_STR_CMP(res->transaction_id, &req->req.transactionId)) {
 		IPA_LOGP_ESIPA("AuthenticateClient", LERROR, "eIM responded with unexpected transaction ID\n");
