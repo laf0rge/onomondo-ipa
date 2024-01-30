@@ -82,7 +82,11 @@ struct ipa_es10b_cancel_session_res *ipa_es10b_cancel_session(struct ipa_context
 	if (res->cancel_session_ok
 	    && !IPA_ASN_STR_CMP(&res->cancel_session_ok->euiccCancelSessionSigned.transactionId,
 				&req->req.transactionId)) {
-		IPA_LOGP_ES10X("CancelSession", LERROR, "eIM responded with unexpected transaction ID\n");
+		IPA_LOGP_ES10X("CancelSession", LERROR,
+			       "eUICC responded with unexpected transaction ID (expected: %s, got: %s)\n",
+			       ipa_hexdump(req->req.transactionId.buf, req->req.transactionId.size),
+			       ipa_hexdump(res->cancel_session_ok->euiccCancelSessionSigned.transactionId.buf,
+					   res->cancel_session_ok->euiccCancelSessionSigned.transactionId.size));
 		res->cancel_session_err = -1;
 		goto error;
 	}
