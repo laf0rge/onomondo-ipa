@@ -67,6 +67,7 @@ struct ipa_es10b_load_bnd_prfle_pkg_res *ipa_es10b_load_bnd_prfle_pkg(struct ipa
 	return res;
 error:
 	IPA_FREE(es10b_res);
+	IPA_FREE(res);
 	return NULL;
 }
 
