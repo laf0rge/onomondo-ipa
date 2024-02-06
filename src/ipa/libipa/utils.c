@@ -129,7 +129,6 @@ int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv)
 
 	assert(priv);
 	assert(buffer);
-	assert(buf_encoded->len <= buf_encoded->data_len);
 
 	/* Check whether we still have enough space to store the encoding
 	 * results. */
@@ -142,8 +141,7 @@ int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv)
 		return -ENOMEM;
 	}
 
-	memcpy(buf_encoded->data + buf_encoded->len, buffer, size);
-	buf_encoded->len += size;
+	ipa_buf_cpy(buf_encoded, buffer, size);
 
 	return 0;
 }

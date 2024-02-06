@@ -124,6 +124,17 @@ static inline struct ipa_buf *ipa_buf_alloc_and_cpy(const uint8_t *in, size_t le
 	return buf;
 }
 
+/*! Allocate a new ipa_buf and copy from user provided memory.
+ *  \param[in] buf ipa_buf where the data should be copied (appended) to.
+ *  \param[in] in user provided memory to copy.
+ *  \param[in] len amount of bytes to copy from user provided memory. */
+static inline void ipa_buf_cpy(struct ipa_buf *buf, const uint8_t *in, size_t len)
+{
+	assert(buf->len + len <= buf->data_len);
+	memcpy(buf->data + buf->len, in, len);
+	buf->len += len;
+}
+
 /*! Assign data from a different location to an uninitialized ipa_buf struct.
  *  \param[in] buf uninitialized ipa_buf (possibly statically allocated).
  *  \param[in] data user provided memory to assign to the ipa_buf.
