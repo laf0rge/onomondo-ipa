@@ -23,3 +23,7 @@ echo 'add_library(libasn STATIC' >> CMakeLists.txt
 ls *.h *.c -1 >> CMakeLists.txt
 echo ')' >> CMakeLists.txt
 echo 'target_include_directories(libasn PUBLIC ${CMAKE_SOURCE_DIR}/include PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})' >> CMakeLists.txt
+
+# Re-apply patches to generated sourcecode
+cd ../../../
+patch -p1 < ./asn1/0001-PKIX1Explicit88-remove-broken-constraint-check-in-Ce.patch
