@@ -104,6 +104,12 @@ BMPString.c
 BMPString.h
 BOOLEAN.c
 BOOLEAN.h
+BoundProfilePackage-86tlv.c
+BoundProfilePackage-86tlv.h
+BoundProfilePackage-87tlv.c
+BoundProfilePackage-87tlv.h
+BoundProfilePackage-88tlv.c
+BoundProfilePackage-88tlv.h
 BoundProfilePackage.c
 BoundProfilePackage.h
 BppCommandId.c
