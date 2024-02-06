@@ -8,7 +8,7 @@ struct asn_TYPE_descriptor_s;
 	IPA_LOGP(SES10X, level, "%s: " fmt, func, ## args)
 
 #define IPA_ES10X_VERSION_LEN 3
-#define IPA_ES10X_ASN_ENCODER_BUF_SIZE 5120
+#define IPA_ES10X_ASN_ENCODER_BUF_SIZE 512000
 
 void *ipa_es10x_res_dec(const struct asn_TYPE_descriptor_s *td, const struct ipa_buf *es10x_res_encoded,
 			const char *function_name);
