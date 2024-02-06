@@ -111,7 +111,15 @@ BoundProfilePackage-87tlv.h
 BoundProfilePackage-88tlv.c
 BoundProfilePackage-88tlv.h
 BoundProfilePackage.c
+BoundProfilePackage-FirstSequenceOf87.c
+BoundProfilePackage-FirstSequenceOf87.h
 BoundProfilePackage.h
+BoundProfilePackage-SecondSequenceOf87.c
+BoundProfilePackage-SecondSequenceOf87.h
+BoundProfilePackage-SequenceOf86.c
+BoundProfilePackage-SequenceOf86.h
+BoundProfilePackage-SequenceOf88.c
+BoundProfilePackage-SequenceOf88.h
 BppCommandId.c
 BppCommandId.h
 BuiltInDomainDefinedAttribute.c

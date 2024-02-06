@@ -356,12 +356,16 @@ EuiccCancelSessionSigned ::= SEQUENCE {
 BoundProfilePackage-87tlv ::= [7] OCTET STRING
 BoundProfilePackage-88tlv ::= [8] OCTET STRING
 BoundProfilePackage-86tlv ::= [6] OCTET STRING
+BoundProfilePackage-FirstSequenceOf87 ::= [0] SEQUENCE OF BoundProfilePackage-87tlv
+BoundProfilePackage-SequenceOf88 ::= [1] SEQUENCE OF BoundProfilePackage-88tlv
+BoundProfilePackage-SecondSequenceOf87 ::= [2] SEQUENCE OF BoundProfilePackage-87tlv
+BoundProfilePackage-SequenceOf86 ::= [3] SEQUENCE OF BoundProfilePackage-86tlv
 BoundProfilePackage ::= [54] SEQUENCE { -- Tag 'BF36'
    initialiseSecureChannelRequest [35] InitialiseSecureChannelRequest, -- Tag 'BF23'
-   firstSequenceOf87 [0] SEQUENCE OF BoundProfilePackage-87tlv, -- sequence of '87' TLVs
-   sequenceOf88 [1] SEQUENCE OF BoundProfilePackage-88tlv, -- sequence of '88' TLVs
-   secondSequenceOf87 [2] SEQUENCE OF BoundProfilePackage-87tlv OPTIONAL, -- sequence of '87' TLVs
-   sequenceOf86 [3] SEQUENCE OF BoundProfilePackage-86tlv -- sequence of '86' TLVs
+   firstSequenceOf87 [0] BoundProfilePackage-FirstSequenceOf87, -- sequence of '87' TLVs
+   sequenceOf88 [1] BoundProfilePackage-SequenceOf88, -- sequence of '88' TLVs
+   secondSequenceOf87 [2] BoundProfilePackage-SecondSequenceOf87 OPTIONAL, -- sequence of '87' TLVs
+   sequenceOf86 [3] BoundProfilePackage-SequenceOf86 -- sequence of '86' TLVs
 }
 
 -- Definition of Get eUICC Challenge --------------------------

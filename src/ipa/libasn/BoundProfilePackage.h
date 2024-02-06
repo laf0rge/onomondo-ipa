@@ -13,44 +13,25 @@
 
 /* Including external dependencies */
 #include "InitialiseSecureChannelRequest.h"
-#include "BoundProfilePackage-87tlv.h"
-#include <asn_SEQUENCE_OF.h>
-#include <constr_SEQUENCE_OF.h>
-#include "BoundProfilePackage-88tlv.h"
-#include "BoundProfilePackage-86tlv.h"
+#include "BoundProfilePackage-FirstSequenceOf87.h"
+#include "BoundProfilePackage-SequenceOf88.h"
+#include "BoundProfilePackage-SequenceOf86.h"
 #include <constr_SEQUENCE.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/* Forward declarations */
+struct BoundProfilePackage_SecondSequenceOf87;
+
 /* BoundProfilePackage */
 typedef struct BoundProfilePackage {
 	InitialiseSecureChannelRequest_t	 initialiseSecureChannelRequest;
-	struct BoundProfilePackage__firstSequenceOf87 {
-		A_SEQUENCE_OF(BoundProfilePackage_87tlv_t) list;
-		
-		/* Context for parsing across buffer boundaries */
-		asn_struct_ctx_t _asn_ctx;
-	} firstSequenceOf87;
-	struct BoundProfilePackage__sequenceOf88 {
-		A_SEQUENCE_OF(BoundProfilePackage_88tlv_t) list;
-		
-		/* Context for parsing across buffer boundaries */
-		asn_struct_ctx_t _asn_ctx;
-	} sequenceOf88;
-	struct BoundProfilePackage__secondSequenceOf87 {
-		A_SEQUENCE_OF(BoundProfilePackage_87tlv_t) list;
-		
-		/* Context for parsing across buffer boundaries */
-		asn_struct_ctx_t _asn_ctx;
-	} *secondSequenceOf87;
-	struct BoundProfilePackage__sequenceOf86 {
-		A_SEQUENCE_OF(BoundProfilePackage_86tlv_t) list;
-		
-		/* Context for parsing across buffer boundaries */
-		asn_struct_ctx_t _asn_ctx;
-	} sequenceOf86;
+	BoundProfilePackage_FirstSequenceOf87_t	 firstSequenceOf87;
+	BoundProfilePackage_SequenceOf88_t	 sequenceOf88;
+	struct BoundProfilePackage_SecondSequenceOf87	*secondSequenceOf87	/* OPTIONAL */;
+	BoundProfilePackage_SequenceOf86_t	 sequenceOf86;
 	/*
 	 * This type is extensible,
 	 * possible extensions are below.
@@ -68,6 +49,9 @@ extern asn_TYPE_member_t asn_MBR_BoundProfilePackage_1[5];
 #ifdef __cplusplus
 }
 #endif
+
+/* Referred external types */
+#include "BoundProfilePackage-SecondSequenceOf87.h"
 
 #endif	/* _BoundProfilePackage_H_ */
 #include <asn_internal.h>

@@ -7,154 +7,6 @@
 
 #include "BoundProfilePackage.h"
 
-static asn_TYPE_member_t asn_MBR_firstSequenceOf87_3[] = {
-	{ ATF_POINTER, 0, 0,
-		(ASN_TAG_CLASS_CONTEXT | (7 << 2)),
-		0,
-		&asn_DEF_BoundProfilePackage_87tlv,
-		0,
-		{ 0, 0, 0 },
-		0, 0, /* No default value */
-		""
-		},
-};
-static const ber_tlv_tag_t asn_DEF_firstSequenceOf87_tags_3[] = {
-	(ASN_TAG_CLASS_CONTEXT | (0 << 2)),
-	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
-};
-static asn_SET_OF_specifics_t asn_SPC_firstSequenceOf87_specs_3 = {
-	sizeof(struct BoundProfilePackage__firstSequenceOf87),
-	offsetof(struct BoundProfilePackage__firstSequenceOf87, _asn_ctx),
-	0,	/* XER encoding is XMLDelimitedItemList */
-};
-static /* Use -fall-defs-global to expose */
-asn_TYPE_descriptor_t asn_DEF_firstSequenceOf87_3 = {
-	"firstSequenceOf87",
-	"firstSequenceOf87",
-	&asn_OP_SEQUENCE_OF,
-	asn_DEF_firstSequenceOf87_tags_3,
-	sizeof(asn_DEF_firstSequenceOf87_tags_3)
-		/sizeof(asn_DEF_firstSequenceOf87_tags_3[0]) - 1, /* 1 */
-	asn_DEF_firstSequenceOf87_tags_3,	/* Same as above */
-	sizeof(asn_DEF_firstSequenceOf87_tags_3)
-		/sizeof(asn_DEF_firstSequenceOf87_tags_3[0]), /* 2 */
-	{ 0, 0, SEQUENCE_OF_constraint },
-	asn_MBR_firstSequenceOf87_3,
-	1,	/* Single element */
-	&asn_SPC_firstSequenceOf87_specs_3	/* Additional specs */
-};
-
-static asn_TYPE_member_t asn_MBR_sequenceOf88_5[] = {
-	{ ATF_POINTER, 0, 0,
-		(ASN_TAG_CLASS_CONTEXT | (8 << 2)),
-		0,
-		&asn_DEF_BoundProfilePackage_88tlv,
-		0,
-		{ 0, 0, 0 },
-		0, 0, /* No default value */
-		""
-		},
-};
-static const ber_tlv_tag_t asn_DEF_sequenceOf88_tags_5[] = {
-	(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
-	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
-};
-static asn_SET_OF_specifics_t asn_SPC_sequenceOf88_specs_5 = {
-	sizeof(struct BoundProfilePackage__sequenceOf88),
-	offsetof(struct BoundProfilePackage__sequenceOf88, _asn_ctx),
-	0,	/* XER encoding is XMLDelimitedItemList */
-};
-static /* Use -fall-defs-global to expose */
-asn_TYPE_descriptor_t asn_DEF_sequenceOf88_5 = {
-	"sequenceOf88",
-	"sequenceOf88",
-	&asn_OP_SEQUENCE_OF,
-	asn_DEF_sequenceOf88_tags_5,
-	sizeof(asn_DEF_sequenceOf88_tags_5)
-		/sizeof(asn_DEF_sequenceOf88_tags_5[0]) - 1, /* 1 */
-	asn_DEF_sequenceOf88_tags_5,	/* Same as above */
-	sizeof(asn_DEF_sequenceOf88_tags_5)
-		/sizeof(asn_DEF_sequenceOf88_tags_5[0]), /* 2 */
-	{ 0, 0, SEQUENCE_OF_constraint },
-	asn_MBR_sequenceOf88_5,
-	1,	/* Single element */
-	&asn_SPC_sequenceOf88_specs_5	/* Additional specs */
-};
-
-static asn_TYPE_member_t asn_MBR_secondSequenceOf87_7[] = {
-	{ ATF_POINTER, 0, 0,
-		(ASN_TAG_CLASS_CONTEXT | (7 << 2)),
-		0,
-		&asn_DEF_BoundProfilePackage_87tlv,
-		0,
-		{ 0, 0, 0 },
-		0, 0, /* No default value */
-		""
-		},
-};
-static const ber_tlv_tag_t asn_DEF_secondSequenceOf87_tags_7[] = {
-	(ASN_TAG_CLASS_CONTEXT | (2 << 2)),
-	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
-};
-static asn_SET_OF_specifics_t asn_SPC_secondSequenceOf87_specs_7 = {
-	sizeof(struct BoundProfilePackage__secondSequenceOf87),
-	offsetof(struct BoundProfilePackage__secondSequenceOf87, _asn_ctx),
-	0,	/* XER encoding is XMLDelimitedItemList */
-};
-static /* Use -fall-defs-global to expose */
-asn_TYPE_descriptor_t asn_DEF_secondSequenceOf87_7 = {
-	"secondSequenceOf87",
-	"secondSequenceOf87",
-	&asn_OP_SEQUENCE_OF,
-	asn_DEF_secondSequenceOf87_tags_7,
-	sizeof(asn_DEF_secondSequenceOf87_tags_7)
-		/sizeof(asn_DEF_secondSequenceOf87_tags_7[0]) - 1, /* 1 */
-	asn_DEF_secondSequenceOf87_tags_7,	/* Same as above */
-	sizeof(asn_DEF_secondSequenceOf87_tags_7)
-		/sizeof(asn_DEF_secondSequenceOf87_tags_7[0]), /* 2 */
-	{ 0, 0, SEQUENCE_OF_constraint },
-	asn_MBR_secondSequenceOf87_7,
-	1,	/* Single element */
-	&asn_SPC_secondSequenceOf87_specs_7	/* Additional specs */
-};
-
-static asn_TYPE_member_t asn_MBR_sequenceOf86_9[] = {
-	{ ATF_POINTER, 0, 0,
-		(ASN_TAG_CLASS_CONTEXT | (6 << 2)),
-		0,
-		&asn_DEF_BoundProfilePackage_86tlv,
-		0,
-		{ 0, 0, 0 },
-		0, 0, /* No default value */
-		""
-		},
-};
-static const ber_tlv_tag_t asn_DEF_sequenceOf86_tags_9[] = {
-	(ASN_TAG_CLASS_CONTEXT | (3 << 2)),
-	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
-};
-static asn_SET_OF_specifics_t asn_SPC_sequenceOf86_specs_9 = {
-	sizeof(struct BoundProfilePackage__sequenceOf86),
-	offsetof(struct BoundProfilePackage__sequenceOf86, _asn_ctx),
-	0,	/* XER encoding is XMLDelimitedItemList */
-};
-static /* Use -fall-defs-global to expose */
-asn_TYPE_descriptor_t asn_DEF_sequenceOf86_9 = {
-	"sequenceOf86",
-	"sequenceOf86",
-	&asn_OP_SEQUENCE_OF,
-	asn_DEF_sequenceOf86_tags_9,
-	sizeof(asn_DEF_sequenceOf86_tags_9)
-		/sizeof(asn_DEF_sequenceOf86_tags_9[0]) - 1, /* 1 */
-	asn_DEF_sequenceOf86_tags_9,	/* Same as above */
-	sizeof(asn_DEF_sequenceOf86_tags_9)
-		/sizeof(asn_DEF_sequenceOf86_tags_9[0]), /* 2 */
-	{ 0, 0, SEQUENCE_OF_constraint },
-	asn_MBR_sequenceOf86_9,
-	1,	/* Single element */
-	&asn_SPC_sequenceOf86_specs_9	/* Additional specs */
-};
-
 asn_TYPE_member_t asn_MBR_BoundProfilePackage_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct BoundProfilePackage, initialiseSecureChannelRequest),
 		(ASN_TAG_CLASS_CONTEXT | (35 << 2)),
@@ -167,8 +19,8 @@ asn_TYPE_member_t asn_MBR_BoundProfilePackage_1[] = {
 		},
 	{ ATF_NOFLAGS, 0, offsetof(struct BoundProfilePackage, firstSequenceOf87),
 		(ASN_TAG_CLASS_CONTEXT | (0 << 2)),
-		0,
-		&asn_DEF_firstSequenceOf87_3,
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_BoundProfilePackage_FirstSequenceOf87,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */
@@ -176,8 +28,8 @@ asn_TYPE_member_t asn_MBR_BoundProfilePackage_1[] = {
 		},
 	{ ATF_NOFLAGS, 0, offsetof(struct BoundProfilePackage, sequenceOf88),
 		(ASN_TAG_CLASS_CONTEXT | (1 << 2)),
-		0,
-		&asn_DEF_sequenceOf88_5,
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_BoundProfilePackage_SequenceOf88,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */
@@ -185,8 +37,8 @@ asn_TYPE_member_t asn_MBR_BoundProfilePackage_1[] = {
 		},
 	{ ATF_POINTER, 1, offsetof(struct BoundProfilePackage, secondSequenceOf87),
 		(ASN_TAG_CLASS_CONTEXT | (2 << 2)),
-		0,
-		&asn_DEF_secondSequenceOf87_7,
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_BoundProfilePackage_SecondSequenceOf87,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */
@@ -194,8 +46,8 @@ asn_TYPE_member_t asn_MBR_BoundProfilePackage_1[] = {
 		},
 	{ ATF_NOFLAGS, 0, offsetof(struct BoundProfilePackage, sequenceOf86),
 		(ASN_TAG_CLASS_CONTEXT | (3 << 2)),
-		0,
-		&asn_DEF_sequenceOf86_9,
+		-1,	/* IMPLICIT tag at current level */
+		&asn_DEF_BoundProfilePackage_SequenceOf86,
 		0,
 		{ 0, 0, 0 },
 		0, 0, /* No default value */
