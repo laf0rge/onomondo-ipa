@@ -263,11 +263,14 @@ struct ipa_bpp_segments *ipa_bpp_segments_encode(const struct BoundProfilePackag
 		segments->count++;
 	}
 
-	segment = enc_second_seq_of_87(bpp->secondSequenceOf87);
-	if (!segment)
-		goto error;
-	segments->segment[segments->count] = segment;
-	segments->count++;
+	/* Optional */
+	if (bpp->secondSequenceOf87) {
+		segment = enc_second_seq_of_87(bpp->secondSequenceOf87);
+		if (!segment)
+			goto error;
+		segments->segment[segments->count] = segment;
+		segments->count++;
+	}
 
 	segment = enc_tag_and_len_of_sequenceOf86(&bpp->sequenceOf86);
 	if (!segment)
