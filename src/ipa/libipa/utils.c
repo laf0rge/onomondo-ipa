@@ -273,7 +273,7 @@ size_t ipa_parse_btlv_hdr(size_t *len, uint16_t *tag, struct ipa_buf *buf)
 		*tag = *data;
 	} else if (tag && tag_len == 2) {
 		*tag = (*data) << 8;
-		*tag |= *data;
+		*tag |= *(data + 1);
 	}
 	data += tag_len;
 	data_len -= tag_len;
