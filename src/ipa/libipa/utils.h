@@ -24,6 +24,7 @@ void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_p
 		    enum log_subsys log_subsys, enum log_level log_level);
 int ipa_cmp_case_insensitive(const char *str1, const char *str2, size_t len);
 bool ipa_tag_in_taglist(uint16_t tag, const struct ipa_buf *tag_list);
+size_t ipa_parse_btlv_hdr(size_t *len, uint16_t *tag, struct ipa_buf *buf);
 void ipa_strip_tlv_envelope(struct ipa_buf *buf, uint16_t envelope_tag);
 
 /* \! Compare an ASN.1 string object to another ASN.1 string object.
