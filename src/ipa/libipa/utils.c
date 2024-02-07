@@ -316,7 +316,7 @@ size_t ipa_parse_btlv_hdr(size_t *len, uint16_t *tag, struct ipa_buf *buf)
 
 /*! Strip a TLV envelope (if it is present) from an ipa_buf.
  *  \param[inout] buf ipa_buf that contains the data to be stripped
- *  \param[in] envelope_tag tag of the envelope (to check if the envelope is present). */
+ *  \param[in] envelope_tag tag of the envelope (as a verification so we won't strip random data). */
 void ipa_strip_tlv_envelope(struct ipa_buf *buf, uint16_t envelope_tag)
 {
 	size_t chop_bytes = 0;
