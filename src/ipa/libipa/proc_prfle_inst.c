@@ -17,32 +17,8 @@
 #include "es10b_load_bnd_prfle_pkg.h"
 #include "esipa_handle_notif.h"
 #include "es10b_rm_notif_from_lst.h"
+#include "bpp_segments.h"
 #include "proc_prfle_inst.h"
-
-/* We receive the Initialize Secure Channel Request, its decoded form, so we must encode it again */
-static struct ipa_buf *enc_init_sec_chan_req(const struct InitialiseSecureChannelRequest *init_sec_chan_req)
-{
-	struct ipa_buf *init_sec_chan_req_encoded = ipa_buf_alloc(IPA_ES10X_ASN_ENCODER_BUF_SIZE);
-	asn_enc_rval_t rc;
-
-	IPA_LOGP(SIPA, LDEBUG, "encoding Initialise Secure Channel Request:\n");
-	ipa_asn1c_dump(&asn_DEF_InitialiseSecureChannelRequest, init_sec_chan_req, 1, SIPA, LDEBUG);
-
-	assert(init_sec_chan_req_encoded);
-	rc = der_encode(&asn_DEF_InitialiseSecureChannelRequest, init_sec_chan_req, ipa_asn1c_consume_bytes_cb,
-			init_sec_chan_req_encoded);
-
-	if (rc.encoded <= 0) {
-		IPA_LOGP(SIPA, LDEBUG, "cannot encode Initialise Secure Channel Request!\n");
-		IPA_FREE(init_sec_chan_req_encoded);
-		return NULL;
-	}
-
-	IPA_LOGP(SIPA, LDEBUG, "encoded Initialise Secure Channel Request: %s\n",
-		 ipa_buf_hexdump(init_sec_chan_req_encoded));
-
-	return init_sec_chan_req_encoded;
-}
 
 /* Return codes: < 0 = error, 0 = ok, 1 = Result was present, notification sent */
 static int handle_load_bnd_prfle_pkg_res(struct ipa_context *ctx, struct ipa_es10b_load_bnd_prfle_pkg_res *res,
@@ -60,7 +36,7 @@ static int handle_load_bnd_prfle_pkg_res(struct ipa_context *ctx, struct ipa_es1
 		return 0;
 	}
 
-	/* A respond is present, this is either the normal ending of the installation sequence or the eUICC has aborted
+	/* A response is present, this is either the normal ending of the installation sequence or the eUICC has aborted
 	 * the the installation. In both situations we forward the ProfileInstallationResult to the eIM. */
 	handle_notif_req.profile_installation_result = res->res;
 	rc = ipa_esipa_handle_notif(ctx, &handle_notif_req);
@@ -77,92 +53,26 @@ static int handle_load_bnd_prfle_pkg_res(struct ipa_context *ctx, struct ipa_es1
  *  \returns 0 on success, negative on failure. */
 int ipa_proc_prfle_inst(struct ipa_context *ctx, const struct ipa_proc_prfle_inst_pars *pars)
 {
-	const struct InitialiseSecureChannelRequest *init_sec_chan_req = NULL;
 	struct ipa_es10b_load_bnd_prfle_pkg_res *load_bnd_prfle_pkg_res = NULL;
-	struct ipa_buf *init_sec_chan_req_encoded = NULL;
+	struct ipa_bpp_segments *segments = NULL;
 	unsigned int i;
 	int rc;
 	long seq_number = 0;
 
-	/* Step #1-#2 (ES8+.InitialiseSecureChannel) */
-	init_sec_chan_req = &pars->bound_profile_package->initialiseSecureChannelRequest;
-	init_sec_chan_req_encoded = enc_init_sec_chan_req(init_sec_chan_req);
-	load_bnd_prfle_pkg_res =
-	    ipa_es10b_load_bnd_prfle_pkg(ctx, init_sec_chan_req_encoded->data, init_sec_chan_req_encoded->len);
-	if (!load_bnd_prfle_pkg_res) {
-		IPA_LOGP(SIPA, LERROR, "failed to transfer InitialiseSecureChannelRequest!\n");
-		IPA_FREE(init_sec_chan_req_encoded);
-		goto error;
-	}
-	IPA_FREE(init_sec_chan_req_encoded);
-	rc = handle_load_bnd_prfle_pkg_res(ctx, load_bnd_prfle_pkg_res, &seq_number);
-	if (rc)
-		goto error;
-
-	/* Step #3 (ES8+.ConfigureISDP) */
-	for (i = 0; i < pars->bound_profile_package->firstSequenceOf87.list.count; i++) {
-		IPA_LOGP(SIPA, LDEBUG, "transferring ES8+.ConfigureISDP segments...\n");
+	/* Step #3-#5 Split BPP into ES8+ segments and send the segments to eUICC */
+	segments = ipa_bpp_segments_encode(pars->bound_profile_package);
+	for (i = 0; i < segments->count; i++) {
+		IPA_LOGP(SIPA, LDEBUG, "transferring ES8+ segments...\n");
 		load_bnd_prfle_pkg_res =
-		    ipa_es10b_load_bnd_prfle_pkg(ctx, pars->bound_profile_package->firstSequenceOf87.list.array[i]->buf,
-						 pars->bound_profile_package->firstSequenceOf87.list.array[i]->size);
+		    ipa_es10b_load_bnd_prfle_pkg(ctx, segments->segment[i]->data, segments->segment[i]->len);
 		if (!load_bnd_prfle_pkg_res) {
-			IPA_LOGP(SIPA, LERROR, "failed to transfer ES8+.ConfigureISDP segments!\n");
-			goto error;
-		}
-		rc = handle_load_bnd_prfle_pkg_res(ctx, load_bnd_prfle_pkg_res, &seq_number);
-		if (rc)
-			goto error;
-	}
-
-	/* Step #4 (ES8+.StoreMetadata) */
-	for (i = 0; i < pars->bound_profile_package->sequenceOf88.list.count; i++) {
-		IPA_LOGP(SIPA, LDEBUG, "transferring ES8+.StoreMetadata segments...\n");
-		load_bnd_prfle_pkg_res =
-		    ipa_es10b_load_bnd_prfle_pkg(ctx, pars->bound_profile_package->sequenceOf88.list.array[i]->buf,
-						 pars->bound_profile_package->sequenceOf88.list.array[i]->size);
-		if (!load_bnd_prfle_pkg_res) {
-			IPA_LOGP(SIPA, LERROR, "failed to transfer ES8+.StoreMetadata segments!\n");
-			goto error;
-		}
-		rc = handle_load_bnd_prfle_pkg_res(ctx, load_bnd_prfle_pkg_res, &seq_number);
-		if (rc)
-			goto error;
-	}
-
-	/* Step #5 (ES8+.ReplaceSessionKeys", optional) */
-	if (pars->bound_profile_package->secondSequenceOf87) {
-		for (i = 0; i < pars->bound_profile_package->secondSequenceOf87->list.count; i++) {
-			IPA_LOGP(SIPA, LDEBUG, "transferring ES8+.ReplaceSessionKeys segments...\n");
-			load_bnd_prfle_pkg_res =
-			    ipa_es10b_load_bnd_prfle_pkg(ctx,
-							 pars->bound_profile_package->secondSequenceOf87->
-							 list.array[i]->buf,
-							 pars->bound_profile_package->secondSequenceOf87->
-							 list.array[i]->size);
-			if (!load_bnd_prfle_pkg_res) {
-				IPA_LOGP(SIPA, LERROR, "failed to transfer ES8+.ReplaceSessionKeys segments!\n");
-				goto error;
-			}
-			rc = handle_load_bnd_prfle_pkg_res(ctx, load_bnd_prfle_pkg_res, &seq_number);
-			if (rc)
-				goto error;
-		}
-	}
-
-	/* Step #6 (ES8+.LoadProfileElements) */
-	for (i = 0; i < pars->bound_profile_package->sequenceOf86.list.count; i++) {
-		IPA_LOGP(SIPA, LDEBUG, "transferring ES8+.LoadProfileElements segments...\n");
-		load_bnd_prfle_pkg_res =
-		    ipa_es10b_load_bnd_prfle_pkg(ctx, pars->bound_profile_package->sequenceOf86.list.array[i]->buf,
-						 pars->bound_profile_package->sequenceOf86.list.array[i]->size);
-		if (!load_bnd_prfle_pkg_res) {
-			IPA_LOGP(SIPA, LERROR, "failed to transfer ES8+.LoadProfileElements segments!\n");
+			IPA_LOGP(SIPA, LERROR, "failed to transfer ES8+ segments!\n");
 			goto error;
 		}
 		rc = handle_load_bnd_prfle_pkg_res(ctx, load_bnd_prfle_pkg_res, &seq_number);
 		if (rc < 0) {
 			goto error;
-		} else if (rc == 0 && i == pars->bound_profile_package->sequenceOf86.list.count - 1) {
+		} else if (rc == 0 && i == segments->count - 1) {
 			IPA_LOGP(SIPA, LERROR, "eUICC didn't respond with ProfileInstallationResult!\n");
 			goto error;
 		}
@@ -173,9 +83,11 @@ int ipa_proc_prfle_inst(struct ipa_context *ctx, const struct ipa_proc_prfle_ins
 	if (rc < 0)
 		goto error;
 
+	ipa_bpp_segments_free(segments);
 	IPA_LOGP(SIPA, LINFO, "profile installation succeded!\n");
 	return 0;
 error:
+	ipa_bpp_segments_free(segments);
 	IPA_LOGP(SIPA, LERROR, "profile installation failed!\n");
 	return -EINVAL;
 }
