@@ -39,7 +39,7 @@ static struct ipa_buf *enc_handle_notif_req(const struct ipa_esipa_handle_notif_
 
 static int dec_handle_notif_res(const struct ipa_buf *msg_to_ipa_encoded)
 {
-	/* There is no response defined for this command (see also SGP.32, section 6.3.2.4), so we expect just an empty
+	/* There is no response defined for this function (see also SGP.32, section 6.3.2.4), so we expect just an empty
 	 * response (0 bytes of data) */
 	if (msg_to_ipa_encoded->len) {
 		IPA_LOGP_ESIPA("HandleNotification", LERROR,
