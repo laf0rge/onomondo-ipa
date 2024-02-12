@@ -34,6 +34,7 @@ int main(int argc, char **argv)
 	struct ipa_config cfg = { 0 };
 	struct ipa_context *ctx;
 	int opt;
+	int rc;
 
 	printf("IPAd!\n");
 
@@ -91,12 +92,23 @@ int main(int argc, char **argv)
 	/* Create a new IPA context */
 	ctx = ipa_new_ctx(&cfg);
 	if (!ctx) {
-		IPA_LOGP(SMAIN, LERROR, "no context, initialization failed!\n");
-		return -EINVAL;
+		IPA_LOGP(SMAIN, LERROR, "cannot create context!\n");
+		rc = -EINVAL;
+		goto error;
+	}
+
+	/* Initialize IPA */
+	rc = ipa_init(ctx);
+	if (rc < 0) {
+		IPA_LOGP(SMAIN, LERROR, "initialization failed!\n");
+		rc = -EINVAL;
+		goto error;
 	}
 
 	/* Run a single poll cycle and exit. */
 	ipa_poll(ctx);
+
+error:
 	ipa_free_ctx(ctx);
-	return 0;
+	return rc;
 }

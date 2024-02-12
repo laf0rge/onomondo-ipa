@@ -73,7 +73,7 @@ error:
 	return -EINVAL;
 }
 
-/*! Create a new ipa_context and prepare links towards eIM and eUICC.
+/*! Create a new ipa_context.
  *  \param[in] cfg IPAd configuration.
  *  \returns ipa_context on success, NULL on failure. */
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
@@ -82,32 +82,41 @@ struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 	int rc;
 
 	ctx = IPA_ALLOC_ZERO(struct ipa_context);
+	assert(ctx);
+
 	ctx->cfg = cfg;
+
+	return ctx;
+}
+
+/*! Initialize IPAd and prepare links towards eIM and eUICC.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \returns 0 success, -EINVAL on failure. */
+int ipa_init(struct ipa_context *ctx)
+{
+	int rc;
 
 	ctx->http_ctx = ipa_http_init();
 	if (!ctx->http_ctx)
-		goto error;
+		return -EINVAL;
 
-	ctx->scard_ctx = ipa_scard_init(cfg->reader_num);
+	ctx->scard_ctx = ipa_scard_init(ctx->cfg->reader_num);
 	if (!ctx->scard_ctx)
-		goto error;
+		return -EINVAL;
 
 	rc = ipa_euicc_init_es10x(ctx);
 	if (rc < 0)
-		goto error;
+		return -EINVAL;
 
 	rc = ipa_es10c_get_eid(ctx, ctx->eid);
 	if (rc < 0)
-		goto error;
+		return -EINVAL;
 
 	rc = equip_eim_cfg(ctx);
 	if (rc < 0)
-		goto error;
+		return -EINVAL;
 
-	return ctx;
-error:
-	ipa_free_ctx(ctx);
-	return NULL;
+	return 0;
 }
 
 /*! poll the IPAd (may be called in regular intervals or on purpose).
