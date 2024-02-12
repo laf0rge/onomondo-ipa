@@ -20,7 +20,7 @@
 
 #include "es10b_get_eim_cfg_data.h"
 
-static int equip_eim_cfg(struct ipa_context *ctx, struct ipa_config *cfg)
+static int equip_eim_cfg(struct ipa_context *ctx)
 {
 	struct ipa_es10b_eim_cfg_data *eim_cfg_data = NULL;
 	struct EimConfigurationData *eim_cfg_data_item = NULL;
@@ -100,7 +100,7 @@ struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 	if (rc < 0)
 		goto error;
 
-	rc = equip_eim_cfg(ctx, cfg);
+	rc = equip_eim_cfg(ctx);
 	if (rc < 0)
 		goto error;
 
