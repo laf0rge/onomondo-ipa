@@ -16,13 +16,13 @@ struct ipa_context {
 	/*! sub-context of the smartcard connection towards the eUICC, */
 	void *scard_ctx;
 
-	/*! cached eID (read from eUICC on context creation) */
+	/*! cached eID (read from eUICC when ipa_init is called) */
 	uint8_t eid[IPA_LEN_EID];
 
-	/*! cached eimId (read from eUICC on context creation) */
+	/*! cached eimId (read from eUICC when ipa_init is called) */
 	char *eim_id;
 
-	/*! cached eIM address (read from eUICC on context creation) */
+	/*! cached eIM address (read from eUICC when ipa_init is called) */
 	char *eim_fqdn;
 
 	/*! internal storage for IoT eUICC emulation. (This data may be subject to changes when administrative
