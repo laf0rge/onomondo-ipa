@@ -67,6 +67,9 @@ struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(const struct ipa_buf *
 		return NULL;
 	}
 
+	IPA_LOGP_ESIPA(function_name, LDEBUG, "ESipa message received from eIM:\n");
+	ipa_buf_hexdump_multiline(msg_to_ipa_encoded, 64, 1, SESIPA, LDEBUG);
+
 	rc = ber_decode(0, &asn_DEF_EsipaMessageFromEimToIpa,
 			(void **)&msg_to_ipa, msg_to_ipa_encoded->data, msg_to_ipa_encoded->len);
 
@@ -88,7 +91,7 @@ struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(const struct ipa_buf *
 		return NULL;
 	}
 
-	IPA_LOGP_ESIPA(function_name, LDEBUG, "ESipa message received from eIM:\n");
+	IPA_LOGP(SESIPA, LDEBUG, " decoded ASN.1:\n");
 	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa, 1, SESIPA, LDEBUG);
 
 	if (msg_to_ipa->present != epected_res_type) {
@@ -124,6 +127,9 @@ struct ipa_buf *ipa_esipa_msg_to_eim_enc(const struct EsipaMessageFromIpaToEim *
 		IPA_FREE(buf_encoded);
 		return NULL;
 	}
+
+	IPA_LOGP(SES10X, LDEBUG, " encoded ASN.1:\n");
+	ipa_buf_hexdump_multiline(buf_encoded, 64, 1, SESIPA, LDEBUG);
 
 	return buf_encoded;
 }
