@@ -16,19 +16,6 @@ struct ipa_config {
 	 *  used.) */
 	char *preferred_eim_id;
 
-	/* TODO: SYS#6742: The mechanism that allows the configuration of fallback that should be used in case
-	 * GetEimConfigurationData fails is not very elegant. This machanism should be replaced with a more
-	 * elegant solution. */
-
-	/*! fallback eimId (optional, will be used in case GetEimConfigurationData fails) */
-	char *fallback_eim_id;
-
-	/*! fallback eimFqdn (optional, will be used in case GetEimConfigurationData fails) */
-	char *fallback_eim_fqdn;
-
-	/*! fallback euiccCiPKId (optional, will be used in case GetEimConfigurationData fails) */
-	struct ipa_buf *fallback_euicc_ci_pkid;
-
 	/*! current TAC (This struct member may be updated at any time after context creation.) */
 	uint8_t tac[IPA_LEN_TAC];
 
@@ -40,6 +27,19 @@ struct ipa_config {
 
 	/*! Number of the logical channel that is used to communicate with the ISD-R */
 	uint8_t euicc_channel;
+
+	/*! IoT eUICC emulation.
+	 *  This IPAd also supports the use of consumer eUICCs, which have a slightly different interface. When the
+	 *  IoT eUICC emulation is enabled, the IPAd will adapt the interface on ES10x function level so that the
+	 *  consumer eUICC appears as an IoT eUICC on procedure level. */
+	struct {
+		/* ! Enable IoT eUICC emulation */
+		bool enabled;
+
+		/* ! user provided ipa_buf with BER encoded GetEimConfigurationDataResponse. */
+		struct ipa_buf *eim_cfg_ber;
+	} iot_euicc_emu;
+
 };
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg);

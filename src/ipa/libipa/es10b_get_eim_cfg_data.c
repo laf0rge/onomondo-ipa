@@ -61,8 +61,8 @@ void convert_get_eim_cfg_data(struct ipa_es10b_eim_cfg_data *res)
 				res->eim_cfg_data_list[i]->eim_public_key_data.eim_public_key =
 				    ipa_buf_alloc(IPA_ES10X_ASN_ENCODER_BUF_SIZE);
 				rc = der_encode(&asn_DEF_SubjectPublicKeyInfo,
-						&res->res->eimConfigurationDataList.list.array[i]->
-						eimPublicKeyData->choice.eimPublicKey, ipa_asn1c_consume_bytes_cb,
+						&res->res->eimConfigurationDataList.list.array[i]->eimPublicKeyData->
+						choice.eimPublicKey, ipa_asn1c_consume_bytes_cb,
 						res->eim_cfg_data_list[i]->eim_public_key_data.eim_public_key);
 				if (rc.encoded <= 0) {
 					IPA_LOGP_ES10X("GetEimConfigurationData", LERROR,
@@ -76,8 +76,8 @@ void convert_get_eim_cfg_data(struct ipa_es10b_eim_cfg_data *res)
 				res->eim_cfg_data_list[i]->eim_public_key_data.eim_certificate =
 				    ipa_buf_alloc(IPA_ES10X_ASN_ENCODER_BUF_SIZE);
 				rc = der_encode(&asn_DEF_Certificate,
-						&res->res->eimConfigurationDataList.list.array[i]->
-						eimPublicKeyData->choice.eimCertificate, ipa_asn1c_consume_bytes_cb,
+						&res->res->eimConfigurationDataList.list.array[i]->eimPublicKeyData->
+						choice.eimCertificate, ipa_asn1c_consume_bytes_cb,
 						res->eim_cfg_data_list[i]->eim_public_key_data.eim_certificate);
 				if (rc.encoded <= 0) {
 					IPA_LOGP_ES10X("GetEimConfigurationData", LERROR,
@@ -98,16 +98,16 @@ void convert_get_eim_cfg_data(struct ipa_es10b_eim_cfg_data *res)
 				res->eim_cfg_data_list[i]->trusted_public_key_data_tls.trusted_eim_pk_tls =
 				    ipa_buf_alloc(IPA_ES10X_ASN_ENCODER_BUF_SIZE);
 				rc = der_encode(&asn_DEF_SubjectPublicKeyInfo,
-						&res->res->eimConfigurationDataList.list.
-						array[i]->trustedPublicKeyDataTls->choice.trustedEimPkTls,
+						&res->res->eimConfigurationDataList.list.array[i]->
+						trustedPublicKeyDataTls->choice.trustedEimPkTls,
 						ipa_asn1c_consume_bytes_cb,
-						res->eim_cfg_data_list[i]->
-						trusted_public_key_data_tls.trusted_eim_pk_tls);
+						res->eim_cfg_data_list[i]->trusted_public_key_data_tls.
+						trusted_eim_pk_tls);
 				if (rc.encoded <= 0) {
 					IPA_LOGP_ES10X("GetEimConfigurationData", LERROR,
 						       "data format conversion failed, cannot re-encode trustedEimPkTls in trustedPublicKeyDataTls\n");
-					IPA_FREE(res->eim_cfg_data_list[i]->
-						 trusted_public_key_data_tls.trusted_eim_pk_tls);
+					IPA_FREE(res->eim_cfg_data_list[i]->trusted_public_key_data_tls.
+						 trusted_eim_pk_tls);
 					res->eim_cfg_data_list[i]->trusted_public_key_data_tls.trusted_eim_pk_tls =
 					    NULL;
 					return;
@@ -117,16 +117,16 @@ void convert_get_eim_cfg_data(struct ipa_es10b_eim_cfg_data *res)
 				res->eim_cfg_data_list[i]->trusted_public_key_data_tls.trusted_certificate_tls =
 				    ipa_buf_alloc(IPA_ES10X_ASN_ENCODER_BUF_SIZE);
 				rc = der_encode(&asn_DEF_Certificate,
-						&res->res->eimConfigurationDataList.list.
-						array[i]->trustedPublicKeyDataTls->choice.trustedCertificateTls,
+						&res->res->eimConfigurationDataList.list.array[i]->
+						trustedPublicKeyDataTls->choice.trustedCertificateTls,
 						ipa_asn1c_consume_bytes_cb,
-						res->eim_cfg_data_list[i]->
-						trusted_public_key_data_tls.trusted_certificate_tls);
+						res->eim_cfg_data_list[i]->trusted_public_key_data_tls.
+						trusted_certificate_tls);
 				if (rc.encoded <= 0) {
 					IPA_LOGP_ES10X("GetEimConfigurationData", LERROR,
 						       "data format conversion failed, cannot re-encode trustedCertificateTls in trustedPublicKeyDataTls\n");
-					IPA_FREE(res->eim_cfg_data_list[i]->
-						 trusted_public_key_data_tls.trusted_certificate_tls);
+					IPA_FREE(res->eim_cfg_data_list[i]->trusted_public_key_data_tls.
+						 trusted_certificate_tls);
 					res->eim_cfg_data_list[i]->trusted_public_key_data_tls.trusted_certificate_tls =
 					    NULL;
 					return;
@@ -158,10 +158,7 @@ static int dec_get_eim_cfg_data(struct ipa_es10b_eim_cfg_data *eim_cfg_data, con
 	return 0;
 }
 
-/*! Function (ES10b): GetEimConfigurationData.
- *  \param[inout] ctx pointer to ipa_context.
- *  \returns pointer newly allocated struct with function result, NULL on error. */
-struct ipa_es10b_eim_cfg_data *ipa_es10b_get_eim_cfg_data(struct ipa_context *ctx)
+static struct ipa_es10b_eim_cfg_data *get_eim_cfg_data(struct ipa_context *ctx)
 {
 	struct ipa_buf *es10a_req = NULL;
 	struct ipa_buf *es10a_res = NULL;
@@ -197,6 +194,50 @@ error:
 	IPA_FREE(es10a_res);
 	ipa_es10b_get_eim_cfg_data_free(eim_cfg_data);
 	return NULL;
+}
+
+static struct ipa_es10b_eim_cfg_data *get_eim_cfg_data_iot_emu(struct ipa_context *ctx)
+{
+	struct ipa_buf *es10a_req = NULL;
+	struct ipa_buf *es10a_res = NULL;
+	struct ipa_es10b_eim_cfg_data *eim_cfg_data = IPA_ALLOC_ZERO(struct ipa_es10b_eim_cfg_data);
+	struct GetEimConfigurationDataRequest get_eim_cfg_data_req = { 0 };
+	int rc;
+
+	IPA_LOGP_ES10X("GetEimConfigurationData", LERROR,
+		       "IoT eUICC emulation active, pretending to query eUICC for eIM configuration...\n");
+	if (!ctx->iot_euicc_emu.eim_cfg_ber) {
+		IPA_LOGP_ES10X("GetEimConfigurationData", LERROR, "no eIM configuration configured\n");
+		goto error;
+	}
+	es10a_res = ipa_buf_dup(ctx->iot_euicc_emu.eim_cfg_ber);
+	assert(es10a_res);
+
+	rc = dec_get_eim_cfg_data(eim_cfg_data, es10a_res);
+	if (rc < 0)
+		goto error;
+
+	convert_get_eim_cfg_data(eim_cfg_data);
+
+	IPA_FREE(es10a_req);
+	IPA_FREE(es10a_res);
+	return eim_cfg_data;
+error:
+	IPA_FREE(es10a_req);
+	IPA_FREE(es10a_res);
+	ipa_es10b_get_eim_cfg_data_free(eim_cfg_data);
+	return NULL;
+}
+
+/*! Function (ES10b): GetEimConfigurationData.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \returns pointer newly allocated struct with function result, NULL on error. */
+struct ipa_es10b_eim_cfg_data *ipa_es10b_get_eim_cfg_data(struct ipa_context *ctx)
+{
+	if (ctx->cfg->iot_euicc_emu.enabled)
+		return get_eim_cfg_data_iot_emu(ctx);
+	else
+		return get_eim_cfg_data(ctx);
 }
 
 /*! Free results of function (ES10b): GetEimConfigurationData.
