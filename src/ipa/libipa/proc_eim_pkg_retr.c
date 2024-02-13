@@ -15,6 +15,7 @@
 #include "context.h"
 #include "utils.h"
 #include "esipa_get_eim_pkg.h"
+#include "es10b_get_eim_cfg_data.h"
 #include "proc_cmn_mtl_auth.h"
 #include "proc_cmn_cancel_sess.h"
 #include "proc_direct_prfle_dwnld.h"
@@ -22,12 +23,44 @@
 #include "proc_euicc_data_req.h"
 #include "proc_eim_pkg_retr.h"
 
+static int get_euicc_ci_pkid(struct ipa_context *ctx, struct ipa_buf **pkid)
+{
+	struct ipa_es10b_eim_cfg_data *eim_cfg_data = NULL;
+	struct EimConfigurationData *eim_cfg_data_item = NULL;
+
+	*pkid = NULL;
+
+	eim_cfg_data = ipa_es10b_get_eim_cfg_data(ctx);
+	if (!eim_cfg_data) {
+		IPA_LOGP(SIPA, LERROR, "cannot read EimConfigurationData from eUICC\n");
+		goto error;
+	}
+
+	eim_cfg_data_item = ipa_es10b_get_eim_cfg_data_filter(eim_cfg_data, ctx->eim_id);
+	if (!eim_cfg_data_item) {
+		IPA_LOGP(SIPA, LERROR, "no EimConfigurationData item for eimId %s present!\n", ctx->eim_id);
+		goto error;
+	}
+
+	if (eim_cfg_data_item->euiccCiPKId)
+		*pkid = IPA_BUF_FROM_ASN(eim_cfg_data_item->euiccCiPKId);
+
+	ipa_es10b_get_eim_cfg_data_free(eim_cfg_data);
+	return 0;
+error:
+	IPA_LOGP(SIPA, LERROR, "unable to retrieve EimConfigurationData\n");
+	ipa_es10b_get_eim_cfg_data_free(eim_cfg_data);
+	return -EINVAL;
+}
+
 /*! Perform eIM Package Retrieval Procedure.
  *  \param[inout] ctx pointer to ipa_context.
  *  \returns 0 on success, negative on failure. */
 int ipa_proc_eim_pkg_retr(struct ipa_context *ctx)
 {
 	struct ipa_esipa_get_eim_pkg_res *get_eim_pkg_res = NULL;
+	int rc;
+	struct ipa_buf *allowed_ca_pkid = NULL;
 
 	/* Poll eIM */
 	get_eim_pkg_res = ipa_esipa_get_eim_pkg(ctx, ctx->eid);
@@ -62,11 +95,16 @@ int ipa_proc_eim_pkg_retr(struct ipa_context *ctx)
 				 "the ProfileDownloadData does not contain an activationCode -- cannot continue!\n");
 			goto error;
 		}
-		direct_prfle_dwnlod_pars.allowed_ca = ctx->euicc_ci_pkid;
+
+		rc = get_euicc_ci_pkid(ctx, &allowed_ca_pkid);
+		if (rc < 0)
+			goto error;
+
+		direct_prfle_dwnlod_pars.allowed_ca = allowed_ca_pkid;
 		direct_prfle_dwnlod_pars.tac = ctx->cfg->tac;
 		direct_prfle_dwnlod_pars.ac =
-		    IPA_STR_FROM_ASN(&get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->
-				     choice.activationCode);
+		    IPA_STR_FROM_ASN(&get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->choice.
+				     activationCode);
 		ipa_proc_direct_prfle_dwnlod(ctx, &direct_prfle_dwnlod_pars);
 		IPA_FREE((void *)direct_prfle_dwnlod_pars.ac);
 	} else {
@@ -76,10 +114,12 @@ int ipa_proc_eim_pkg_retr(struct ipa_context *ctx)
 	}
 
 	ipa_esipa_get_eim_pkg_free(get_eim_pkg_res);
+	IPA_FREE(allowed_ca_pkid);
 	IPA_LOGP(SIPA, LINFO, "eIM Package Retrieval succeded!\n");
 	return 0;
 error:
 	ipa_esipa_get_eim_pkg_free(get_eim_pkg_res);
+	IPA_FREE(allowed_ca_pkid);
 	IPA_LOGP(SIPA, LINFO, "eIM Package Retrieval failed!\n");
 	return -EINVAL;
 }

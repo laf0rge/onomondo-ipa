@@ -47,11 +47,6 @@ static int equip_eim_cfg(struct ipa_context *ctx)
 	else
 		goto error;
 
-	/* TODO: We do not need this parameter very often. Maybe we can get rid of it by querying the eIM
-	 * configuration when we need it. */
-	if (eim_cfg_data_item->euiccCiPKId)
-		ctx->euicc_ci_pkid = IPA_BUF_FROM_ASN(eim_cfg_data_item->euiccCiPKId);
-
 	ipa_es10b_get_eim_cfg_data_free(eim_cfg_data);
 
 	return 0;
@@ -129,7 +124,6 @@ void ipa_free_ctx(struct ipa_context *ctx)
 
 	IPA_FREE(ctx->eim_id);
 	IPA_FREE(ctx->eim_fqdn);
-	IPA_FREE(ctx->euicc_ci_pkid);
 	IPA_FREE(ctx->iot_euicc_emu.eim_cfg_ber);
 
 	if (ctx->scard_ctx)

@@ -25,9 +25,6 @@ struct ipa_context {
 	/*! cached eIM address (read from eUICC on context creation) */
 	char *eim_fqdn;
 
-	/*! cached allowed CA (optional, read from eUICC on context creation) */
-	struct ipa_buf *euicc_ci_pkid;
-
 	/*! internal storage for IoT eUICC emulation. (This data may be subject to changes when administrative
 	 *  operations are carried out on the card (e.g. PSMOs). This usually means that the size of the data
 	 *  set changes and the ipa_buf may be re-allocated with a different size. To prevent irretations and
