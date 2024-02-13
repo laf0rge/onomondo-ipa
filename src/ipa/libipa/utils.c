@@ -102,7 +102,7 @@ void ipa_hexdump_multiline(const uint8_t *data, size_t len, size_t width, uint8_
  *  \param[in] indent indentation level of the generated output.
  *  \param[in] log_subsys log subsystem to generate the output for.
  *  \param[in] log_level log level to generate the output for. */
-void ipa_buf_hexdump_multiline(struct ipa_buf *buf, size_t width, uint8_t indent, enum log_subsys log_subsys,
+void ipa_buf_hexdump_multiline(const struct ipa_buf *buf, size_t width, uint8_t indent, enum log_subsys log_subsys,
 			       enum log_level log_level)
 {
 	char indent_str[256];
