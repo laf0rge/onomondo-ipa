@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "mem.h"
+#include "log.h"
 
 /*! Get the size of an array in elements.
  *  \param[in] array array reference. */
@@ -55,6 +56,11 @@ static inline char *ipa_buf_hexdump(const struct ipa_buf *buf)
 		return "(null)";
 	return ipa_hexdump(buf->data, buf->len);
 }
+
+void ipa_hexdump_multiline(const uint8_t *data, size_t len, size_t width, uint8_t indent, enum log_subsys log_subsys,
+			   enum log_level log_level);
+void ipa_buf_hexdump_multiline(const struct ipa_buf *buf, size_t width, uint8_t indent, enum log_subsys log_subsys,
+			       enum log_level log_level);
 
 /*! Allocate a new ipa_buf object.
  *  \param[in] len number of bytes to allocate inside ipa_buf.

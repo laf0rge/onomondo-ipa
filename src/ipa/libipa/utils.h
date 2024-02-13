@@ -15,10 +15,6 @@ struct num_str_map {
 };
 
 const char *ipa_str_from_num(const struct num_str_map *map, long num, const char *def);
-void ipa_hexdump_multiline(const uint8_t *data, size_t len, size_t width, uint8_t indent, enum log_subsys log_subsys,
-			   enum log_level log_level);
-void ipa_buf_hexdump_multiline(const struct ipa_buf *buf, size_t width, uint8_t indent, enum log_subsys log_subsys,
-			       enum log_level log_level);
 int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv);
 void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_ptr, uint8_t indent,
 		    enum log_subsys log_subsys, enum log_level log_level);
