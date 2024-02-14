@@ -58,12 +58,10 @@ void convert_get_eim_cfg_data(struct ipa_es10b_eim_cfg_data *res)
 		if (res->res->eimConfigurationDataList.list.array[i]->eimPublicKeyData) {
 			switch (res->res->eimConfigurationDataList.list.array[i]->eimPublicKeyData->present) {
 			case EimConfigurationData__eimPublicKeyData_PR_eimPublicKey:
-				res->eim_cfg_data_list[i]->eim_public_key_data.eim_public_key =
-				    ipa_buf_alloc(IPA_ES10X_ASN_ENCODER_BUF_SIZE);
 				rc = der_encode(&asn_DEF_SubjectPublicKeyInfo,
 						&res->res->eimConfigurationDataList.list.array[i]->eimPublicKeyData->
 						choice.eimPublicKey, ipa_asn1c_consume_bytes_cb,
-						res->eim_cfg_data_list[i]->eim_public_key_data.eim_public_key);
+						&res->eim_cfg_data_list[i]->eim_public_key_data.eim_public_key);
 				if (rc.encoded <= 0) {
 					IPA_LOGP_ES10X("GetEimConfigurationData", LERROR,
 						       "data format conversion failed, cannot re-encode eimPublicKey in eimPublicKeyData\n");
@@ -73,12 +71,10 @@ void convert_get_eim_cfg_data(struct ipa_es10b_eim_cfg_data *res)
 				}
 				break;
 			case EimConfigurationData__eimPublicKeyData_PR_eimCertificate:
-				res->eim_cfg_data_list[i]->eim_public_key_data.eim_certificate =
-				    ipa_buf_alloc(IPA_ES10X_ASN_ENCODER_BUF_SIZE);
 				rc = der_encode(&asn_DEF_Certificate,
 						&res->res->eimConfigurationDataList.list.array[i]->eimPublicKeyData->
 						choice.eimCertificate, ipa_asn1c_consume_bytes_cb,
-						res->eim_cfg_data_list[i]->eim_public_key_data.eim_certificate);
+						&res->eim_cfg_data_list[i]->eim_public_key_data.eim_certificate);
 				if (rc.encoded <= 0) {
 					IPA_LOGP_ES10X("GetEimConfigurationData", LERROR,
 						       "data format conversion failed, cannot re-encode eimCertificate in eimPublicKeyData\n");
@@ -95,13 +91,11 @@ void convert_get_eim_cfg_data(struct ipa_es10b_eim_cfg_data *res)
 		if (res->res->eimConfigurationDataList.list.array[i]->trustedPublicKeyDataTls) {
 			switch (res->res->eimConfigurationDataList.list.array[i]->trustedPublicKeyDataTls->present) {
 			case EimConfigurationData__trustedPublicKeyDataTls_PR_trustedEimPkTls:
-				res->eim_cfg_data_list[i]->trusted_public_key_data_tls.trusted_eim_pk_tls =
-				    ipa_buf_alloc(IPA_ES10X_ASN_ENCODER_BUF_SIZE);
 				rc = der_encode(&asn_DEF_SubjectPublicKeyInfo,
 						&res->res->eimConfigurationDataList.list.array[i]->
 						trustedPublicKeyDataTls->choice.trustedEimPkTls,
 						ipa_asn1c_consume_bytes_cb,
-						res->eim_cfg_data_list[i]->trusted_public_key_data_tls.
+						&res->eim_cfg_data_list[i]->trusted_public_key_data_tls.
 						trusted_eim_pk_tls);
 				if (rc.encoded <= 0) {
 					IPA_LOGP_ES10X("GetEimConfigurationData", LERROR,
@@ -114,13 +108,11 @@ void convert_get_eim_cfg_data(struct ipa_es10b_eim_cfg_data *res)
 				}
 				break;
 			case EimConfigurationData__trustedPublicKeyDataTls_PR_trustedCertificateTls:
-				res->eim_cfg_data_list[i]->trusted_public_key_data_tls.trusted_certificate_tls =
-				    ipa_buf_alloc(IPA_ES10X_ASN_ENCODER_BUF_SIZE);
 				rc = der_encode(&asn_DEF_Certificate,
 						&res->res->eimConfigurationDataList.list.array[i]->
 						trustedPublicKeyDataTls->choice.trustedCertificateTls,
 						ipa_asn1c_consume_bytes_cb,
-						res->eim_cfg_data_list[i]->trusted_public_key_data_tls.
+						&res->eim_cfg_data_list[i]->trusted_public_key_data_tls.
 						trusted_certificate_tls);
 				if (rc.encoded <= 0) {
 					IPA_LOGP_ES10X("GetEimConfigurationData", LERROR,

@@ -109,7 +109,7 @@ struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(const struct ipa_buf *
  *  \returns pointer newly allocated ipa_buf that contains the encoded message, NULL on error. */
 struct ipa_buf *ipa_esipa_msg_to_eim_enc(const struct EsipaMessageFromIpaToEim *msg_to_eim, const char *function_name)
 {
-	struct ipa_buf *buf_encoded;
+	struct ipa_buf *buf_encoded = NULL;
 	asn_enc_rval_t rc;
 
 	assert(msg_to_eim);
@@ -118,10 +118,7 @@ struct ipa_buf *ipa_esipa_msg_to_eim_enc(const struct EsipaMessageFromIpaToEim *
 	IPA_LOGP_ESIPA(function_name, LDEBUG, "ESipa message that will be sent to eIM:\n");
 	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromIpaToEim, msg_to_eim, 1, SESIPA, LDEBUG);
 
-	buf_encoded = ipa_buf_alloc(IPA_ESIPA_ASN_ENCODER_BUF_SIZE);
-	assert(buf_encoded);
-
-	rc = der_encode(&asn_DEF_EsipaMessageFromIpaToEim, msg_to_eim, ipa_asn1c_consume_bytes_cb, buf_encoded);
+	rc = der_encode(&asn_DEF_EsipaMessageFromIpaToEim, msg_to_eim, ipa_asn1c_consume_bytes_cb, &buf_encoded);
 	if (rc.encoded <= 0) {
 		IPA_LOGP_ESIPA(function_name, LERROR, "cannot encode eIM request!\n");
 		IPA_FREE(buf_encoded);

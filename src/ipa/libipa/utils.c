@@ -13,6 +13,7 @@
 #include <onomondo/ipa/log.h>
 #include <asn_application.h>
 #include "utils.h"
+#include "length.h"
 
 /* \! Lookup a numeric value in a num to string map and return the coresponding string.
  *  \param[in] map pointer num to str map.
@@ -121,24 +122,35 @@ void ipa_buf_hexdump_multiline(const struct ipa_buf *buf, size_t width, uint8_t 
 /*! Generate a hexdump string from the input data.
  *  \param[in] buffer pointer to chunk with encoded data.
  *  \param[in] size length of encoded data chunk.
- *  \param[out] priv pointer to caller provided ipa_buf that is used to store the encoded data.
+ *  \param[out] priv pointer to a pointer (may be NULL) that points to a caller provided ipa_buf that stores the output.
  *  \returns 0 on success, -ENOMEM on error. */
 int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv)
 {
-	struct ipa_buf *buf_encoded = priv;
+	struct ipa_buf **buf_encoded_ptr = priv;
+	struct ipa_buf *buf_encoded = *buf_encoded_ptr;
+	size_t realloc_size;
 
 	assert(priv);
 	assert(buffer);
 
+	/* In case the caller didn't provide an initial buffer, we allocate one */
+	if (!buf_encoded) {
+		buf_encoded = ipa_buf_alloc(IPA_LEN_ASN1_ENCODER_BUF);
+		assert(buf_encoded);
+		*buf_encoded_ptr = buf_encoded;
+	}
+
 	/* Check whether we still have enough space to store the encoding
 	 * results. */
 	if (buf_encoded->data_len < buf_encoded->len + size) {
-		/* TODO: Maybe work with realloc here?, then we could have small initial buffer sizes and
-		 * automatically allocate more memory if needed? */
-		IPA_LOGP(SIPA, LERROR,
-			 "ASN.1 encoder failed due to small buffer size (have: %zu bytes, required: %zu bytes\n",
+		IPA_LOGP(SIPA, LDEBUG,
+			 "ASN.1 encoder buffer exhausted, reallocating more memory (have: %zu bytes, required: %zu bytes\n",
 			 buf_encoded->data_len, buf_encoded->len + size);
-		return -ENOMEM;
+
+		realloc_size = ((buf_encoded->len + size) / IPA_LEN_ASN1_ENCODER_BUF + 1) * IPA_LEN_ASN1_ENCODER_BUF;
+		buf_encoded = ipa_buf_realloc(buf_encoded, realloc_size);
+		assert(buf_encoded);
+		*buf_encoded_ptr = buf_encoded;
 	}
 
 	ipa_buf_cpy(buf_encoded, buffer, size);

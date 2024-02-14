@@ -81,6 +81,18 @@ static inline struct ipa_buf *ipa_buf_alloc(size_t len)
 	return buf;
 }
 
+static inline struct ipa_buf *ipa_buf_realloc(struct ipa_buf *buf, size_t len)
+{
+	buf = IPA_REALLOC(buf, sizeof(*buf) + len);
+	assert(buf);
+
+	buf->data = (uint8_t *) buf + sizeof(*buf);
+	buf->data_len = len;
+	memset(buf->data + buf->len, 0, len - buf->len);
+
+	return buf;
+}
+
 /*! Allocate a new ipa_buf object and initialize it with data.
  *  \param[in] len number of bytes to allocate inside ipa_buf.
  *  \param[in] data to copy into the newly allocated ipa_buf.

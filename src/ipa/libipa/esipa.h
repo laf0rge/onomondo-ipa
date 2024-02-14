@@ -10,7 +10,6 @@ struct ipa_buf;
 	IPA_LOGP(SESIPA, level, "%s: " fmt, func, ## args)
 
 #define IPA_ESIPA_URL_MAXLEN 1024
-#define IPA_ESIPA_ASN_ENCODER_BUF_SIZE 5120
 
 char *ipa_esipa_get_eim_url(struct ipa_context *ctx);
 struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(const struct ipa_buf *msg_to_ipa_encoded,
