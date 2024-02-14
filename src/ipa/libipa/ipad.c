@@ -17,8 +17,8 @@
 #include "euicc.h"
 #include "es10c_get_eid.h"
 #include "proc_eim_pkg_retr.h"
-
 #include "es10b_get_eim_cfg_data.h"
+#include "es10b_add_init_eim.h"
 
 static int equip_eim_cfg(struct ipa_context *ctx)
 {
@@ -104,6 +104,41 @@ int ipa_init(struct ipa_context *ctx)
 	if (rc < 0)
 		return -EINVAL;
 
+	return 0;
+}
+
+/*! setup initial eIM configuration on the eUICC (AddInitialEim).
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[inout] cfg BER encoded eIM configuration (in the form of AddInitialEimRequest or GetEimConfigurationDataResponse).
+ *  \returns 0 on success, negative on error. */
+int ipa_eim_cfg(struct ipa_context *ctx, struct ipa_buf *cfg)
+{
+	asn_dec_rval_t rc;
+	struct AddInitialEimRequest *eim_cfg_decoded = NULL;
+	struct ipa_es10b_add_init_eim_req add_init_eim_req = { 0 };
+	struct ipa_es10b_add_init_eim_res *add_init_eim_res = NULL;
+
+	/* AddInitialEimRequest and GetEimConfigurationDataResponse are identical. This means we can cast
+	 * GetEimConfigurationDataResponse encoded ASN.1 data to AddInitialEimRequest */
+	if (cfg->data[0] == 0xBF && cfg->data[1] == 0x55) {
+		cfg->data[0] = 0xBF;
+		cfg->data[1] = 0x57;
+	}
+
+	/* Decode AddInitialEimRequest */
+	rc = ber_decode(0, &asn_DEF_AddInitialEimRequest, (void **)&eim_cfg_decoded, cfg->data, cfg->len);
+	if (rc.code != RC_OK) {
+		IPA_LOGP(SIPA, LERROR, "unable decode EimConfigurationData\n");
+		ASN_STRUCT_FREE(asn_DEF_AddInitialEimRequest, eim_cfg_decoded);
+		return -EINVAL;
+	}
+
+	/* Call ES10b function AddInitialEim */
+	add_init_eim_req.req = *eim_cfg_decoded;
+	add_init_eim_res = ipa_es10b_add_init_eim(ctx, &add_init_eim_req);
+
+	ipa_es10b_add_init_eim_res_free(add_init_eim_res);
+	ASN_STRUCT_FREE(asn_DEF_AddInitialEimRequest, eim_cfg_decoded);
 	return 0;
 }
 

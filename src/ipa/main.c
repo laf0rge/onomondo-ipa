@@ -25,18 +25,20 @@ static void print_help(void)
 	printf(" -e eimId ............ set preferred eIM (in case the eUICC has multiple)\n");
 	printf(" -r N ................ set reader number (default: %d)\n", DEFAULT_READER_NUMBER);
 	printf(" -c N ................ set logical channel number (default: %d)\n", DEFAULT_CHANNEL_NUMBER);
+	printf(" -f PATH ............. set initial eIM configuration\n");
 	printf(" -S .................. disable HTTPS\n");
 	printf(" -E PATH ............. emulate IoT euicc, set path to .ber files with emulation data\n");
 }
 
 struct ipa_buf *load_ber_from_file(char *dir, char *file)
 {
-	char path[PATH_MAX];
+	char path[PATH_MAX] = { 0 };
 	FILE *ber_file = NULL;
 	struct ipa_buf *ber = NULL;
 	size_t ber_size;
 
-	strcpy(path, dir);
+	if (dir)
+		strcpy(path, dir);
 	strcat(path, file);
 
 	ber_file = fopen(path, "r");
@@ -63,6 +65,7 @@ int main(int argc, char **argv)
 	int opt;
 	int rc;
 	char *iot_euicc_emu_ber_path = NULL;
+	char *initial_eim_cfg_file = NULL;
 
 	printf("IPAd!\n");
 
@@ -73,7 +76,7 @@ int main(int argc, char **argv)
 
 	/* Overwrite configuration values with user defined parameters */
 	while (1) {
-		opt = getopt(argc, argv, "ht:e:r:c:SE:");
+		opt = getopt(argc, argv, "ht:e:r:c:SE:f:");
 		if (opt == -1)
 			break;
 
@@ -99,6 +102,9 @@ int main(int argc, char **argv)
 			break;
 		case 'E':
 			iot_euicc_emu_ber_path = optarg;
+			break;
+		case 'f':
+			initial_eim_cfg_file = optarg;
 			break;
 		default:
 			printf("unhandled option: %c!\n", opt);
@@ -139,9 +145,15 @@ int main(int argc, char **argv)
 		goto error;
 	}
 
-	/* Run a single poll cycle and exit. */
-	ipa_poll(ctx);
-
+	/* Load initial eIM configuration */
+	if (initial_eim_cfg_file) {
+		struct ipa_buf *eim_cfg = load_ber_from_file(NULL, initial_eim_cfg_file);
+		ipa_eim_cfg(ctx, eim_cfg);
+		IPA_FREE(eim_cfg);
+	} else {
+		/* Run a single poll cycle and exit. */
+		ipa_poll(ctx);
+	}
 error:
 	ipa_free_ctx(ctx);
 	IPA_FREE(cfg.iot_euicc_emu.eim_cfg_ber);

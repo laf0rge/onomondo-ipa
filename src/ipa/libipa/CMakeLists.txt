@@ -2,6 +2,7 @@ add_library(libipa STATIC
   activation_code.c
   bpp_segments.c
   es10a_get_euicc_cfg_addr.c
+  es10b_add_init_eim.c
   es10b_auth_serv.c
   es10b_cancel_session.c
   es10b_get_certs.c
