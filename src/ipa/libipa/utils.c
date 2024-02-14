@@ -159,18 +159,31 @@ int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv)
 }
 
 struct ipa_asn1c_dump_buf {
-	char printbuf[10240];
+	char *printbuf;
 	char *printbuf_ptr;
+	size_t printbuf_size;
 };
 
 static int ipa_asn1c_dump_consume(const void *buffer, size_t size, void *app_key)
 {
 
 	struct ipa_asn1c_dump_buf *buf = app_key;
+	size_t realloc_size;
+	size_t current_size;
 
-	if ((buf->printbuf_ptr - buf->printbuf) + size >= sizeof(buf->printbuf)) {
-		IPA_LOGP(SMAIN, LERROR, "ASN.1 print buffer too small - cannot display full struct content!\n");
-		return -EINVAL;
+	if ((buf->printbuf_ptr - buf->printbuf) + size >= buf->printbuf_size) {
+		realloc_size =
+		    (((buf->printbuf_ptr - buf->printbuf) + size) / IPA_LEN_ASN1_PRINTER_BUF +
+		     1) * IPA_LEN_ASN1_PRINTER_BUF;
+		IPA_LOGP(SMAIN, LERROR,
+			 "ASN.1 print buffer exhausted - allocating more space for up to %zu characters!\n",
+			 realloc_size);
+
+		current_size = buf->printbuf_ptr - buf->printbuf;
+		buf->printbuf = IPA_REALLOC(buf->printbuf, realloc_size);
+		buf->printbuf_ptr = buf->printbuf + current_size;
+		buf->printbuf_size = realloc_size;
+		memset(buf->printbuf_ptr, 0, realloc_size - current_size);
 	}
 
 	memcpy(buf->printbuf_ptr, buffer, size);
@@ -191,12 +204,14 @@ void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_p
 		    enum log_subsys log_subsys, enum log_level log_level)
 {
 	char indent_str[256];
-	static struct ipa_asn1c_dump_buf buf;
+	struct ipa_asn1c_dump_buf buf = { 0 };
 
 	memset(indent_str, ' ', indent);
 	indent_str[indent] = '\0';
 
+	buf.printbuf = IPA_ALLOC_N_ZERO(IPA_LEN_ASN1_PRINTER_BUF);
 	buf.printbuf_ptr = buf.printbuf;
+	buf.printbuf_size = IPA_LEN_ASN1_PRINTER_BUF;
 	td->op->print_struct(td, struct_ptr, 1, ipa_asn1c_dump_consume, &buf);
 
 	char *token = strtok(buf.printbuf, "\n");
@@ -205,6 +220,8 @@ void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_p
 		IPA_LOGP(log_subsys, log_level, "%s %s\n", indent_str, token);
 		token = strtok(NULL, "\n");
 	}
+
+	IPA_FREE(buf.printbuf);
 }
 
 /*! Compare two strings case insensitive.
