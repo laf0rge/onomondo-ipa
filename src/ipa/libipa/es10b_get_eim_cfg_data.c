@@ -196,7 +196,7 @@ static struct ipa_es10b_eim_cfg_data *get_eim_cfg_data_iot_emu(struct ipa_contex
 	struct GetEimConfigurationDataRequest get_eim_cfg_data_req = { 0 };
 	int rc;
 
-	IPA_LOGP_ES10X("GetEimConfigurationData", LERROR,
+	IPA_LOGP_ES10X("GetEimConfigurationData", LINFO,
 		       "IoT eUICC emulation active, pretending to query eUICC for eIM configuration...\n");
 	if (!ctx->iot_euicc_emu.eim_cfg_ber) {
 		IPA_LOGP_ES10X("GetEimConfigurationData", LERROR, "no eIM configuration configured\n");
