@@ -47,6 +47,6 @@ struct ipa_config {
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg);
 void ipa_iot_euicc_emu_export(struct ipa_iot_euicc_emu *data, struct ipa_context *ctx);
 int ipa_init(struct ipa_context *ctx);
-int ipa_eim_cfg(struct ipa_context *ctx, struct ipa_buf *cfg);
+int ipa_add_init_eim_cfg(struct ipa_context *ctx, struct ipa_buf *cfg);
 int ipa_poll(struct ipa_context *ctx);
 void ipa_free_ctx(struct ipa_context *ctx);

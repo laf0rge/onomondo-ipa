@@ -124,7 +124,7 @@ int ipa_init(struct ipa_context *ctx)
  *  \param[inout] ctx pointer to ipa_context.
  *  \param[inout] cfg BER encoded eIM configuration (in the form of AddInitialEimRequest or GetEimConfigurationDataResponse).
  *  \returns 0 on success, negative on error. */
-int ipa_eim_cfg(struct ipa_context *ctx, struct ipa_buf *cfg)
+int ipa_add_init_eim_cfg(struct ipa_context *ctx, struct ipa_buf *cfg)
 {
 	asn_dec_rval_t rc;
 	struct AddInitialEimRequest *eim_cfg_decoded = NULL;

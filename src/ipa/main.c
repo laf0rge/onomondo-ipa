@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 	/* Load initial eIM configuration */
 	if (initial_eim_cfg_file) {
 		struct ipa_buf *eim_cfg = load_ber_from_file(NULL, initial_eim_cfg_file);
-		ipa_eim_cfg(ctx, eim_cfg);
+		ipa_add_init_eim_cfg(ctx, eim_cfg);
 		IPA_FREE(eim_cfg);
 	} else {
 		/* Run a single poll cycle and exit. */
