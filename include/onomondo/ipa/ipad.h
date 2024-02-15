@@ -17,7 +17,6 @@ struct ipa_iot_euicc_emu {
 
 /*! IPAd Configuration */
 struct ipa_config {
-
 	/*! preferred eimId (optional. When set to NULL, the first eIM config item in the EimConfigurationData list is
 	 *  used.) */
 	char *preferred_eim_id;
