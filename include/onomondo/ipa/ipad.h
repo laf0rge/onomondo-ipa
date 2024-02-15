@@ -9,6 +9,12 @@
 
 struct ipa_context;
 
+/*! IoT eUICC emulation state */
+struct ipa_iot_euicc_emu {
+	/*! eIM configuration in the form of a BER encoded GetEimConfigurationDataResponse. */
+	struct ipa_buf *eim_cfg_ber;
+};
+
 /*! IPAd Configuration */
 struct ipa_config {
 
@@ -28,21 +34,19 @@ struct ipa_config {
 	/*! Number of the logical channel that is used to communicate with the ISD-R */
 	uint8_t euicc_channel;
 
-	/*! IoT eUICC emulation.
+	/*! Enable IoT eUICC emulation.
 	 *  This IPAd also supports the use of consumer eUICCs, which have a slightly different interface. When the
 	 *  IoT eUICC emulation is enabled, the IPAd will adapt the interface on ES10x function level so that the
 	 *  consumer eUICC appears as an IoT eUICC on procedure level. */
-	struct {
-		/* ! Enable IoT eUICC emulation */
-		bool enabled;
+	bool iot_euicc_emu_enabled;
 
-		/* ! user provided ipa_buf with BER encoded GetEimConfigurationDataResponse. */
-		struct ipa_buf *eim_cfg_ber;
-	} iot_euicc_emu;
-
+	/*! User provided Initial state of the eUICC emulation. All user provided memory in this struct will be copied
+	 *  to an internal memory, so the API user may free the provided memory immediately after calling ipa_init */
+	struct ipa_iot_euicc_emu iot_euicc_emu;
 };
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg);
+void ipa_iot_euicc_emu_export(struct ipa_iot_euicc_emu *data, struct ipa_context *ctx);
 int ipa_init(struct ipa_context *ctx);
 int ipa_eim_cfg(struct ipa_context *ctx, struct ipa_buf *cfg);
 int ipa_poll(struct ipa_context *ctx);

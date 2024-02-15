@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 	if (iot_euicc_emu_ber_path) {
 		printf(" IoT euicc emulation:\n");
 		printf("  iot_euicc_emu_ber_path = %s\n", iot_euicc_emu_ber_path);
-		cfg.iot_euicc_emu.enabled = true;
+		cfg.iot_euicc_emu_enabled = true;
 		cfg.iot_euicc_emu.eim_cfg_ber = load_ber_from_file(iot_euicc_emu_ber_path, "eim_cfg.ber");
 	}
 

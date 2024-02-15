@@ -56,6 +56,12 @@ error:
 	return -EINVAL;
 }
 
+static void iot_euicc_emu_dup_contents(struct ipa_iot_euicc_emu *copy, const struct ipa_iot_euicc_emu *orig)
+{
+	assert(orig->eim_cfg_ber);
+	copy->eim_cfg_ber = ipa_buf_dup(orig->eim_cfg_ber);
+}
+
 /*! Create a new ipa_context.
  *  \param[in] cfg IPAd configuration.
  *  \returns ipa_context on success, NULL on failure. */
@@ -69,12 +75,19 @@ struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 
 	ctx->cfg = cfg;
 
-	if (cfg->iot_euicc_emu.enabled) {
-		assert(cfg->iot_euicc_emu.eim_cfg_ber);
-		ctx->iot_euicc_emu.eim_cfg_ber = ipa_buf_dup(cfg->iot_euicc_emu.eim_cfg_ber);
+	if (cfg->iot_euicc_emu_enabled) {
+		iot_euicc_emu_dup_contents(&ctx->iot_euicc_emu, &cfg->iot_euicc_emu);
 	}
 
 	return ctx;
+}
+
+/*! Export the current state of the IoT eUICC emulation data.
+ *  \param[in] data copy of the emulation data, caller takes ownership and is responsible for freeing.
+ *  \param[inout] ctx pointer to ipa_context. */
+void ipa_iot_euicc_emu_export(struct ipa_iot_euicc_emu *data, struct ipa_context *ctx)
+{
+	iot_euicc_emu_dup_contents(data, &ctx->iot_euicc_emu);
 }
 
 /*! Initialize IPAd and prepare links towards eIM and eUICC.

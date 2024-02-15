@@ -29,7 +29,5 @@ struct ipa_context {
 	 *  operations are carried out on the card (e.g. PSMOs). This usually means that the size of the data
 	 *  set changes and the ipa_buf may be re-allocated with a different size. To prevent irretations and
 	 *  stale pointers in the domain of the API user we maintain a private dataset) */
-	struct {
-		struct ipa_buf *eim_cfg_ber;
-	} iot_euicc_emu;
+	struct ipa_iot_euicc_emu iot_euicc_emu;
 };

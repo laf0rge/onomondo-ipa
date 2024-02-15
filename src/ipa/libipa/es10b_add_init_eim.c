@@ -131,7 +131,7 @@ error:
 struct ipa_es10b_add_init_eim_res *ipa_es10b_add_init_eim(struct ipa_context *ctx,
 							  const struct ipa_es10b_add_init_eim_req *req)
 {
-	if (ctx->cfg->iot_euicc_emu.enabled)
+	if (ctx->cfg->iot_euicc_emu_enabled)
 		return add_init_eim_iot_emu(ctx, req);
 	else
 		return add_init_eim(ctx, req);
