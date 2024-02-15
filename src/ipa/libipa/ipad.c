@@ -19,6 +19,7 @@
 #include "proc_eim_pkg_retr.h"
 #include "es10b_get_eim_cfg_data.h"
 #include "es10b_add_init_eim.h"
+#include "es10b_euicc_mem_rst.h"
 
 static int equip_eim_cfg(struct ipa_context *ctx)
 {
@@ -153,6 +154,22 @@ int ipa_add_init_eim_cfg(struct ipa_context *ctx, struct ipa_buf *cfg)
 	ipa_es10b_add_init_eim_res_free(add_init_eim_res);
 	ASN_STRUCT_FREE(asn_DEF_AddInitialEimRequest, eim_cfg_decoded);
 	return 0;
+}
+
+/*! reset memory of the eUICC (eUICCMemoryReset).
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[inout] operatnl_profiles apply reset option "deleteOperationalProfiles".
+ *  \param[inout] test_profiles apply reset option "deleteFieldLoadedTestProfiles".
+ *  \param[inout] default_smdp_addr apply reset option "resetDefaultSmdpAddress".
+ *  \returns 0 on success, negative on error. */
+int ipa_euicc_mem_rst(struct ipa_context *ctx, bool operatnl_profiles, bool test_profiles, bool default_smdp_addr)
+{
+	struct ipa_es10b_euicc_mem_rst euicc_mem_rst = { 0 };
+	euicc_mem_rst.operatnl_profiles = operatnl_profiles;
+	euicc_mem_rst.test_profiles = test_profiles;
+	euicc_mem_rst.default_smdp_addr = default_smdp_addr;
+
+	return ipa_es10b_euicc_mem_rst(ctx, &euicc_mem_rst);
 }
 
 /*! poll the IPAd (may be called in regular intervals or on purpose).

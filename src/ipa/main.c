@@ -26,6 +26,7 @@ static void print_help(void)
 	printf(" -r N ................ set reader number (default: %d)\n", DEFAULT_READER_NUMBER);
 	printf(" -c N ................ set logical channel number (default: %d)\n", DEFAULT_CHANNEL_NUMBER);
 	printf(" -f PATH ............. set initial eIM configuration\n");
+	printf(" -m .................. reset eUICC memory\n");
 	printf(" -S .................. disable HTTPS\n");
 	printf(" -E PATH ............. emulate IoT euicc, set path to .ber files with emulation data\n");
 }
@@ -66,6 +67,7 @@ int main(int argc, char **argv)
 	int rc;
 	char *iot_euicc_emu_ber_path = NULL;
 	char *initial_eim_cfg_file = NULL;
+	bool getopt_euicc_memory_reset = false;
 
 	printf("IPAd!\n");
 
@@ -76,7 +78,7 @@ int main(int argc, char **argv)
 
 	/* Overwrite configuration values with user defined parameters */
 	while (1) {
-		opt = getopt(argc, argv, "ht:e:r:c:SE:f:");
+		opt = getopt(argc, argv, "ht:e:r:c:SE:f:m");
 		if (opt == -1)
 			break;
 
@@ -105,6 +107,9 @@ int main(int argc, char **argv)
 			break;
 		case 'f':
 			initial_eim_cfg_file = optarg;
+			break;
+		case 'm':
+			getopt_euicc_memory_reset = true;
 			break;
 		default:
 			printf("unhandled option: %c!\n", opt);
@@ -150,6 +155,8 @@ int main(int argc, char **argv)
 		struct ipa_buf *eim_cfg = load_ber_from_file(NULL, initial_eim_cfg_file);
 		ipa_add_init_eim_cfg(ctx, eim_cfg);
 		IPA_FREE(eim_cfg);
+	} else if (getopt_euicc_memory_reset) {
+		ipa_euicc_mem_rst(ctx, true, true, true);
 	} else {
 		/* Run a single poll cycle and exit. */
 		ipa_poll(ctx);

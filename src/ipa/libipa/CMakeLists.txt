@@ -5,6 +5,7 @@ add_library(libipa STATIC
   es10b_add_init_eim.c
   es10b_auth_serv.c
   es10b_cancel_session.c
+  es10b_euicc_mem_rst.c
   es10b_get_certs.c
   es10b_get_eim_cfg_data.c
   es10b_get_euicc_chlg.c
