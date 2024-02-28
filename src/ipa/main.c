@@ -159,7 +159,7 @@ int main(int argc, char **argv)
 		ipa_euicc_mem_rst(ctx, true, true, true);
 	} else {
 		/* Run a single poll cycle and exit. */
-		ipa_poll(ctx);
+		ipa_poll(ctx, false);
 	}
 error:
 	ipa_free_ctx(ctx);

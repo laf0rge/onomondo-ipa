@@ -20,6 +20,7 @@
 
 struct http_ctx {
 	bool initialized;
+	CURL *curl;
 };
 
 /*! Initialize HTTP client.
@@ -54,7 +55,7 @@ static size_t store_response_cb(void *ptr, size_t size, size_t nmemb, void *clie
 	return size * nmemb;
 }
 
-/*! Perform HTTP request.
+/*! Open a TCP connection (if not already present) and Perform HTTP request.
  *  \param[inout] http_ctx HTTP client context.
  *  \param[out] res buffer with HTTP response.
  *  \param[out] req buffer with HTTP request (POST).
@@ -63,27 +64,29 @@ static size_t store_response_cb(void *ptr, size_t size, size_t nmemb, void *clie
 int ipa_http_req(void *http_ctx, struct ipa_buf *res, const struct ipa_buf *req, const char *url)
 {
 	struct http_ctx *ctx = http_ctx;
-	CURL *curl = NULL;
 	CURLcode rc;
 	struct curl_slist *list = NULL;
 
 	assert(ctx->initialized);
 
-	curl = curl_easy_init();
-	if (!curl) {
-		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure!\n");
-		goto error;
+	/* Create a new curl context (also represents an onoging connection) in case it does not exist */
+	if (!ctx->curl) {
+		ctx->curl = curl_easy_init();
+		if (!ctx->curl) {
+			IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure!\n");
+			goto error;
+		}
 	}
 #ifdef SKIP_VERIFICATION
 	/* Bypass SSL certificate verification (only for debug, disable in productive use!) */
-	rc = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+	rc = curl_easy_setopt(ctx->curl, CURLOPT_SSL_VERIFYPEER, 0L);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
 
 	/* Bypass SSL hostname verification (only for debug, disable in productive use!) */
-	rc = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+	rc = curl_easy_setopt(ctx->curl, CURLOPT_SSL_VERIFYHOST, 0L);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
@@ -96,57 +99,68 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res, const struct ipa_buf *req,
 	list = curl_slist_append(list, "User-Agent: " IPA_HTTP_USER_AGENT);
 	list = curl_slist_append(list, "X-Admin-Protocol: " IPA_HTTP_X_ADMIN_PROTOCOL);
 	list = curl_slist_append(list, "Content-Type: " IPA_HTTP_CONTENT_TYPE);
-	rc = curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+	rc = curl_easy_setopt(ctx->curl, CURLOPT_HTTPHEADER, list);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
 
 	/* Perform HTTP Request */
-	rc = curl_easy_setopt(curl, CURLOPT_URL, url);
+	rc = curl_easy_setopt(ctx->curl, CURLOPT_URL, url);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
-	rc = curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req->data);
+	rc = curl_easy_setopt(ctx->curl, CURLOPT_POSTFIELDS, req->data);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
-	rc = curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, req->len);
+	rc = curl_easy_setopt(ctx->curl, CURLOPT_POSTFIELDSIZE, req->len);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
-	rc = curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, store_response_cb);
+	rc = curl_easy_setopt(ctx->curl, CURLOPT_WRITEFUNCTION, store_response_cb);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
-	rc = curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)res);
+	rc = curl_easy_setopt(ctx->curl, CURLOPT_WRITEDATA, (void *)res);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
-	rc = curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
+	rc = curl_easy_setopt(ctx->curl, CURLOPT_TIMEOUT, 5);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
-	rc = curl_easy_perform(curl);
+
+	rc = curl_easy_perform(ctx->curl);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "HTTP request to %s failed: %s\n", url, curl_easy_strerror(rc));
 		goto error;
 	}
 	IPA_LOGP(SHTTP, LINFO, "HTTP request to %s successful: %s\n", url, curl_easy_strerror(rc));
 
-	curl_easy_cleanup(curl);
 	curl_slist_free_all(list);
 	return 0;
 error:
-	curl_easy_cleanup(curl);
+	ipa_http_close(http_ctx);
 	curl_slist_free_all(list);
 	return -EIO;
+}
+
+/*! Close the TCP underlyaing TCP connection (to be called after the last request).
+ *  \param[inout] http_ctx HTTP client context. */
+void ipa_http_close(void *http_ctx)
+{
+	struct http_ctx *ctx = http_ctx;
+	if (!ctx->curl)
+		return;
+	curl_easy_cleanup(ctx->curl);
+	ctx->curl = NULL;
 }
 
 /*! Free HTTP client.
@@ -158,6 +172,7 @@ void ipa_http_free(void *http_ctx)
 	if (!http_ctx)
 		return;
 
+	ipa_http_close(http_ctx);
 	curl_global_cleanup();
 	IPA_FREE(ctx);
 	IPA_LOGP(SHTTP, LINFO, "HTTP client freed.\n");

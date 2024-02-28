@@ -15,6 +15,7 @@
 #include "utils.h"
 #include "context.h"
 #include "euicc.h"
+#include "esipa.h"
 #include "es10c_get_eid.h"
 #include "proc_eim_pkg_retr.h"
 #include "es10b_get_eim_cfg_data.h"
@@ -174,10 +175,18 @@ int ipa_euicc_mem_rst(struct ipa_context *ctx, bool operatnl_profiles, bool test
 
 /*! poll the IPAd (may be called in regular intervals or on purpose).
  *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] keep_esipa keep ESipa connection open (for following polls).
  *  \returns 0 on success, negative on error. */
-int ipa_poll(struct ipa_context *ctx)
+int ipa_poll(struct ipa_context *ctx, bool keep_esipa)
 {
-	return ipa_proc_eim_pkg_retr(ctx);
+	int rc;
+
+	rc = ipa_proc_eim_pkg_retr(ctx);
+
+	if (!keep_esipa)
+		ipa_esipa_close(ctx);
+
+	return rc;
 }
 
 /*! close links towards eIM and eUICC and free an ipa_context.

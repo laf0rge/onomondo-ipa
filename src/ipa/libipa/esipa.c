@@ -162,6 +162,13 @@ error:
 	return NULL;
 }
 
+/*! Close any underlyaing transport protocol connection towards the eIM
+ *  \param[in] ctx pointer to ipa_context. */
+void ipa_esipa_close(struct ipa_context *ctx)
+{
+	ipa_http_close(ctx->http_ctx);
+}
+
 /*! Convert a notificationList (RetrieveNotificationsListResponse) from RSP to SGP32 format.
  *  \param[out] lst_out output of notificationList in SGP32 format.
  *  \param[in] lst_in input of notificationList in RSP format. */
