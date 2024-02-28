@@ -150,8 +150,7 @@ error:
 }
 
 /*! Free HTTP client.
- *  \param[inout] http_ctx HTTP client context.
- *  \returns pointer to HTTP client context. */
+ *  \param[inout] http_ctx HTTP client context. */
 void ipa_http_free(void *http_ctx)
 {
 	struct http_ctx *ctx = http_ctx;
