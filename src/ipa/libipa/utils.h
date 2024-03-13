@@ -152,7 +152,7 @@ void ipa_strip_tlv_envelope(struct ipa_buf *buf, uint16_t envelope_tag);
  *    \param[out] asn1_obj pointer to asn1c generated string object to equip.
  *    \param[in] ipa_buf pointer to ipa_buf with data. */
 #define IPA_COPY_IPA_BUF_TO_ASN(asn1_obj, ipa_buf) ({ \
-	(asn1_obj)->buf = IPA_ALLOC_N(ipa_buf->len); \
+	(asn1_obj)->buf = IPA_ALLOC_N((ipa_buf)->len);	\
 	assert((asn1_obj)->buf); \
 	memcpy((asn1_obj)->buf, (ipa_buf)->data, (ipa_buf)->len); \
 	(asn1_obj)->size = (ipa_buf)->len; \
