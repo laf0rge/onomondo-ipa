@@ -101,17 +101,17 @@ int ipa_scard_transceive(void *scard_ctx, struct ipa_buf *res, const struct ipa_
 	assert(req);
 
 	res->len = res->data_len;
-	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d TX: \n", ctx->reader_num);
+	IPA_LOGP(SSCARD, LDEBUG, "PCSC reader #%d TX: \n", ctx->reader_num);
 	ipa_buf_hexdump_multiline(req, 64, 1, SSCARD, LINFO);
 
 	rc = SCardTransmit(ctx->hCard, ctx->pioSendPci, req->data, req->len, &ctx->pioRecvPci, res->data, &res->len);
 	PCSC_ERROR(ctx->reader_num, rc, "SCardEndTransaction");
 
 	if (res->len) {
-		IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d RX: \n", ctx->reader_num);
+		IPA_LOGP(SSCARD, LDEBUG, "PCSC reader #%d RX: \n", ctx->reader_num);
 		ipa_buf_hexdump_multiline(res, 64, 1, SSCARD, LINFO);
 	} else {
-		IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d RX: (no data)\n", ctx->reader_num);
+		IPA_LOGP(SSCARD, LDEBUG, "PCSC reader #%d RX: (no data)\n", ctx->reader_num);
 	}
 
 	return 0;
