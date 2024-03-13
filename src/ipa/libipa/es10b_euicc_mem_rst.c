@@ -37,12 +37,16 @@ static int dec_euicc_mem_rst_res(const struct ipa_buf *es10b_res)
 	if (!asn)
 		return -EINVAL;
 
-	if (asn->resetResult != EuiccMemoryResetResponse__resetResult_ok) {
+	if (asn->resetResult != EuiccMemoryResetResponse__resetResult_ok &&
+	    asn->resetResult != EuiccMemoryResetResponse__resetResult_nothingToDelete) {
 		IPA_LOGP_ES10X("eUICCMemoryReset", LERROR, "function failed with error code %ld=%s!\n",
+			       asn->resetResult, ipa_str_from_num(error_code_strings, asn->resetResult, "(unknown)"));
+		rc = -EINVAL;
+	} else {
+		IPA_LOGP_ES10X("eUICCMemoryReset", LERROR, "function succeeded with status code %ld=%s!\n",
 			       asn->resetResult, ipa_str_from_num(error_code_strings, asn->resetResult, "(unknown)"));
 	}
 
-	rc = asn->resetResult;
 	ASN_STRUCT_FREE(asn_DEF_EuiccMemoryResetResponse, asn);
 	return rc;
 }
