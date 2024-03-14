@@ -28,7 +28,8 @@ static struct ipa_buf *enc_auth_clnt_req(const struct ipa_esipa_auth_clnt_req *r
 	return ipa_esipa_msg_to_eim_enc(&msg_to_eim, "AuthenticateClient");
 }
 
-static struct ipa_esipa_auth_clnt_res *dec_auth_clnt_res(const struct ipa_buf *msg_to_ipa_encoded)
+static struct ipa_esipa_auth_clnt_res *dec_auth_clnt_res(const struct ipa_buf *msg_to_ipa_encoded,
+							 const struct ipa_esipa_auth_clnt_req *req)
 {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
 	struct ipa_esipa_auth_clnt_res *res = NULL;
@@ -46,6 +47,13 @@ static struct ipa_esipa_auth_clnt_res *dec_auth_clnt_res(const struct ipa_buf *m
 		res->auth_clnt_ok_dpe =
 		    &msg_to_ipa->choice.authenticateClientResponseEsipa.choice.authenticateClientOkDPEsipa;
 		res->transaction_id = res->auth_clnt_ok_dpe->transactionId;
+		if (!IPA_ASN_STR_CMP(res->transaction_id, &req->req.transactionId)) {
+			IPA_LOGP_ESIPA("AuthenticateClient", LERROR,
+				       "eIM responded with unexpected transaction ID (expected: %s, got: %s)\n",
+				       ipa_hexdump(req->req.transactionId.buf, req->req.transactionId.size),
+				       ipa_hexdump(res->transaction_id->buf, res->transaction_id->size));
+			res->auth_clnt_err = -1;
+		}
 		break;
 	case AuthenticateClientResponseEsipa_PR_authenticateClientOkDSEsipa:
 		res->auth_clnt_ok_dse =
@@ -86,18 +94,9 @@ struct ipa_esipa_auth_clnt_res *ipa_esipa_auth_clnt(struct ipa_context *ctx, con
 	if (!esipa_res)
 		goto error;
 
-	res = dec_auth_clnt_res(esipa_res);
+	res = dec_auth_clnt_res(esipa_res, req);
 	if (!res)
 		goto error;
-
-	if (!IPA_ASN_STR_CMP(res->transaction_id, &req->req.transactionId)) {
-		IPA_LOGP_ESIPA("AuthenticateClient", LERROR,
-			       "eIM responded with unexpected transaction ID (expected: %s, got: %s)\n",
-			       ipa_hexdump(req->req.transactionId.buf, req->req.transactionId.size),
-			       ipa_hexdump(res->transaction_id->buf, res->transaction_id->size));
-		res->auth_clnt_err = -1;
-		goto error;
-	}
 
 error:
 	IPA_FREE(esipa_req);
