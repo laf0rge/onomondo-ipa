@@ -17,6 +17,18 @@
 #include "esipa.h"
 #include "esipa_auth_clnt.h"
 
+static const struct num_str_map error_code_strings[] = {
+	{ AuthenticateErrorCode_invalidCertificate, "invalidCertificate" },
+	{ AuthenticateErrorCode_invalidSignature, "invalidSignature" },
+	{ AuthenticateErrorCode_unsupportedCurve, "unsupportedCurve" },
+	{ AuthenticateErrorCode_noSessionContext, "noSessionContext" },
+	{ AuthenticateErrorCode_invalidOid, "invalidOid" },
+	{ AuthenticateErrorCode_euiccChallengeMismatch, "euiccChallengeMismatch" },
+	{ AuthenticateErrorCode_ciPKUnknown, "ciPKUnknown" },
+	{ AuthenticateErrorCode_undefinedError, "undefinedError" },
+	{ 0, NULL }
+};
+
 static struct ipa_buf *enc_auth_clnt_req(const struct ipa_esipa_auth_clnt_req *req)
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim = { 0 };
@@ -63,8 +75,9 @@ static struct ipa_esipa_auth_clnt_res *dec_auth_clnt_res(const struct ipa_buf *m
 	case AuthenticateClientResponseEsipa_PR_authenticateClientErrorEsipa:
 		res->auth_clnt_err =
 		    msg_to_ipa->choice.authenticateClientResponseEsipa.choice.authenticateClientErrorEsipa;
-		IPA_LOGP_ESIPA("AuthenticateClient", LERROR, "function failed with error code %ld!\n",
-			       res->auth_clnt_err);
+		IPA_LOGP_ESIPA("AuthenticateClient", LERROR, "function failed with error code %ld=%s!\n",
+			       res->auth_clnt_err, ipa_str_from_num(error_code_strings, res->auth_clnt_err,
+								    "(unknown)"));
 		break;
 	default:
 		IPA_LOGP_ESIPA("AuthenticateClient", LERROR, "unexpected response content!\n");
