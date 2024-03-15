@@ -13,6 +13,7 @@
 #include <onomondo/ipa/mem.h>
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/log.h>
+#include <UTF8String.h>
 #include "context.h"
 #include "utils.h"
 #include "es10b_get_euicc_info.h"
@@ -111,15 +112,19 @@ static int check_certificate(const struct ipa_buf *allowed_ca, const Certificate
 	return 0;
 }
 
-static void gen_ctx_params_1(struct CtxParams1 *ctx_params_1, const uint8_t *tac)
+static void gen_ctx_params_1(struct CtxParams1 *ctx_params_1, const uint8_t *tac, const char *ac_token)
 {
 	assert(ctx_params_1);
 	memset(ctx_params_1, 0, sizeof(*ctx_params_1));
 
 	ctx_params_1->present = CtxParams1_PR_ctxParamsForCommonAuthentication;
 
-	/* TODO: This is an optional field, but what is it for?
-	 * ctx_params_1->choice.ctxParamsForCommonAuthentication.matchingId = ? */
+	/* Use the AC_TOKEN as MatchingId (see also GSMA SGP.22, section 4.1) */
+	if (ac_token) {
+		static UTF8String_t matchingId;
+		IPA_ASSIGN_STR_TO_ASN(matchingId, ac_token);
+		ctx_params_1->choice.ctxParamsForCommonAuthentication.matchingId = &matchingId;
+	}
 
 	IPA_ASSIGN_BUF_TO_ASN(ctx_params_1->choice.ctxParamsForCommonAuthentication.deviceInfo.tac, (uint8_t *) tac,
 			      IPA_LEN_TAC);
@@ -192,7 +197,7 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx,
 	ipa_strip_tlv_envelope(euicc_ci_pkid_to_be_used, 0x04);
 	IPA_ASSIGN_IPA_BUF_TO_ASN(auth_serv_req.req.euiccCiPKIdToBeUsed, euicc_ci_pkid_to_be_used);
 	auth_serv_req.req.serverCertificate = init_auth_res->init_auth_ok->serverCertificate;
-	gen_ctx_params_1(&auth_serv_req.req.ctxParams1, pars->tac);
+	gen_ctx_params_1(&auth_serv_req.req.ctxParams1, pars->tac, pars->ac_token);
 	auth_serv_res = ipa_es10b_auth_serv(ctx, &auth_serv_req);
 	if (!auth_serv_res)
 		goto error;
