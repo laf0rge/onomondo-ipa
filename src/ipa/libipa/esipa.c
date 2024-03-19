@@ -38,6 +38,8 @@ char *ipa_esipa_get_eim_url(struct ipa_context *ctx)
 
 	/* Be sure we don't accidentally overrun the buffer */
 	url_len = strlen(eim_url);
+	if (!ctx->eim_fqdn)
+		return NULL;
 	url_len += strlen(ctx->eim_fqdn);
 	url_len += strlen(SUFFIX);
 	assert(url_len < sizeof(eim_url));
