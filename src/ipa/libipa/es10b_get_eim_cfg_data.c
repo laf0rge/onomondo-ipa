@@ -24,6 +24,13 @@ void convert_get_eim_cfg_data(struct ipa_es10b_eim_cfg_data *res)
 	unsigned int i;
 	asn_enc_rval_t rc;
 
+	/* Nothing to convert */
+	if (!res->res->eimConfigurationDataList.list.count) {
+		res->eim_cfg_data_list_count = 0;
+		res->eim_cfg_data_list = NULL;
+		return;
+	}
+
 	res->eim_cfg_data_list_count = res->res->eimConfigurationDataList.list.count;
 	res->eim_cfg_data_list = IPA_ALLOC_N(sizeof(struct ipa_eim_cfg_data *) * res->eim_cfg_data_list_count);
 
@@ -194,15 +201,15 @@ static struct ipa_es10b_eim_cfg_data *get_eim_cfg_data_iot_emu(struct ipa_contex
 	struct ipa_buf *es10a_res = NULL;
 	struct ipa_es10b_eim_cfg_data *eim_cfg_data = IPA_ALLOC_ZERO(struct ipa_es10b_eim_cfg_data);
 	struct GetEimConfigurationDataRequest get_eim_cfg_data_req = { 0 };
+	uint8_t empty_eim_cfg[] = { 0xBF, 0x55, 0x02, 0xA0, 0x00 };
 	int rc;
 
 	IPA_LOGP_ES10X("GetEimConfigurationData", LINFO,
 		       "IoT eUICC emulation active, pretending to query eUICC for eIM configuration...\n");
-	if (!ctx->iot_euicc_emu.eim_cfg_ber) {
-		IPA_LOGP_ES10X("GetEimConfigurationData", LERROR, "no eIM configuration configured\n");
-		goto error;
-	}
-	es10a_res = ipa_buf_dup(ctx->iot_euicc_emu.eim_cfg_ber);
+	if (!ctx->nvstate.iot_euicc_emu.eim_cfg_ber) {
+		es10a_res = ipa_buf_alloc_data(sizeof(empty_eim_cfg), empty_eim_cfg);
+	} else
+		es10a_res = ipa_buf_dup(ctx->nvstate.iot_euicc_emu.eim_cfg_ber);
 	assert(es10a_res);
 
 	rc = dec_get_eim_cfg_data(eim_cfg_data, es10a_res);

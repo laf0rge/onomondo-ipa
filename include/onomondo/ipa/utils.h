@@ -172,6 +172,33 @@ static inline void ipa_buf_assign(struct ipa_buf *buf, const uint8_t *data, size
 	buf->len = len;
 }
 
+/*! Deserialize ipa_buf from a buffer (data may come from a file or similar).
+ *  \param[in] data user provided memory with serialized ipa_buf.
+ *  \param[in] len length of the user provided memory that contains the serialied ipa_buf. */
+static inline struct ipa_buf *ipa_buf_deserialize(uint8_t *data, size_t len)
+{
+	/*! An ipa_buf is serialized by writing its header to a file and append its data section directly after. Since
+	 *  ipa_buf_alloc already allocates an ipa_buf object this way no extra effort has to be taken. It is
+	 *  sufficient to pass the pointer to the ipa_buf object to memcpy and use sizeof(*buf) + buf->data_len as
+	 *  length. */
+
+	struct ipa_buf *buf_serialized;
+	struct ipa_buf *buf;
+
+	/* This will give us an almost working ipa_buf (the data pointer will be stale) */
+	buf_serialized = (struct ipa_buf *)data;
+
+	/* First we allocate a new buffer from the data in the serialzed buffer. We cannot trust the data pointer since
+	 * this serialzed buffer may have come from a different process on a different machine, so we must calculate
+	 * the beginning of the data ourselves. We also must be suere to copy the complete memory. */
+	buf = ipa_buf_alloc_data(buf_serialized->data_len, (uint8_t *) buf_serialized + sizeof(*buf_serialized));
+
+	/* The original buffer may not have utilized all the available memory, so we restore the length. */
+	buf->len = buf_serialized->len;
+
+	return buf;
+}
+
 /*! Free an ipa_buf object.
  *  \param[in] pointer to ipa_buf object to free. */
 static inline void ipa_buf_free(struct ipa_buf *buf)

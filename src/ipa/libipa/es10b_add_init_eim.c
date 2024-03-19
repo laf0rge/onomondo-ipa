@@ -112,8 +112,8 @@ static struct ipa_es10b_add_init_eim_res *add_init_eim_iot_emu(struct ipa_contex
 	eim_cfg_new->data[1] = 0x55;
 
 	/* Replace the current eIM configuration with the new eIM configuration */
-	IPA_FREE(ctx->iot_euicc_emu.eim_cfg_ber);
-	ctx->iot_euicc_emu.eim_cfg_ber = eim_cfg_new;
+	IPA_FREE(ctx->nvstate.iot_euicc_emu.eim_cfg_ber);
+	ctx->nvstate.iot_euicc_emu.eim_cfg_ber = eim_cfg_new;
 	IPA_LOGP_ES10X("AddInitialEim", LINFO, "done, eIM configuration stored in memory.\n");
 
 	/* TODO: fill in an appropriate response */

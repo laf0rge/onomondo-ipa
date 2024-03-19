@@ -22,7 +22,87 @@
 #include "es10b_add_init_eim.h"
 #include "es10b_euicc_mem_rst.h"
 
-static int equip_eim_cfg(struct ipa_context *ctx)
+static void nvstate_free_contents(struct ipa_nvstate *nvstate)
+{
+	IPA_FREE(nvstate->iot_euicc_emu.eim_cfg_ber);
+}
+
+static void nvstate_reset(struct ipa_nvstate *nvstate)
+{
+	nvstate_free_contents(nvstate);
+	memset(nvstate, 0, sizeof(*nvstate));
+	nvstate->version = IPA_NVSTATE_VERSION;
+}
+
+static struct ipa_buf *nvstate_serialize_ipa_buf(struct ipa_buf *nvstate_bin, struct ipa_buf *buf)
+{
+	if (!buf)
+		return nvstate_bin;
+	nvstate_bin = ipa_buf_realloc(nvstate_bin, nvstate_bin->len + buf->data_len + sizeof(*buf));
+	assert(nvstate_bin);
+	memcpy(nvstate_bin->data + nvstate_bin->len, buf, buf->data_len + sizeof(*buf));
+	nvstate_bin->len += buf->data_len + sizeof(*buf);
+	return nvstate_bin;
+}
+
+static struct ipa_buf *nvstate_serialize(struct ipa_nvstate *nvstate)
+{
+	struct ipa_buf *nvstate_bin;
+
+	/* serialize statically allocated struct members */
+	nvstate_bin = ipa_buf_alloc_data(sizeof(*nvstate), (uint8_t *) nvstate);
+	assert(nvstate_bin);
+
+	/* serialize dynamically allocated struct members (append code for new members here) */
+	nvstate_bin = nvstate_serialize_ipa_buf(nvstate_bin, nvstate->iot_euicc_emu.eim_cfg_ber);
+	return nvstate_bin;
+}
+
+struct ipa_buf *nvstate_deserialize_ipa_buf(uint8_t ** nvstate_data, size_t *nvstate_data_len, struct ipa_buf *buf)
+{
+	if (!buf)
+		return NULL;
+
+	buf = ipa_buf_deserialize(*nvstate_data, *nvstate_data_len);
+
+	*nvstate_data += buf->data_len;
+	*nvstate_data_len -= buf->data_len;
+
+	return buf;
+}
+
+static void nvstate_deserialize(struct ipa_nvstate *nvstate, struct ipa_buf *nvstate_bin)
+{
+	uint8_t *nvstate_data;
+	size_t nvstate_data_len;
+
+	/* nothing to deserialize */
+	if (!nvstate_bin) {
+		nvstate_reset(nvstate);
+		return;
+	}
+
+	/* desearialize statically allocated struct members and check version */
+	memcpy((uint8_t *) nvstate, nvstate_bin->data, sizeof(*nvstate));
+	nvstate_data = nvstate_bin->data + sizeof(*nvstate);
+	nvstate_data_len = nvstate_bin->len - sizeof(*nvstate);
+	if (nvstate->version != IPA_NVSTATE_VERSION) {
+		IPA_LOGP(SIPA, LERROR,
+			 "cannot deserialize non volatile state with mismatiching version number %u (expected version: %u)\n",
+			 nvstate->version, IPA_NVSTATE_VERSION);
+		nvstate_reset(nvstate);
+		return;
+	}
+
+	/* deserialize dynamically allocated struct members (append code for new members here) */
+	nvstate->iot_euicc_emu.eim_cfg_ber =
+	    nvstate_deserialize_ipa_buf(&nvstate_data, &nvstate_data_len, nvstate->iot_euicc_emu.eim_cfg_ber);
+}
+
+/*! Read eIM configuration from eUICC and pick a suitable eIM.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \returns 0 success, -EINVAL on failure. */
+int eim_init(struct ipa_context *ctx)
 {
 	struct ipa_es10b_eim_cfg_data *eim_cfg_data = NULL;
 	struct EimConfigurationData *eim_cfg_data_item = NULL;
@@ -58,16 +138,10 @@ error:
 	return -EINVAL;
 }
 
-static void iot_euicc_emu_dup_contents(struct ipa_iot_euicc_emu *copy, const struct ipa_iot_euicc_emu *orig)
-{
-	assert(orig->eim_cfg_ber);
-	copy->eim_cfg_ber = ipa_buf_dup(orig->eim_cfg_ber);
-}
-
 /*! Create a new ipa_context.
  *  \param[in] cfg IPAd configuration.
  *  \returns ipa_context on success, NULL on failure. */
-struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
+struct ipa_context *ipa_new_ctx(struct ipa_config *cfg, struct ipa_buf *nvstate)
 {
 	struct ipa_context *ctx;
 	int rc;
@@ -76,20 +150,9 @@ struct ipa_context *ipa_new_ctx(struct ipa_config *cfg)
 	assert(ctx);
 
 	ctx->cfg = cfg;
-
-	if (cfg->iot_euicc_emu_enabled) {
-		iot_euicc_emu_dup_contents(&ctx->iot_euicc_emu, &cfg->iot_euicc_emu);
-	}
+	nvstate_deserialize(&ctx->nvstate, nvstate);
 
 	return ctx;
-}
-
-/*! Export the current state of the IoT eUICC emulation data.
- *  \param[in] data copy of the emulation data, caller takes ownership and is responsible for freeing.
- *  \param[inout] ctx pointer to ipa_context. */
-void ipa_iot_euicc_emu_export(struct ipa_iot_euicc_emu *data, struct ipa_context *ctx)
-{
-	iot_euicc_emu_dup_contents(data, &ctx->iot_euicc_emu);
 }
 
 /*! Initialize IPAd and prepare links towards eIM and eUICC.
@@ -112,10 +175,6 @@ int ipa_init(struct ipa_context *ctx)
 		return -EINVAL;
 
 	rc = ipa_es10c_get_eid(ctx, ctx->eid);
-	if (rc < 0)
-		return -EINVAL;
-
-	rc = equip_eim_cfg(ctx);
 	if (rc < 0)
 		return -EINVAL;
 
@@ -191,18 +250,24 @@ int ipa_poll(struct ipa_context *ctx, bool keep_esipa)
 
 /*! close links towards eIM and eUICC and free an ipa_context.
  *  \param[inout] ctx pointer to ipa_context. */
-void ipa_free_ctx(struct ipa_context *ctx)
+struct ipa_buf *ipa_free_ctx(struct ipa_context *ctx)
 {
+	struct ipa_buf *nvstate;
+
 	if (!ctx)
-		return;
+		return NULL;
+
+	nvstate = nvstate_serialize(&ctx->nvstate);
 
 	IPA_FREE(ctx->eim_id);
 	IPA_FREE(ctx->eim_fqdn);
-	IPA_FREE(ctx->iot_euicc_emu.eim_cfg_ber);
 
 	if (ctx->scard_ctx)
 		ipa_euicc_close_es10x(ctx);
 	ipa_http_free(ctx->http_ctx);
 	ipa_scard_free(ctx->scard_ctx);
+	nvstate_free_contents(&ctx->nvstate);
 	IPA_FREE(ctx);
+
+	return nvstate;
 }

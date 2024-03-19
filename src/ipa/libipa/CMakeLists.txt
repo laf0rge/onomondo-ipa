@@ -15,7 +15,9 @@ add_library(libipa STATIC
   es10b_prep_dwnld.c
   es10b_retr_notif_from_lst.c
   es10b_rm_notif_from_lst.c
-  es10c_enable_prfle.c  
+  es10c_delete_prfle.c
+  es10c_disable_prfle.c
+  es10c_enable_prfle.c
   es10c_get_eid.c
   es10x.c
   esipa_auth_clnt.c

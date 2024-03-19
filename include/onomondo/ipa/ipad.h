@@ -8,12 +8,7 @@
 #define IPE_LEN_EIM_ID 256
 
 struct ipa_context;
-
-/*! IoT eUICC emulation state */
-struct ipa_iot_euicc_emu {
-	/*! eIM configuration in the form of a BER encoded GetEimConfigurationDataResponse. */
-	struct ipa_buf *eim_cfg_ber;
-};
+struct ipa_buf;
 
 /*! IPAd Configuration */
 struct ipa_config {
@@ -38,16 +33,12 @@ struct ipa_config {
 	 *  IoT eUICC emulation is enabled, the IPAd will adapt the interface on ES10x function level so that the
 	 *  consumer eUICC appears as an IoT eUICC on procedure level. */
 	bool iot_euicc_emu_enabled;
-
-	/*! User provided Initial state of the eUICC emulation. All user provided memory in this struct will be copied
-	 *  to an internal memory, so the API user may free the provided memory immediately after calling ipa_init */
-	struct ipa_iot_euicc_emu iot_euicc_emu;
 };
 
-struct ipa_context *ipa_new_ctx(struct ipa_config *cfg);
-void ipa_iot_euicc_emu_export(struct ipa_iot_euicc_emu *data, struct ipa_context *ctx);
+struct ipa_context *ipa_new_ctx(struct ipa_config *cfg, struct ipa_buf *nvstate);
 int ipa_init(struct ipa_context *ctx);
+int eim_init(struct ipa_context *ctx);
 int ipa_add_init_eim_cfg(struct ipa_context *ctx, struct ipa_buf *cfg);
 int ipa_euicc_mem_rst(struct ipa_context *ctx, bool operatnl_profiles, bool test_profiles, bool default_smdp_addr);
 int ipa_poll(struct ipa_context *ctx, bool keep_esipa);
-void ipa_free_ctx(struct ipa_context *ctx);
+struct ipa_buf *ipa_free_ctx(struct ipa_context *ctx);

@@ -101,8 +101,8 @@ int ipa_es10b_euicc_mem_rst(struct ipa_context *ctx, const struct ipa_es10b_euic
 	if (ctx->cfg->iot_euicc_emu_enabled) {
 		IPA_LOGP_ES10X("eUICCMemoryReset", LINFO,
 			       "IoT eUICC emulation active, also clearing memory with eIM configuration...\n");
-		IPA_FREE(ctx->iot_euicc_emu.eim_cfg_ber);
-		ctx->iot_euicc_emu.eim_cfg_ber = ipa_buf_alloc_data(sizeof(empty_eim_cfg), empty_eim_cfg);
+		IPA_FREE(ctx->nvstate.iot_euicc_emu.eim_cfg_ber);
+		ctx->nvstate.iot_euicc_emu.eim_cfg_ber = ipa_buf_alloc_data(sizeof(empty_eim_cfg), empty_eim_cfg);
 	}
 
 error:

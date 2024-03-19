@@ -3,7 +3,23 @@
 #include "length.h"
 #include <onomondo/ipa/ipad.h>
 #include <onomondo/ipa/utils.h>
-struct ipa_config;
+
+#define IPA_NVSTATE_VERSION 1
+
+/* Non volatile state: All struct members in this struct are automatically backed up to a non volatile memory location.
+ * (see below). However, this only covers statically allocated struct members. When struct members contain a pointer
+ * to a dynamically allocated memory location, then appropriate code must be added to nvstate_serialize,
+ * nvstate_deserialize and nvstate_free_contents (see ipad.c). */
+struct ipa_nvstate {
+
+	uint32_t version;
+
+	/*! internal storage for IoT eUICC emulation. */
+	struct {
+		struct ipa_buf *eim_cfg_ber;
+	} iot_euicc_emu;
+
+} __attribute__((packed));
 
 /*! Context for one IPAd instance. */
 struct ipa_context {
@@ -25,9 +41,7 @@ struct ipa_context {
 	/*! cached eIM address (read from eUICC when ipa_init is called) */
 	char *eim_fqdn;
 
-	/*! internal storage for IoT eUICC emulation. (This data may be subject to changes when administrative
-	 *  operations are carried out on the card (e.g. PSMOs). This usually means that the size of the data
-	 *  set changes and the ipa_buf may be re-allocated with a different size. To prevent irretations and
-	 *  stale pointers in the domain of the API user we maintain a private dataset) */
-	struct ipa_iot_euicc_emu iot_euicc_emu;
+	/*! Non volatile storage: Everything stored in this struct is loaded by the API user from a non volatile memory
+	 *  location on startup (ipa_new_ctx) and stored to a non volatile location on exit (ipa_free_ctx). */
+	struct ipa_nvstate nvstate;
 };
