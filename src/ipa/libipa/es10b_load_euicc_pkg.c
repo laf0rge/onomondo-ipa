@@ -18,6 +18,8 @@
 #include "es10x.h"
 #include "es10b_load_euicc_pkg.h"
 #include "es10c_enable_prfle.h"
+#include "es10c_disable_prfle.h"
+#include "es10c_delete_prfle.h"
 
 static int dec_load_euicc_pkg_res(struct ipa_es10b_load_euicc_pkg_res *res, const struct ipa_buf *es10b_res)
 {
@@ -91,6 +93,52 @@ struct EuiccResultData *iot_emo_do_enable_psmo(struct ipa_context *ctx, const st
 	return euicc_result_data;
 }
 
+struct EuiccResultData *iot_emo_do_disable_psmo(struct ipa_context *ctx, const struct Psmo__disable *disable_psmo)
+{
+	struct ipa_es10c_disable_prfle_req disable_prfle_req = { 0 };
+	struct ipa_es10c_disable_prfle_res *disable_prfle_res = NULL;
+	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+
+	/* With the IoT/PSMO interface we can only identify the profile via its ICCID */
+	disable_prfle_req.req.profileIdentifier.present = DisableProfileRequest__profileIdentifier_PR_iccid;
+	disable_prfle_req.req.profileIdentifier.choice.iccid = disable_psmo->iccid;
+
+	/* There is no way to tell the eUICC via the IoT/PSMO interface when a refresh is required, in order to be safe
+	 * here, we must assume that a refresh is always needed. */
+	disable_prfle_req.req.refreshFlag = true;
+
+	disable_prfle_res = ipa_es10c_disable_prfle(ctx, &disable_prfle_req);
+	euicc_result_data->present = EuiccResultData_PR_disableResult;
+	if (disable_prfle_res)
+		euicc_result_data->choice.disableResult = disable_prfle_res->res->disableResult;
+	else
+		euicc_result_data->choice.disableResult = DisableProfileResult_undefinedError;
+
+	ipa_es10c_disable_prfle_res_free(disable_prfle_res);
+	return euicc_result_data;
+}
+
+struct EuiccResultData *iot_emo_do_delete_psmo(struct ipa_context *ctx, const struct Psmo__delete *delete_psmo)
+{
+	struct ipa_es10c_delete_prfle_req delete_prfle_req = { 0 };
+	struct ipa_es10c_delete_prfle_res *delete_prfle_res = NULL;
+	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+
+	/* With the IoT/PSMO interface we can only identify the profile via its ICCID */
+	delete_prfle_req.req.present = DeleteProfileRequest_PR_iccid;
+	delete_prfle_req.req.choice.iccid = delete_psmo->iccid;
+
+	delete_prfle_res = ipa_es10c_delete_prfle(ctx, &delete_prfle_req);
+	euicc_result_data->present = EuiccResultData_PR_deleteResult;
+	if (delete_prfle_res)
+		euicc_result_data->choice.deleteResult = delete_prfle_res->res->deleteResult;
+	else
+		euicc_result_data->choice.deleteResult = DeleteProfileResult_undefinedError;
+
+	ipa_es10c_delete_prfle_res_free(delete_prfle_res);
+	return euicc_result_data;
+}
+
 struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *ctx,
 							    const struct ipa_es10b_load_euicc_pkg_req *req)
 {
@@ -128,12 +176,10 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 				psmo_result = iot_emo_do_enable_psmo(ctx, &psmo->choice.enable);
 				break;
 			case Psmo_PR_disable:
-				/* TODO */
-				assert(false);
+				psmo_result = iot_emo_do_disable_psmo(ctx, &psmo->choice.disable);
 				break;
 			case Psmo_PR_delete:
-				/* TODO */
-				assert(false);
+				psmo_result = iot_emo_do_delete_psmo(ctx, &psmo->choice.Delete);
 				break;
 			case Psmo_PR_listProfileInfo:
 				/* TODO */
