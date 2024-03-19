@@ -1,6 +1,6 @@
 /*
  * Author: Philipp Maier <pmaier@sysmocom.de> / sysmocom - s.f.m.c. GmbH
- * See also: GSMA SGP.22, 5.7.16: Function (ES10b): EnableProfile
+ * See also: GSMA SGP.22, 5.7.16: Function (ES10c): EnableProfile
  *
  */
 
