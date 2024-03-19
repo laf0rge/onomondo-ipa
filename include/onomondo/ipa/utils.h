@@ -81,6 +81,9 @@ static inline struct ipa_buf *ipa_buf_alloc(size_t len)
 	return buf;
 }
 
+/*! Reallocate/Resize an existing ipa_buf object.
+ *  \param[in] len new number of bytes to allocate inside ipa_buf.
+ *  \returns pointer to newly allocated ipa_buf object. */
 static inline struct ipa_buf *ipa_buf_realloc(struct ipa_buf *buf, size_t len)
 {
 	buf = IPA_REALLOC(buf, sizeof(*buf) + len);
