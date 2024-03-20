@@ -209,12 +209,12 @@ int main(int argc, char **argv)
 			rc = -EINVAL;
 			goto error;
 		}
-
-		rc = ipa_poll(ctx, false);
+		rc = ipa_poll(ctx);
 		if (rc < 0)
 			IPA_LOGP(SMAIN, LERROR, "poll cycle failed!\n");
 		else
 			IPA_LOGP(SMAIN, LINFO, "poll cycle successful!\n");
+		ipa_close(ctx);
 	}
 
 error:

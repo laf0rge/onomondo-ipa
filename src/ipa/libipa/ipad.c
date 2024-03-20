@@ -234,18 +234,17 @@ int ipa_euicc_mem_rst(struct ipa_context *ctx, bool operatnl_profiles, bool test
 
 /*! poll the IPAd (may be called in regular intervals or on purpose).
  *  \param[inout] ctx pointer to ipa_context.
- *  \param[in] keep_esipa keep ESipa connection open (for following polls).
  *  \returns 0 on success, negative on error. */
-int ipa_poll(struct ipa_context *ctx, bool keep_esipa)
+int ipa_poll(struct ipa_context *ctx)
 {
-	int rc;
+	return ipa_proc_eim_pkg_retr(ctx);
+}
 
-	rc = ipa_proc_eim_pkg_retr(ctx);
-
-	if (!keep_esipa)
-		ipa_esipa_close(ctx);
-
-	return rc;
+/*! close connection towards the eIM.
+ *  \param[inout] ctx pointer to ipa_context. */
+void ipa_close(struct ipa_context *ctx)
+{
+	ipa_esipa_close(ctx);
 }
 
 /*! close links towards eIM and eUICC and free an ipa_context.
