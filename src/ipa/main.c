@@ -28,9 +28,9 @@ static void print_help(void)
 	printf(" -c N ................ set logical channel number (default: %d)\n", DEFAULT_CHANNEL_NUMBER);
 	printf(" -f PATH ............. set initial eIM configuration\n");
 	printf(" -m .................. reset eUICC memory\n");
+	printf(" -n PATH ............. path to nvstate file (default: %s)\n", DEFAULT_NVSTATE_PATH);
 	printf(" -S .................. disable HTTPS\n");
 	printf(" -E .................. emulate IoT eUICC (compatibility mode to use consumer eUICCs)\n");
-	printf(" -n PATH ............. path to nvstate file (default: %s)\n", DEFAULT_NVSTATE_PATH);
 }
 
 struct ipa_buf *load_ber_from_file(char *dir, char *file)
@@ -56,8 +56,7 @@ struct ipa_buf *load_ber_from_file(char *dir, char *file)
 
 	ber->len = fread(ber->data, sizeof(char), ber->data_len, ber_file);
 	fclose(ber_file);
-	printf("  loaded BER data from file %s, size: %zu\n", path, ber->len);
-
+	IPA_LOGP(SMAIN, LINFO, "loaded BER data from file %s, size: %zu\n", path, ber->len);
 	return ber;
 }
 
@@ -69,7 +68,8 @@ struct ipa_buf *load_nvstate_from_file(char *path)
 
 	file_ptr = fopen(path, "r");
 	if (!file_ptr) {
-		printf("  unable to load nvstate from file %s -- a new nvstate will be created.\n", path);
+		IPA_LOGP(SMAIN, LERROR, "unable to load nvstate from file %s -- a new nvstate will be created.\n",
+			 path);
 		return NULL;
 	}
 
@@ -82,7 +82,7 @@ struct ipa_buf *load_nvstate_from_file(char *path)
 
 	nvstate->len = fread(nvstate->data, sizeof(char), nvstate->data_len, file_ptr);
 	fclose(file_ptr);
-	printf("  loaded nvstate from file %s, size: %zu\n", path, nvstate->data_len);
+	IPA_LOGP(SMAIN, LINFO, "loaded nvstate from file %s, size: %zu\n", path, nvstate->data_len);
 
 	return nvstate;
 }
@@ -93,13 +93,13 @@ void save_nvstate_to_file(char *path, struct ipa_buf *nvstate)
 
 	file_ptr = fopen(path, "w");
 	if (!file_ptr) {
-		printf("  unable to save nvstate from file %s!\n", path);
+		IPA_LOGP(SMAIN, LERROR, "unable to save nvstate from file %s!\n", path);
 		return;
 	}
 
 	fwrite(nvstate->data, sizeof(char), nvstate->data_len, file_ptr);
 	fclose(file_ptr);
-	printf("  saved nvstate to file %s, size: %zu\n", path, nvstate->data_len);
+	IPA_LOGP(SMAIN, LINFO, "saved nvstate to file %s, size: %zu\n", path, nvstate->data_len);
 }
 
 int main(int argc, char **argv)
@@ -108,9 +108,8 @@ int main(int argc, char **argv)
 	struct ipa_context *ctx;
 	int opt;
 	int rc;
-	char *initial_eim_cfg_file = NULL;
+	char *getopt_initial_eim_cfg_file = NULL;
 	bool getopt_euicc_memory_reset = false;
-
 	char *getopt_nvstate_path = DEFAULT_NVSTATE_PATH;
 	struct ipa_buf *nvstate_load = NULL;
 	struct ipa_buf *nvstate_save = NULL;
@@ -118,13 +117,13 @@ int main(int argc, char **argv)
 	printf("IPAd!\n");
 
 	/* Populate configuration with default values */
-	cfg.reader_num = 0;
-	cfg.euicc_channel = 1;
+	cfg.reader_num = DEFAULT_READER_NUMBER;
+	cfg.euicc_channel = DEFAULT_CHANNEL_NUMBER;
 	ipa_binary_from_hexstr(cfg.tac, sizeof(cfg.tac), DEFAULT_TAC);
 
 	/* Overwrite configuration values with user defined parameters */
 	while (1) {
-		opt = getopt(argc, argv, "ht:e:r:c:SEf:mn:");
+		opt = getopt(argc, argv, "ht:e:r:c:f:mn:SE");
 		if (opt == -1)
 			break;
 
@@ -145,14 +144,8 @@ int main(int argc, char **argv)
 		case 'c':
 			cfg.euicc_channel = atoi(optarg);
 			break;
-		case 'S':
-			cfg.eim_disable_ssl = true;
-			break;
-		case 'E':
-			cfg.iot_euicc_emu_enabled = true;
-			break;
 		case 'f':
-			initial_eim_cfg_file = optarg;
+			getopt_initial_eim_cfg_file = optarg;
 			break;
 		case 'm':
 			getopt_euicc_memory_reset = true;
@@ -160,17 +153,21 @@ int main(int argc, char **argv)
 		case 'n':
 			getopt_nvstate_path = optarg;
 			break;
+		case 'S':
+			cfg.eim_disable_ssl = true;
+			break;
+		case 'E':
+			cfg.iot_euicc_emu_enabled = true;
+			break;
 		default:
 			printf("unhandled option: %c!\n", opt);
 			break;
 		};
 	}
 
-	printf("nvstate path: %s\n", getopt_nvstate_path);
-	nvstate_load = load_nvstate_from_file(getopt_nvstate_path);
-
 	/* Display current config */
-	printf("config:\n");
+	printf("parameter:\n");
+	printf(" nvstate path: %s\n", getopt_nvstate_path);
 	printf(" preferred_eim_id = %s\n", cfg.preferred_eim_id ? cfg.preferred_eim_id : "(first configured eIM)");
 	printf(" reader_num = %d\n", cfg.reader_num);
 	printf(" euicc_channel = %d\n", cfg.euicc_channel);
@@ -180,6 +177,7 @@ int main(int argc, char **argv)
 	printf("\n");
 
 	/* Create a new IPA context */
+	nvstate_load = load_nvstate_from_file(getopt_nvstate_path);
 	ctx = ipa_new_ctx(&cfg, nvstate_load);
 	if (!ctx) {
 		IPA_LOGP(SMAIN, LERROR, "cannot create context!\n");
@@ -195,14 +193,16 @@ int main(int argc, char **argv)
 		goto error;
 	}
 
-	/* Load initial eIM configuration */
-	if (initial_eim_cfg_file) {
-		struct ipa_buf *eim_cfg = load_ber_from_file(NULL, initial_eim_cfg_file);
+	if (getopt_initial_eim_cfg_file) {
+		/* Load initial eIM configuration */
+		struct ipa_buf *eim_cfg = load_ber_from_file(NULL, getopt_initial_eim_cfg_file);
 		ipa_add_init_eim_cfg(ctx, eim_cfg);
 		IPA_FREE(eim_cfg);
 	} else if (getopt_euicc_memory_reset) {
+		/* Perform an eUICC memory reset */
 		ipa_euicc_mem_rst(ctx, true, true, true);
 	} else {
+		/* Run a single poll cycle and exit */
 		rc = eim_init(ctx);
 		if (rc < 0) {
 			IPA_LOGP(SMAIN, LERROR, "eIM initialization failed!\n");
@@ -210,9 +210,13 @@ int main(int argc, char **argv)
 			goto error;
 		}
 
-		/* Run a single poll cycle and exit. */
-		ipa_poll(ctx, false);
+		rc = ipa_poll(ctx, false);
+		if (rc < 0)
+			IPA_LOGP(SMAIN, LERROR, "poll cycle failed!\n");
+		else
+			IPA_LOGP(SMAIN, LINFO, "poll cycle successful!\n");
 	}
+
 error:
 	nvstate_save = ipa_free_ctx(ctx);
 	save_nvstate_to_file(getopt_nvstate_path, nvstate_save);
