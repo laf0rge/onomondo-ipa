@@ -21,6 +21,7 @@
 #include "es10b_get_eim_cfg_data.h"
 #include "es10b_add_init_eim.h"
 #include "es10b_euicc_mem_rst.h"
+#include "proc_euicc_pkg_dwnld_exec.h"
 
 static void nvstate_free_contents(struct ipa_nvstate *nvstate)
 {
@@ -237,7 +238,10 @@ int ipa_euicc_mem_rst(struct ipa_context *ctx, bool operatnl_profiles, bool test
  *  \returns 0 on success, negative on error. */
 int ipa_poll(struct ipa_context *ctx)
 {
-	return ipa_proc_eim_pkg_retr(ctx);
+	if (ctx->load_euicc_pkg_res)
+		return ipa_proc_eucc_pkg_dwnld_exec_onset(ctx);
+	else
+		return ipa_proc_eim_pkg_retr(ctx);
 }
 
 /*! close connection towards the eIM.
@@ -260,6 +264,7 @@ struct ipa_buf *ipa_free_ctx(struct ipa_context *ctx)
 
 	IPA_FREE(ctx->eim_id);
 	IPA_FREE(ctx->eim_fqdn);
+	IPA_FREE(ctx->load_euicc_pkg_res);
 
 	if (ctx->scard_ctx)
 		ipa_euicc_close_es10x(ctx);

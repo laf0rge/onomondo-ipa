@@ -41,6 +41,9 @@ struct ipa_context {
 	/*! cached eIM address (read from eUICC when ipa_init is called) */
 	char *eim_fqdn;
 
+	/*! cached EuiccPackageResult */
+	struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_res;
+
 	/*! Non volatile storage: Everything stored in this struct is loaded by the API user from a non volatile memory
 	 *  location on startup (ipa_new_ctx) and stored to a non volatile location on exit (ipa_free_ctx). */
 	struct ipa_nvstate nvstate;

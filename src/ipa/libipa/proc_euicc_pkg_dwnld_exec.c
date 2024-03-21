@@ -40,14 +40,8 @@ static int remove_notifications(struct ipa_context *ctx, struct EimAcknowledgeme
 	return 0;
 }
 
-/*! Perform Generic eUICC Package Download and Execution Procedure.
- *  \param[inout] ctx pointer to ipa_context.
- *  \param[in] euicc_package_request pointer to struct that holds the EuiccPackageRequest.
- *  \returns 0 on success, negative on failure. */
-int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, const struct EuiccPackageRequest *euicc_package_request)
+int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx)
 {
-	struct ipa_esipa_get_eim_pkg_res *get_eim_pkg_res = NULL;
-	struct ipa_es10b_load_euicc_pkg_req load_euicc_pkg_req = { 0 };
 	struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_res = NULL;
 	struct ipa_es10b_retr_notif_from_lst_req retr_notif_from_lst_req = { 0 };
 	struct ipa_es10b_retr_notif_from_lst_res *retr_notif_from_lst_res = NULL;
@@ -56,17 +50,15 @@ int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, const struct EuiccPack
 	int rc;
 
 	/* Step #3-#8 (ES10b.LoadEuiccPackage) */
-	load_euicc_pkg_req.req = *euicc_package_request;
-	load_euicc_pkg_res = ipa_es10b_load_euicc_pkg(ctx, &load_euicc_pkg_req);
-	if (!load_euicc_pkg_res)
+	if (!ctx->load_euicc_pkg_res)
 		goto error;
-	else if (!load_euicc_pkg_res->res)
+	else if (!ctx->load_euicc_pkg_res)
 		goto error;
 
 	/* Step #9 (ES10b.RetrieveNotificationsList) */
 	/* TODO: this is a conditional step, only when the eUICC package contained PSMOs we retrieve notifications */
 	retr_notif_from_lst_req.search_criteria.choice.seqNumber =
-	    load_euicc_pkg_res->res->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.seqNumber;
+	    ctx->load_euicc_pkg_res->res->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.seqNumber;
 	retr_notif_from_lst_req.search_criteria.present = RetrieveNotificationsListRequest__searchCriteria_PR_seqNumber;
 	retr_notif_from_lst_res = ipa_es10b_retr_notif_from_lst(ctx, &retr_notif_from_lst_req);
 	if (!retr_notif_from_lst_res)
@@ -77,7 +69,7 @@ int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, const struct EuiccPack
 		goto error;
 
 	/* Step #10-#14 (ESipa.ProvideEimPackageResult) */
-	prvde_eim_pkg_rslt_req.euicc_package_result = load_euicc_pkg_res->res;
+	prvde_eim_pkg_rslt_req.euicc_package_result = ctx->load_euicc_pkg_res->res;
 	prvde_eim_pkg_rslt_req.notification_list = retr_notif_from_lst_res->notification_list;
 	prvde_eim_pkg_rslt_res = ipa_esipa_prvde_eim_pkg_rslt(ctx, &prvde_eim_pkg_rslt_req);
 	if (!prvde_eim_pkg_rslt_res)
@@ -98,8 +90,8 @@ int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, const struct EuiccPack
 	/* Step #15-17 (ES10b.RemoveNotificationFromList) */
 	/* Remove the notification for the euiccPackageResult. */
 	rc = ipa_es10b_rm_notif_from_lst(ctx,
-					 load_euicc_pkg_res->res->choice.
-					 euiccPackageResultSigned.euiccPackageResultDataSigned.seqNumber);
+					 ctx->load_euicc_pkg_res->res->choice.euiccPackageResultSigned.
+					 euiccPackageResultDataSigned.seqNumber);
 	if (rc < 0)
 		goto error;
 	/* Remove the notifications that the eIM has requested to remove in the provideEimPackageResultResponse. */
@@ -107,18 +99,45 @@ int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, const struct EuiccPack
 	if (rc < 0)
 		goto error;
 
-	ipa_esipa_get_eim_pkg_free(get_eim_pkg_res);
-	ipa_es10b_load_euicc_pkg_res_free(load_euicc_pkg_res);
+	ipa_es10b_load_euicc_pkg_res_free(ctx->load_euicc_pkg_res);
+	ctx->load_euicc_pkg_res = NULL;
 	ipa_es10b_retr_notif_from_lst_res_free(retr_notif_from_lst_res);
 	ipa_esipa_prvde_eim_pkg_rslt_free(prvde_eim_pkg_rslt_res);
 	IPA_LOGP(SIPA, LINFO, "Generic eUICC Package Download and Execution succeded!\n");
 	return 0;
 error:
 	/* TODO: Do we need to report an error to the eIM? */
-	ipa_esipa_get_eim_pkg_free(get_eim_pkg_res);
-	ipa_es10b_load_euicc_pkg_res_free(load_euicc_pkg_res);
 	ipa_es10b_retr_notif_from_lst_res_free(retr_notif_from_lst_res);
 	ipa_esipa_prvde_eim_pkg_rslt_free(prvde_eim_pkg_rslt_res);
+	IPA_LOGP(SIPA, LERROR, "Generic eUICC Package Download and Execution failed!\n");
+	return -EINVAL;
+}
+
+int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, const struct EuiccPackageRequest *euicc_package_request)
+{
+	struct ipa_es10b_load_euicc_pkg_req load_euicc_pkg_req = { 0 };
+	struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_res = NULL;
+	int rc;
+
+	/* This must not happen. The internal logic in ipad_poll must make sure that ipa_proc_eucc_pkg_dwnld_exec_onset
+	 * runs first in case ctx->load_euicc_pkg_res is populated. */
+	assert(!ctx->load_euicc_pkg_res);
+
+	/* Step #3-#8 (ES10b.LoadEuiccPackage) */
+	load_euicc_pkg_req.req = *euicc_package_request;
+	load_euicc_pkg_res = ipa_es10b_load_euicc_pkg(ctx, &load_euicc_pkg_req);
+	if (!load_euicc_pkg_res)
+		goto error;
+	else if (!load_euicc_pkg_res->res)
+		goto error;
+
+	ctx->load_euicc_pkg_res = load_euicc_pkg_res;
+	IPA_LOGP(SIPA, LINFO, "Generic eUICC Package Download and Execution progressing successfully...\n");
+	return 0;
+error:
+	/* TODO: Do we need to report an error to the eIM? */
+	ctx->load_euicc_pkg_res = NULL;
+	ipa_es10b_load_euicc_pkg_res_free(load_euicc_pkg_res);
 	IPA_LOGP(SIPA, LERROR, "Generic eUICC Package Download and Execution failed!\n");
 	return -EINVAL;
 }

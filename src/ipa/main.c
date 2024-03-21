@@ -9,6 +9,8 @@
 #include <getopt.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <signal.h>
+#include <unistd.h>
 #include <onomondo/ipa/utils.h>
 #include <onomondo/ipa/log.h>
 #include <onomondo/ipa/ipad.h>
@@ -17,6 +19,9 @@
 #define DEFAULT_CHANNEL_NUMBER 1
 #define DEFAULT_TAC "12345678"
 #define DEFAULT_NVSTATE_PATH "./nvstate.bin"
+
+bool running = true;
+#define POLL_INTERVAL 1		/* sec */
 
 static void print_help(void)
 {
@@ -102,6 +107,11 @@ void save_nvstate_to_file(char *path, struct ipa_buf *nvstate)
 	IPA_LOGP(SMAIN, LINFO, "saved nvstate to file %s, size: %zu\n", path, nvstate->data_len);
 }
 
+static void sig_usr1(int signum)
+{
+	running = false;
+}
+
 int main(int argc, char **argv)
 {
 	struct ipa_config cfg = { 0 };
@@ -113,6 +123,8 @@ int main(int argc, char **argv)
 	char *getopt_nvstate_path = DEFAULT_NVSTATE_PATH;
 	struct ipa_buf *nvstate_load = NULL;
 	struct ipa_buf *nvstate_save = NULL;
+
+	signal(SIGUSR1, sig_usr1);
 
 	printf("IPAd!\n");
 
@@ -186,6 +198,7 @@ int main(int argc, char **argv)
 	}
 
 	/* Initialize IPA */
+	IPA_LOGP(SMAIN, LINFO, "-----------------------------8<-----------------------------\n");
 	rc = ipa_init(ctx);
 	if (rc < 0) {
 		IPA_LOGP(SMAIN, LERROR, "IPAd initialization failed!\n");
@@ -202,19 +215,29 @@ int main(int argc, char **argv)
 		/* Perform an eUICC memory reset */
 		ipa_euicc_mem_rst(ctx, true, true, true);
 	} else {
-		/* Run a single poll cycle and exit */
+		IPA_LOGP(SMAIN, LINFO, "-----------------------------8<-----------------------------\n");
 		rc = eim_init(ctx);
 		if (rc < 0) {
 			IPA_LOGP(SMAIN, LERROR, "eIM initialization failed!\n");
 			rc = -EINVAL;
 			goto error;
 		}
-		rc = ipa_poll(ctx);
-		if (rc < 0)
-			IPA_LOGP(SMAIN, LERROR, "poll cycle failed!\n");
-		else
-			IPA_LOGP(SMAIN, LINFO, "poll cycle successful!\n");
-		ipa_close(ctx);
+
+		while (running) {
+			IPA_LOGP(SMAIN, LINFO, "-----------------------------8<-----------------------------\n");
+			rc = ipa_poll(ctx);
+			if (rc < 0) {
+				IPA_LOGP(SMAIN, LERROR, "poll cycle failed!\n");
+				ipa_close(ctx);
+				rc = -EINVAL;
+				goto error;
+			} else {
+				IPA_LOGP(SMAIN, LINFO, "poll cycle successful!\n");
+				rc = 0;
+			}
+
+			sleep(POLL_INTERVAL);
+		}
 	}
 
 error:
