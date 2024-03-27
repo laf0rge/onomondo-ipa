@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
+#include <unistd.h>
 #include <onomondo/ipa/ipad.h>
 #include <onomondo/ipa/log.h>
 #include <onomondo/ipa/http.h>
@@ -142,6 +143,8 @@ struct ipa_buf *ipa_esipa_req(struct ipa_context *ctx, const struct ipa_buf *esi
 {
 	struct ipa_buf *esipa_res;
 	int rc;
+	unsigned int i;
+	unsigned int wait_time;
 
 	if (!esipa_req) {
 		IPA_LOGP_ESIPA(function_name, LERROR, "eIM request failed due to missing encoded request data!\n");
@@ -151,15 +154,28 @@ struct ipa_buf *ipa_esipa_req(struct ipa_context *ctx, const struct ipa_buf *esi
 	esipa_res = ipa_buf_alloc(IPA_LIMIT_HTTP_REQ);
 	assert(esipa_res);
 
-	rc = ipa_http_req(ctx->http_ctx, esipa_res, esipa_req, ipa_esipa_get_eim_url(ctx));
-	if (rc < 0) {
-		IPA_LOGP_ESIPA(function_name, LERROR, "eIM request failed!\n");
-		goto error;
+	for (i = 0; i < ctx->cfg->esipa_req_retries + 1; i++) {
+		rc = ipa_http_req(ctx->http_ctx, esipa_res, esipa_req, ipa_esipa_get_eim_url(ctx));
+		if (rc < 0 && ctx->cfg->esipa_req_retries == 0) {
+			IPA_LOGP_ESIPA(function_name, LERROR, "eIM request failed!\n");
+			goto error;
+		} else if (rc < 0 && i >= ctx->cfg->esipa_req_retries) {
+			IPA_LOGP_ESIPA(function_name, LERROR,
+				       "eIM request failed, giving up after retrying %u times!\n", i);
+			goto error;
+		} else if (rc < 0) {
+			wait_time = (i + 1) * (i + 1);
+			IPA_LOGP_ESIPA(function_name, LERROR, "eIM request failed, will retry in %u seconds...!\n",
+				       wait_time);
+			sleep(wait_time);
+		} else {
+			/* Successful request */
+			break;
+		}
 	}
 
 	return esipa_res;
 error:
-
 	IPA_FREE(esipa_res);
 	return NULL;
 }

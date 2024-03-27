@@ -19,6 +19,7 @@
 #define DEFAULT_CHANNEL_NUMBER 1
 #define DEFAULT_TAC "12345678"
 #define DEFAULT_NVSTATE_PATH "./nvstate.bin"
+#define DEFAULT_ESIPA_REQ_RETRIES 3
 
 bool running = true;
 
@@ -33,6 +34,7 @@ static void print_help(void)
 	printf(" -f PATH ............. set initial eIM configuration\n");
 	printf(" -m .................. reset eUICC memory\n");
 	printf(" -n PATH ............. path to nvstate file (default: %s)\n", DEFAULT_NVSTATE_PATH);
+	printf(" -y NUM .............. number of retries for ESipa requests (default: %u)", DEFAULT_ESIPA_REQ_RETRIES);
 	printf(" -S .................. disable HTTPS\n");
 	printf(" -E .................. emulate IoT eUICC (compatibility mode to use consumer eUICCs)\n");
 }
@@ -131,10 +133,11 @@ int main(int argc, char **argv)
 	cfg.reader_num = DEFAULT_READER_NUMBER;
 	cfg.euicc_channel = DEFAULT_CHANNEL_NUMBER;
 	ipa_binary_from_hexstr(cfg.tac, sizeof(cfg.tac), DEFAULT_TAC);
+	cfg.esipa_req_retries = DEFAULT_ESIPA_REQ_RETRIES;
 
 	/* Overwrite configuration values with user defined parameters */
 	while (1) {
-		opt = getopt(argc, argv, "ht:e:r:c:f:mn:SE");
+		opt = getopt(argc, argv, "ht:e:r:c:f:mn:SEy:");
 		if (opt == -1)
 			break;
 
@@ -170,6 +173,9 @@ int main(int argc, char **argv)
 		case 'E':
 			cfg.iot_euicc_emu_enabled = true;
 			break;
+		case 'y':
+			cfg.esipa_req_retries = atoi(optarg);
+			break;
 		default:
 			printf("unhandled option: %c!\n", opt);
 			break;
@@ -185,6 +191,7 @@ int main(int argc, char **argv)
 	printf(" eim_disable_ssl = %d\n", cfg.eim_disable_ssl);
 	printf(" tac = %s\n", ipa_hexdump(cfg.tac, sizeof(cfg.tac)));
 	printf(" iot_euicc_emu_enabled = %u\n", cfg.iot_euicc_emu_enabled);
+	printf(" esipa_req_retries = %u\n", cfg.esipa_req_retries);
 	printf("\n");
 
 	/* Create a new IPA context */

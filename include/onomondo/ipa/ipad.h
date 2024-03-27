@@ -22,6 +22,9 @@ struct ipa_config {
 	/*! The caller may choose to disable SSL in a test environment to simplify debugging. */
 	bool eim_disable_ssl;
 
+	/*! Configure the number of retries to apply in case a request (HTTP) to the eIM fails */
+	unsigned int esipa_req_retries;
+
 	/*! ID number of the cardreader that interfaces the eUICC */
 	unsigned int reader_num;
 
