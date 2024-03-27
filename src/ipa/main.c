@@ -21,7 +21,6 @@
 #define DEFAULT_NVSTATE_PATH "./nvstate.bin"
 
 bool running = true;
-#define POLL_INTERVAL 1		/* sec */
 
 static void print_help(void)
 {
@@ -235,8 +234,6 @@ int main(int argc, char **argv)
 				IPA_LOGP(SMAIN, LINFO, "poll cycle successful!\n");
 				rc = 0;
 			}
-
-			sleep(POLL_INTERVAL);
 		}
 	}
 
