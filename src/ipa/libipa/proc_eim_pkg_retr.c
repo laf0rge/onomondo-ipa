@@ -53,29 +53,22 @@ error:
 	return -EINVAL;
 }
 
-/*! Perform eIM Package Retrieval Procedure.
- *  \param[inout] ctx pointer to ipa_context.
- *  \returns 0 on success, negative on failure. */
-int ipa_proc_eim_pkg_retr(struct ipa_context *ctx)
+/* Relay package contents to suitable handler procedure */
+int eim_pkg_exec(struct ipa_context *ctx, const struct ipa_esipa_get_eim_pkg_res *get_eim_pkg_res)
 {
-	struct ipa_esipa_get_eim_pkg_res *get_eim_pkg_res = NULL;
-	int rc;
 	struct ipa_buf *allowed_ca_pkid = NULL;
+	int rc;
 
-	/* Poll eIM */
-	get_eim_pkg_res = ipa_esipa_get_eim_pkg(ctx, ctx->eid);
-	if (!get_eim_pkg_res)
-		goto error;
-	else if (get_eim_pkg_res->eim_pkg_err)
-		goto error;
-
-	/* Relay package contents to suitable handler procedure */
-	if (get_eim_pkg_res->euicc_package_request)
-		ipa_proc_eucc_pkg_dwnld_exec(ctx, get_eim_pkg_res->euicc_package_request);
-	else if (get_eim_pkg_res->ipa_euicc_data_request) {
+	if (get_eim_pkg_res->euicc_package_request) {
+		rc = ipa_proc_eucc_pkg_dwnld_exec(ctx, get_eim_pkg_res->euicc_package_request);
+		if (rc < 0)
+			goto error;
+	} else if (get_eim_pkg_res->ipa_euicc_data_request) {
 		struct ipa_proc_euicc_data_req_pars euicc_data_req_pars = { 0 };
 		euicc_data_req_pars.ipa_euicc_data_request = get_eim_pkg_res->ipa_euicc_data_request;
-		ipa_proc_euicc_data_req(ctx, &euicc_data_req_pars);
+		rc = ipa_proc_euicc_data_req(ctx, &euicc_data_req_pars);
+		if (rc < 0)
+			goto error;
 	} else if (get_eim_pkg_res->dwnld_trigger_request) {
 		struct ipa_proc_direct_prfle_dwnlod_pars direct_prfle_dwnlod_pars = { 0 };
 		if (!get_eim_pkg_res->dwnld_trigger_request->profileDownloadData) {
@@ -84,6 +77,7 @@ int ipa_proc_eim_pkg_retr(struct ipa_context *ctx)
 			 * used to retrieve some context from somewhere that may allow us to continue. */
 			IPA_LOGP(SIPA, LERROR,
 				 "the ProfileDownloadTriggerRequest does not contain ProfileDownloadData -- cannot continue!\n");
+			rc = -EINVAL;
 			goto error;
 		}
 		if (get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->present !=
@@ -93,33 +87,68 @@ int ipa_proc_eim_pkg_retr(struct ipa_context *ctx)
 			 * SM-DP/SM-DS for more context information? */
 			IPA_LOGP(SIPA, LERROR,
 				 "the ProfileDownloadData does not contain an activationCode -- cannot continue!\n");
+			rc = -EINVAL;
 			goto error;
 		}
 
 		rc = get_euicc_ci_pkid(ctx, &allowed_ca_pkid);
-		if (rc < 0)
+		if (rc < 0) {
+			rc = -EINVAL;
 			goto error;
+		}
 
 		direct_prfle_dwnlod_pars.allowed_ca = allowed_ca_pkid;
 		direct_prfle_dwnlod_pars.tac = ctx->cfg->tac;
 		direct_prfle_dwnlod_pars.ac =
 		    IPA_STR_FROM_ASN(&get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->choice.
 				     activationCode);
-		ipa_proc_direct_prfle_dwnlod(ctx, &direct_prfle_dwnlod_pars);
+		rc = ipa_proc_direct_prfle_dwnlod(ctx, &direct_prfle_dwnlod_pars);
 		IPA_FREE((void *)direct_prfle_dwnlod_pars.ac);
+		if (rc < 0)
+			goto error;
 	} else {
 		IPA_LOGP(SIPA, LERROR,
 			 "the GetEimPackageResponse contains an unsupported request -- cannot continue!\n");
+		rc = -EINVAL;
 		goto error;
 	}
 
-	ipa_esipa_get_eim_pkg_free(get_eim_pkg_res);
 	IPA_FREE(allowed_ca_pkid);
-	IPA_LOGP(SIPA, LINFO, "eIM Package Retrieval succeded!\n");
+	IPA_LOGP(SIPA, LINFO, "eIM Package Execution succeeded!\n");
 	return 0;
 error:
-	ipa_esipa_get_eim_pkg_free(get_eim_pkg_res);
 	IPA_FREE(allowed_ca_pkid);
+	IPA_LOGP(SIPA, LINFO, "eIM Package Execution failed!\n");
+	return rc;
+}
+
+/*! Perform eIM Package Retrieval Procedure.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \returns 0 on success, negative on failure. */
+int ipa_proc_eim_pkg_retr(struct ipa_context *ctx)
+{
+	struct ipa_esipa_get_eim_pkg_res *get_eim_pkg_res = NULL;
+	int rc;
+
+	/* Poll eIM */
+	get_eim_pkg_res = ipa_esipa_get_eim_pkg(ctx, ctx->eid);
+	if (!get_eim_pkg_res) {
+		rc = -EINVAL;
+		goto error;
+	} else if (get_eim_pkg_res->eim_pkg_err == GetEimPackageResponse__eimPackageError_noEimPackageAvailable) {
+		rc = -GetEimPackageResponse__eimPackageError_noEimPackageAvailable;
+		goto error;
+	} else if (get_eim_pkg_res->eim_pkg_err) {
+		rc = -EINVAL;
+		goto error;
+	}
+
+	IPA_LOGP(SIPA, LINFO, "eIM Package Retrieval succeeded!\n");
+	rc = eim_pkg_exec(ctx, get_eim_pkg_res);
+	ipa_esipa_get_eim_pkg_free(get_eim_pkg_res);
+	return rc;
+error:
+	ipa_esipa_get_eim_pkg_free(get_eim_pkg_res);
 	IPA_LOGP(SIPA, LINFO, "eIM Package Retrieval failed!\n");
-	return -EINVAL;
+	return rc;
 }
