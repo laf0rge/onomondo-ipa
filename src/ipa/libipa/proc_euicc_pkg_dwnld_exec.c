@@ -40,6 +40,9 @@ static int remove_notifications(struct ipa_context *ctx, struct EimAcknowledgeme
 	return 0;
 }
 
+/*! Continue Generic eUICC Package Download and Execution Procedure.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \returns 0 on success, negative on failure. */
 int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx)
 {
 	struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_res = NULL;
@@ -75,18 +78,6 @@ int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx)
 	if (!prvde_eim_pkg_rslt_res)
 		goto error;
 
-	/* TODO: Here we have a problem: The PSMO list might contain an disable/enable PSMO. This is usually the case
-	 * when a changeover from one provider to another happens. Eventually this means the IP connectivity will be
-	 * gone for some seconds, so if we continue immediately with ipa_esipa_prvde_eim_pkg_rslt(), the request might
-	 * fail.
-	 *
-	 * In case of failure we might concider to safe the state somewhere to resume with the next ipa_poll() cycle.
-	 * Since we do only remove the notifications when after the ProvideEimPackageResult, we do not need to store
-	 * them, we can instead just read them from the card in the next retry cycle.
-	 *
-	 * In case the IP connectivity does not return and the rollbackFlag was set in the enable PSMO, we would use
-	 * the ES10b function profileRollback to return back to the previously enabled profile. */
-
 	/* Step #15-17 (ES10b.RemoveNotificationFromList) */
 	/* Remove the notification for the euiccPackageResult. */
 	rc = ipa_es10b_rm_notif_from_lst(ctx,
@@ -113,6 +104,10 @@ error:
 	return -EINVAL;
 }
 
+/*! Perform Generic eUICC Package Download and Execution Procedure.
+ *  \param[inout] ctx pointer to ipa_context.
+ *  \param[in] euicc_package_request pointer to struct that holds the EuiccPackageRequest.
+ *  \returns 0 on success, negative on failure. */
 int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, const struct EuiccPackageRequest *euicc_package_request)
 {
 	struct ipa_es10b_load_euicc_pkg_req load_euicc_pkg_req = { 0 };
@@ -132,8 +127,17 @@ int ipa_proc_eucc_pkg_dwnld_exec(struct ipa_context *ctx, const struct EuiccPack
 		goto error;
 
 	ctx->load_euicc_pkg_res = load_euicc_pkg_res;
-	IPA_LOGP(SIPA, LINFO, "Generic eUICC Package Download and Execution progressing successfully...\n");
-	return 0;
+
+	if (ctx->load_euicc_pkg_res->profile_changed) {
+		/* In case the execution of the eUICC package has done any changes to the currently selected profile
+		 * we will stop here. The caller will notice that ctx->load_euicc_pkg_res is still populated and call
+		 * ipa_proc_eucc_pkg_dwnld_exec_onset once the IP connection has resettled. */
+		IPA_LOGP(SIPA, LINFO, "Generic eUICC Package Download and Execution progressing successfully...\n");
+		return 0;
+	} else {
+		/* There were no changes to the currently selected profile, so we may continue normally. */
+		return ipa_proc_eucc_pkg_dwnld_exec_onset(ctx);
+	}
 error:
 	/* TODO: Do we need to report an error to the eIM? */
 	ctx->load_euicc_pkg_res = NULL;
