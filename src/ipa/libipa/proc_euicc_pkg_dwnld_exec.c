@@ -94,7 +94,7 @@ int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx)
 	ctx->load_euicc_pkg_res = NULL;
 	ipa_es10b_retr_notif_from_lst_res_free(retr_notif_from_lst_res);
 	ipa_esipa_prvde_eim_pkg_rslt_free(prvde_eim_pkg_rslt_res);
-	IPA_LOGP(SIPA, LINFO, "Generic eUICC Package Download and Execution succeded!\n");
+	IPA_LOGP(SIPA, LINFO, "Generic eUICC Package Download and Execution succeeded!\n");
 	return 0;
 error:
 	/* TODO: Do we need to report an error to the eIM? */

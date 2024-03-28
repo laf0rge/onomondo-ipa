@@ -211,7 +211,7 @@ handle_error:
 	if (ipa_euicc_data_response.present == IpaEuiccDataResponse_PR_ipaEuiccDataError)
 		IPA_LOGP(SIPA, LINFO, "IPA get EUICC data failed, eIM is informed about the failure!\n");
 	else
-		IPA_LOGP(SIPA, LINFO, "IPA get EUICC data succeded!\n");
+		IPA_LOGP(SIPA, LINFO, "IPA get EUICC data succeeded!\n");
 
 	IPA_FREE(tag_list);
 	ipa_es10a_get_euicc_cfg_addr_free(euicc_cfg_addr);

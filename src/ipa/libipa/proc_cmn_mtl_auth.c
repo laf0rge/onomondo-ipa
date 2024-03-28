@@ -234,7 +234,7 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx,
 	ipa_es10b_auth_serv_res_free(auth_serv_res);
 	IPA_FREE(euicc_ci_pkid_to_be_used);
 	IPA_FREE(server_signature_1);
-	IPA_LOGP(SIPA, LINFO, "mutual authentication succeded!\n");
+	IPA_LOGP(SIPA, LINFO, "mutual authentication succeeded!\n");
 	return auth_clnt_res;
 error:
 	if (exec_cmn_cancel_sess) {

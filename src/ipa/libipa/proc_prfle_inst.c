@@ -84,7 +84,7 @@ int ipa_proc_prfle_inst(struct ipa_context *ctx, const struct ipa_proc_prfle_ins
 		goto error;
 
 	ipa_bpp_segments_free(segments);
-	IPA_LOGP(SIPA, LINFO, "profile installation succeded!\n");
+	IPA_LOGP(SIPA, LINFO, "profile installation succeeded!\n");
 	return 0;
 error:
 	ipa_bpp_segments_free(segments);
