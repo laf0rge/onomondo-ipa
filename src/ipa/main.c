@@ -232,14 +232,32 @@ int main(int argc, char **argv)
 		while (running) {
 			IPA_LOGP(SMAIN, LINFO, "-----------------------------8<-----------------------------\n");
 			rc = ipa_poll(ctx);
-			if (rc < 0) {
-				IPA_LOGP(SMAIN, LERROR, "poll cycle failed!\n");
-				ipa_close(ctx);
+
+			switch (rc) {
+			case IPA_POLL_AGAIN_WHEN_ONLINE:
+				/* ipa_poll asks us to wait with the next poll cycle until we have a stable IP
+				 * connection. In this example we assume that IP connectivity is always available. */
+				IPA_LOGP(SMAIN, LINFO, "poll cycle continues normally (profile change)\n");
+				rc = 0;
+				break;
+			case IPA_POLL_AGAIN:
+				/* ipa_poll asks us to continue polling normally */
+				IPA_LOGP(SMAIN, LINFO, "poll cycle continues normally\n");
+				rc = 0;
+				break;
+			case IPA_POLL_AGAIN_LATER:
+				/* ipa_poll tells us that we may poll less frequently, so just exit. */
+				IPA_LOGP(SMAIN, LERROR, "poll cycle ends normally\n");
+				rc = 0;
+				goto error;
+			default:
+				/* We got a negative return code from ipa_poll. This means something does not work
+				 * normally. In a productive setup we would continue calling ipa_poll a few more times
+				 * to see if the cause is a temporary problem. After that we would free the context
+				 * using ipa_free_ctx and start over. */
+				IPA_LOGP(SMAIN, LERROR, "poll cycle ends due to error (%d)\n", rc);
 				rc = -EINVAL;
 				goto error;
-			} else {
-				IPA_LOGP(SMAIN, LINFO, "poll cycle successful!\n");
-				rc = 0;
 			}
 		}
 	}

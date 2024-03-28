@@ -10,6 +10,7 @@ struct ipa_es10b_load_euicc_pkg_req {
 
 struct ipa_es10b_load_euicc_pkg_res {
 	struct EuiccPackageResult *res;
+	bool profile_changed;
 };
 
 struct ipa_es10b_load_euicc_pkg_res *ipa_es10b_load_euicc_pkg(struct ipa_context *ctx,

@@ -10,6 +10,29 @@
 struct ipa_context;
 struct ipa_buf;
 
+enum ipa_poll_rc {
+	/*! The API user shall call ipa_poll() again immediately.
+	 *  (there may be still eIM packages waiting to be executed). */
+	IPA_POLL_AGAIN = 0,
+
+	/*! The APU user may call ipa_poll() less frequently.
+	 *  (there are no further eIM packages waiting) */
+	IPA_POLL_AGAIN_LATER = 1,
+
+	/*! An eIM package contained an operation (e.g. switch to another eUICC profile) that may cause a temporary loss
+	 *  of the IP connectivity. The API user shall call ipa_poll() again as soon as the IP connectivity has
+	 *  been resettled. */
+	IPA_POLL_AGAIN_WHEN_ONLINE = 2,
+
+	/*! Communication with the eUICC was not possible. The caller shall call ipa_popp() again when connectivity to
+	 *  the eUICC has been recovered. */
+	IPA_POLL_CHECK_SCARD = -1000,
+
+	/*! Communication with the eIM was not possible. The caller shall call ipa_popp() again when connectivity to
+	 *  the eIM has been recovered. */
+	IPA_POLL_CHECK_HTTP = -2000,
+};
+
 /*! IPAd Configuration */
 struct ipa_config {
 	/*! preferred eimId (optional. When set to NULL, the first eIM config item in the EimConfigurationData list is

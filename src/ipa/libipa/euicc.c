@@ -143,6 +143,7 @@ static int send_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	rc = ipa_scard_transceive(ctx->scard_ctx, buf_res, buf_req);
 	if (rc < 0) {
 		IPA_LOGP(SEUICC, LERROR, "unable to send ES10x block %u, offset=%zu\n", block_nr, offset);
+		ctx->check_scard = true;
 		goto exit;
 	}
 
@@ -203,6 +204,7 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	rc = ipa_scard_transceive(ctx->scard_ctx, buf_res, buf_req);
 	if (rc < 0) {
 		IPA_LOGP(SEUICC, LERROR, "unable to receive ES10x block %u, offset=%zu\n", block_nr, es10x_res->len);
+		ctx->check_scard = true;
 		rc = -EIO;
 		goto exit;
 	}
@@ -369,6 +371,7 @@ static int select_isd_r(struct ipa_context *ctx)
 	rc = ipa_scard_transceive(ctx->scard_ctx, buf_res, buf_req);
 	if (rc < 0) {
 		IPA_LOGP(SEUICC, LERROR, "unable select ISD-R due to communication error\n");
+		ctx->check_scard = true;
 		rc = -EIO;
 		goto exit;
 	}
@@ -431,6 +434,7 @@ static int manage_channel(struct ipa_context *ctx, bool close)
 	if (rc < 0) {
 		IPA_LOGP(SEUICC, LERROR, "unable %s logical channel %u due to communication error with eUICC\n",
 			 close ? "close" : "open", channel);
+		ctx->check_scard = true;
 		rc = -EIO;
 		goto exit;
 	}

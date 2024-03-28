@@ -176,6 +176,7 @@ struct ipa_buf *ipa_esipa_req(struct ipa_context *ctx, const struct ipa_buf *esi
 
 	return esipa_res;
 error:
+	ctx->check_http = true;
 	IPA_FREE(esipa_res);
 	return NULL;
 }

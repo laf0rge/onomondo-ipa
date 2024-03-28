@@ -198,8 +198,8 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 				break;
 			}
 			if (psmo_result)
-				ASN_SEQUENCE_ADD(&asn->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.
-						 euiccResult.list, psmo_result);
+				ASN_SEQUENCE_ADD(&asn->choice.euiccPackageResultSigned.
+						 euiccPackageResultDataSigned.euiccResult.list, psmo_result);
 		}
 		break;
 	case EuiccPackage_PR_ecoList:
@@ -225,6 +225,33 @@ error:
 	return res;
 }
 
+/* Check if the euicc package that we have just executed has done any changes to the currently selected profile */
+static bool check_for_profile_change(const struct EuiccPackageResult *res)
+{
+	unsigned int i;
+	struct EuiccResultData *euicc_result_data;
+	if (!res)
+		return false;
+	if (!res->present == EuiccPackageResult_PR_euiccPackageResultSigned)
+		return false;
+
+	for (i = 0; i < res->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.euiccResult.list.count; i++) {
+		euicc_result_data =
+		    res->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.euiccResult.list.array[i];
+		switch (euicc_result_data->present) {
+		case EuiccResultData_PR_enableResult:
+			if (euicc_result_data->choice.rollbackResult == EnableProfileResult_ok)
+				return true;
+		case EuiccResultData_PR_disableResult:
+			if (euicc_result_data->choice.disableResult == DisableProfileResult_ok)
+				return true;
+		case EuiccResultData_PR_rollbackResult:
+			if (euicc_result_data->choice.rollbackResult == RollbackProfileResult_ok)
+				return true;
+		}
+	}
+}
+
 /*! Function (ES10b): LoadEuiccPackage.
  *  \param[inout] ctx pointer to ipa_context.
  *  \param[in] req pointer to struct that holds the function parameters.
@@ -232,10 +259,15 @@ error:
 struct ipa_es10b_load_euicc_pkg_res *ipa_es10b_load_euicc_pkg(struct ipa_context *ctx,
 							      const struct ipa_es10b_load_euicc_pkg_req *req)
 {
+	struct ipa_es10b_load_euicc_pkg_res *res;
+
 	if (ctx->cfg->iot_euicc_emu_enabled)
-		return load_euicc_pkg_iot_emu(ctx, req);
+		res = load_euicc_pkg_iot_emu(ctx, req);
 	else
-		return load_euicc_pkg(ctx, req);
+		res = load_euicc_pkg(ctx, req);
+
+	res->profile_changed = check_for_profile_change(res->res);
+	return res;
 }
 
 /*! Free results of function (ES10b): LoadEuiccPackage.

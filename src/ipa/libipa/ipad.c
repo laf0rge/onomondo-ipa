@@ -234,15 +234,48 @@ int ipa_euicc_mem_rst(struct ipa_context *ctx, bool operatnl_profiles, bool test
 	return ipa_es10b_euicc_mem_rst(ctx, &euicc_mem_rst);
 }
 
+static int check_canaries(struct ipa_context *ctx)
+{
+	if (ctx->check_http)
+		return IPA_POLL_CHECK_HTTP;
+	if (ctx->check_scard)
+		return IPA_POLL_CHECK_SCARD;
+	return -EINVAL;
+}
+
 /*! poll the IPAd (may be called in regular intervals or on purpose).
  *  \param[inout] ctx pointer to ipa_context.
- *  \returns 0 on success, negative on error. */
+ *  \returns positive on success, negative on error (see also enum ipa_poll_rc). */
 int ipa_poll(struct ipa_context *ctx)
 {
+	int rc;
+
+	/* Reset canaries */
+	ctx->check_scard = false;
+	ctx->check_http = false;
+
 	if (ctx->load_euicc_pkg_res)
-		return ipa_proc_eucc_pkg_dwnld_exec_onset(ctx);
-	else
-		return ipa_proc_eim_pkg_retr(ctx);
+		/* There is an eUICC package execution ongoing, which we have to finish first */
+		rc = ipa_proc_eucc_pkg_dwnld_exec_onset(ctx);
+	else if (rc < 0)
+		return check_canaries(ctx);
+	else {
+		/* Normal operation, we poll the eIM for the next eIM package. */
+		rc = ipa_proc_eim_pkg_retr(ctx);
+		if (rc == -GetEimPackageResponse__eimPackageError_noEimPackageAvailable)
+			/* When no more eIM packages are available it makes sense to relax the poll interval. */
+			return IPA_POLL_AGAIN_LATER;
+		else if (rc < 0)
+			return check_canaries(ctx);
+	}
+
+	/* There is an eUICC package execution ongoing which has done changes to the currently selected profile.
+	 * the caller of ipa_poll must ensure that ipa_poll is called again once the IP connection has resettled */
+	if (ctx->load_euicc_pkg_res)
+		return IPA_POLL_AGAIN_WHEN_ONLINE;
+
+	/* Tell the caller to continue polling normally */
+	return IPA_POLL_AGAIN;
 }
 
 /*! close connection towards the eIM.

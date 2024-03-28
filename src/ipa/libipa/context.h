@@ -47,4 +47,10 @@ struct ipa_context {
 	/*! Non volatile storage: Everything stored in this struct is loaded by the API user from a non volatile memory
 	 *  location on startup (ipa_new_ctx) and stored to a non volatile location on exit (ipa_free_ctx). */
 	struct ipa_nvstate nvstate;
+
+	/*! A canary to detect smartcard (eUICC) communication errors */
+	bool check_scard;
+
+	/*! A canary to detect HTTP communication errors */
+	bool check_http;
 };
