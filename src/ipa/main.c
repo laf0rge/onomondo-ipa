@@ -265,7 +265,8 @@ int main(int argc, char **argv)
 error:
 	IPA_LOGP(SMAIN, LINFO, "-----------------------------8<-----------------------------\n");
 	nvstate_save = ipa_free_ctx(ctx);
-	save_nvstate_to_file(getopt_nvstate_path, nvstate_save);
+	if (nvstate_save)
+		save_nvstate_to_file(getopt_nvstate_path, nvstate_save);
 	IPA_FREE(nvstate_load);
 	IPA_FREE(nvstate_save);
 	return rc;
