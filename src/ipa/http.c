@@ -16,16 +16,17 @@
 #include <onomondo/ipa/log.h>
 #include <onomondo/ipa/mem.h>
 
-#define SKIP_VERIFICATION
+//#define SKIP_VERIFICATION
 
 struct http_ctx {
 	bool initialized;
+	const char *cabundle;
 	CURL *curl;
 };
 
 /*! Initialize HTTP client.
  *  \returns pointer to newly allocated HTTP client context. */
-void *ipa_http_init(void)
+void *ipa_http_init(const char *cabundle)
 {
 	struct http_ctx *ctx = IPA_ALLOC(struct http_ctx);
 	assert(ctx);
@@ -33,6 +34,7 @@ void *ipa_http_init(void)
 
 	curl_global_init(CURL_GLOBAL_DEFAULT);
 	ctx->initialized = true;
+	ctx->cabundle = cabundle;
 
 	IPA_LOGP(SHTTP, LINFO, "HTTP client initialized.\n");
 
@@ -74,6 +76,13 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res, const struct ipa_buf *req,
 		ctx->curl = curl_easy_init();
 		if (!ctx->curl) {
 			IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure!\n");
+			goto error;
+		}
+	}
+	if (ctx->cabundle) {
+		rc = curl_easy_setopt(ctx->curl, CURLOPT_CAINFO, ctx->cabundle);
+		if (rc != CURLE_OK) {
+			IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 			goto error;
 		}
 	}

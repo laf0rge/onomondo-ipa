@@ -43,6 +43,9 @@ struct ipa_config {
 	uint8_t tac[IPA_LEN_TAC];
 
 	/*! The caller may choose to disable SSL in a test environment to simplify debugging. */
+	const char *eim_cabundle;
+
+	/*! The caller may choose to disable SSL in a test environment to simplify debugging. */
 	bool eim_disable_ssl;
 
 	/*! Configure the number of retries to apply in case a request (HTTP) to the eIM fails */

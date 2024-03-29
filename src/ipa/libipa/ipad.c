@@ -164,7 +164,7 @@ int ipa_init(struct ipa_context *ctx)
 {
 	int rc;
 
-	ctx->http_ctx = ipa_http_init();
+	ctx->http_ctx = ipa_http_init(ctx->cfg->eim_cabundle);
 	if (!ctx->http_ctx)
 		return -EINVAL;
 
