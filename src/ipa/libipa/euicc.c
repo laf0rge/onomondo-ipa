@@ -74,7 +74,7 @@ static struct ipa_buf *format_req_apdu(const struct req_apdu *req_apdu)
 			buf_req->data[4] = 0;
 		buf_req->len = 5;
 	} else if (req_apdu->lc == 0 && req_apdu->le == 0) {
-		/* No data to send and no receove data expected */
+		/* No data to send and no receive data expected */
 		buf_req->data[4] = 0;
 		buf_req->len = 5;
 	} else {
@@ -184,7 +184,7 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 
 	/* In case the expected block length exceeds our buffer limit, we must
 	 * clip. This is no problem since it is always up to the caller to
-	 * check by the return code how many bytes were actually transmited.
+	 * check by the return code how many bytes were actually transmitted.
 	 * The caller also must evaluate the status word to know if there are
 	 * still bytes available in the GET RESPONSE buffer of the eUICC. */
 	if (block_len > MAX_BLOCKSIZE_RX)
@@ -267,7 +267,7 @@ static int euicc_transceive_es10x(struct ipa_context *ctx, struct ipa_buf *es10x
 			break;
 
 		/* The eUICC should ACK each block with SW=9000, the last block
-		 * be confirmied with 61xx to indicate that response data is
+		 * be confirmed with 61xx to indicate that response data is
 		 * available */
 		if (sw != 0x9000 && offset < es10x_req->len) {
 			IPA_LOGP(SEUICC, LERROR, "ES10x transmission aborted early by eUICC, sw=%04x\n", sw);

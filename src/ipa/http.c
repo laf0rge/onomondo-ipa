@@ -69,7 +69,7 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res, const struct ipa_buf *req,
 
 	assert(ctx->initialized);
 
-	/* Create a new curl context (also represents an onoging connection) in case it does not exist */
+	/* Create a new curl context (also represents an ongoing connection) in case it does not exist */
 	if (!ctx->curl) {
 		ctx->curl = curl_easy_init();
 		if (!ctx->curl) {
@@ -152,7 +152,7 @@ error:
 	return -EIO;
 }
 
-/*! Close the TCP underlyaing TCP connection (to be called after the last request).
+/*! Close the TCP underlying TCP connection (to be called after the last request).
  *  \param[inout] http_ctx HTTP client context. */
 void ipa_http_close(void *http_ctx)
 {

@@ -70,8 +70,8 @@ static struct DeviceInfo *make_device_info(struct ipa_context *ctx)
 	/* TODO: Optionally it would also be possible to submint the IMEI here, The question is: Do we need that? */
 
 	/* TODO: The struct "device_info.deviceCapabilities" contains only optional parameters that refer supported
-	 * faturers of the supported RAN. We should find a suitable way to present those fields to the user so that
-	 * he can set the parametr via the ipa_context. For now we leave those parameters unpopulated. */
+	 * features of the supported RAN. We should find a suitable way to present those fields to the user so that
+	 * he can set the parameter via the ipa_context. For now we leave those parameters unpopulated. */
 
 	return &device_info;
 }

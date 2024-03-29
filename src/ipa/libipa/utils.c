@@ -15,7 +15,7 @@
 #include "utils.h"
 #include "length.h"
 
-/* \! Lookup a numeric value in a num to string map and return the coresponding string.
+/* \! Lookup a numeric value in a num to string map and return the corresponding string.
  *  \param[in] map pointer num to str map.
  *  \param[in] num numeric value of the string to look up.
  *  \param[in] def default string to return in case the numeric value is not found.

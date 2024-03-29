@@ -84,13 +84,13 @@ static void nvstate_deserialize(struct ipa_nvstate *nvstate, struct ipa_buf *nvs
 		return;
 	}
 
-	/* desearialize statically allocated struct members and check version */
+	/* deserialize statically allocated struct members and check version */
 	memcpy((uint8_t *) nvstate, nvstate_bin->data, sizeof(*nvstate));
 	nvstate_data = nvstate_bin->data + sizeof(*nvstate);
 	nvstate_data_len = nvstate_bin->len - sizeof(*nvstate);
 	if (nvstate->version != IPA_NVSTATE_VERSION) {
 		IPA_LOGP(SIPA, LERROR,
-			 "cannot deserialize non volatile state with mismatiching version number %u (expected version: %u)\n",
+			 "cannot deserialize non volatile state with mismatching version number %u (expected version: %u)\n",
 			 nvstate->version, IPA_NVSTATE_VERSION);
 		nvstate_reset(nvstate);
 		return;

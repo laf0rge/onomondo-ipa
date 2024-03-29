@@ -93,7 +93,7 @@ int ipa_es10b_euicc_mem_rst(struct ipa_context *ctx, const struct ipa_es10b_euic
 
 	/* TODO: It is a bit unclear how the eIM configuration should be treated when the eUICC memory is reset.
 	 * in SGP.22 v2.5, the specification we use, there is no extra bit for this in resetOptions. But in
-	 * SGP.32 v1.0.1, there is resetEimConfigData(3), which is ambigiously assigned since in SGP.22 v3.1
+	 * SGP.32 v1.0.1, there is resetEimConfigData(3), which is ambiguously assigned since in SGP.22 v3.1
 	 * the same bit means deletePreLoadedTestProfiles(3). This is something that should be closer
 	 * investigated and perhaps confirmed with real sample consumer and IoT eUICCs
 	 * (The same problem also exists with resetAutoEnableConfig(4) and deleteProvisioningProfiles(4)) */

@@ -37,7 +37,7 @@ static int handle_load_bnd_prfle_pkg_res(struct ipa_context *ctx, struct ipa_es1
 	}
 
 	/* A response is present, this is either the normal ending of the installation sequence or the eUICC has aborted
-	 * the the installation. In both situations we forward the ProfileInstallationResult to the eIM. */
+	 * the installation. In both situations we forward the ProfileInstallationResult to the eIM. */
 	handle_notif_req.profile_installation_result = res->res;
 	rc = ipa_esipa_handle_notif(ctx, &handle_notif_req);
 	*seq_number = res->res->profileInstallationResultData.notificationMetadata.seqNumber;

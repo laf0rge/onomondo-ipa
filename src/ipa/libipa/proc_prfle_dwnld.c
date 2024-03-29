@@ -53,8 +53,8 @@ struct ipa_esipa_get_bnd_prfle_pkg_res *ipa_proc_prfle_dwnlod(struct ipa_context
 	else if (!get_bnd_prfle_pkg_res->get_bnd_prfle_pkg_ok)
 		goto error;
 
-	/* In case of error it is the responsibility of the caller to call the Common Cancal Session procedure.
-	 * In case of success, the caller should ask the user for concent before continuing with the profile
+	/* In case of error it is the responsibility of the caller to call the Common Cancel Session procedure.
+	 * In case of success, the caller should ask the user for consent before continuing with the profile
 	 * installation. */
 
 	ipa_es10b_prep_dwnld_res_free(prep_dwnld_res);

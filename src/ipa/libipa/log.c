@@ -45,7 +45,7 @@ static const char *level_str[_NUM_LOG_LEVEL] = {
  *  \param[in] level log level identifier.
  *  \param[in] file source file name.
  *  \param[in] line source file line.
- *  \param[in] format formtstring (followed by arguments). */
+ *  \param[in] format format string (followed by arguments). */
 void ipa_logp(uint32_t subsys, uint32_t level, const char *file, int line, const char *format, ...)
 {
 	va_list ap;

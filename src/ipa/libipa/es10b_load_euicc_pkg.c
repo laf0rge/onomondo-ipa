@@ -165,7 +165,7 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 	ipa_buf_assign(&euicc_sign_epr, "", 0);	/* Return an empty signature as we are unable to sign anything here */
 	IPA_COPY_IPA_BUF_TO_ASN(&asn->choice.euiccPackageResultSigned.euiccSignEPR, &euicc_sign_epr);
 
-	/* Go through the list of PSMOs and ECOs and execute the coresponding iot_emo_do... functions */
+	/* Go through the list of PSMOs and ECOs and execute the corresponding iot_emo_do... functions */
 	switch (req->req.euiccPackageSigned.euiccPackage.present) {
 	case EuiccPackage_PR_psmoList:
 		for (i = 0; i < req->req.euiccPackageSigned.euiccPackage.choice.psmoList.list.count; i++) {

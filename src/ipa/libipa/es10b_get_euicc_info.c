@@ -103,7 +103,7 @@ static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, const st
 
 	euicc_info->euicc_info_2 = asn;
 
-	/* Also offer EUICCInfo2 in SGP32 format */
+	/* Also offer EUICCInfo2 in SGP.32 format */
 	euicc_info->sgp32_euicc_info_2 = IPA_ALLOC(struct SGP32_EUICCInfo2);
 	convert_euicc_info_2(euicc_info->sgp32_euicc_info_2, euicc_info->euicc_info_2);
 

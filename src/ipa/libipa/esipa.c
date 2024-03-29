@@ -54,11 +54,11 @@ char *ipa_esipa_get_eim_url(struct ipa_context *ctx)
 /*! Decode an ASN.1 encoded eIM to IPA message.
  *  \param[in] msg_to_ipa_encoded pointer to ipa_buf that contains the encoded message.
  *  \param[in] function_name name of the ESipa function (for log messages).
- *  \param[in] epected_res_type type of the expected eIM response (for plausibility check).
+ *  \param[in] expected_res_type type of the expected eIM response (for plausibility check).
  *  \returns pointer newly allocated ASN.1 struct that contains the decoded message, NULL on error. */
 struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(const struct ipa_buf *msg_to_ipa_encoded,
 							  const char *function_name,
-							  enum EsipaMessageFromEimToIpa_PR epected_res_type)
+							  enum EsipaMessageFromEimToIpa_PR expected_res_type)
 {
 	struct EsipaMessageFromEimToIpa *msg_to_ipa = NULL;
 	asn_dec_rval_t rc;
@@ -97,7 +97,7 @@ struct EsipaMessageFromEimToIpa *ipa_esipa_msg_to_ipa_dec(const struct ipa_buf *
 	IPA_LOGP(SESIPA, LDEBUG, " decoded ASN.1:\n");
 	ipa_asn1c_dump(&asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa, 1, SESIPA, LDEBUG);
 
-	if (msg_to_ipa->present != epected_res_type) {
+	if (msg_to_ipa->present != expected_res_type) {
 		IPA_LOGP_ESIPA(function_name, LERROR, "unexpected eIM response\n");
 		ASN_STRUCT_FREE(asn_DEF_EsipaMessageFromEimToIpa, msg_to_ipa);
 		return NULL;
@@ -181,7 +181,7 @@ error:
 	return NULL;
 }
 
-/*! Close any underlyaing transport protocol connection towards the eIM
+/*! Close any underlying transport protocol connection towards the eIM
  *  \param[in] ctx pointer to ipa_context. */
 void ipa_esipa_close(struct ipa_context *ctx)
 {

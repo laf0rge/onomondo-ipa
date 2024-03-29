@@ -12,7 +12,7 @@
 #include <onomondo/ipa/log.h>
 
 /*! Parse Activation code.
- *  \param[in] ac ascii string that contains the activation code.
+ *  \param[in] ac ASCII string that contains the activation code.
  *  \returns struct with parsed activation code on success, NULL on failure. */
 struct ipa_activation_code *ipa_activation_code_parse(const char *ac)
 {
@@ -107,7 +107,7 @@ struct ipa_activation_code *ipa_activation_code_parse(const char *ac)
 	};
 
 	/* The SMDP+ address and the AC token are mandatory fields. In case we
-	 * lack one of those fields, we will concider the whole AC as invalid.*/
+	 * lack one of those fields, we will consider the whole AC as invalid.*/
 	if (!ac_decoded->sm_dp_plus_address || !ac_decoded->ac_token) {
 		ipa_activation_code_free(ac_decoded);
 		ac_decoded = NULL;
