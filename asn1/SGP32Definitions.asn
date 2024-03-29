@@ -68,7 +68,7 @@ EimIdType ::= INTEGER {
   eimIdTypeFqdn(2),
   eimIdTypeProprietary(3)
 }
-  EimSupportedProtocol ::= BIT STRING {
+EimSupportedProtocol ::= BIT STRING {
   eimRetrieveHttps(0),
   eimRetrieveCoaps(1),
   eimInjectHttps(2),
