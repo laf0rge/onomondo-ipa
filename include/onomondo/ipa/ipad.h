@@ -42,7 +42,8 @@ struct ipa_config {
 	/*! current TAC (This struct member may be updated at any time after context creation.) */
 	uint8_t tac[IPA_LEN_TAC];
 
-	/*! The caller may choose to disable SSL in a test environment to simplify debugging. */
+	/*! The caller may specify a path to a CA bundle file. The string is passed to ipa_http_init() on
+	 *  initialization (see also http.h and http.c) */
 	const char *eim_cabundle;
 
 	/*! The caller may choose to disable SSL in a test environment to simplify debugging. */

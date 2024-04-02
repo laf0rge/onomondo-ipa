@@ -25,6 +25,7 @@ struct http_ctx {
 };
 
 /*! Initialize HTTP client.
+ *  \param[in] cabundle path to a CA bundle.
  *  \returns pointer to newly allocated HTTP client context. */
 void *ipa_http_init(const char *cabundle)
 {
