@@ -35,6 +35,7 @@ static void print_help(void)
 	printf(" -m .................. reset eUICC memory\n");
 	printf(" -n PATH ............. path to nvstate file (default: %s)\n", DEFAULT_NVSTATE_PATH);
 	printf(" -y NUM .............. number of retries for ESipa requests (default: %u)", DEFAULT_ESIPA_REQ_RETRIES);
+	printf(" -C .................. CA (Certificate Authority) Bundle file\n");
 	printf(" -S .................. disable HTTPS\n");
 	printf(" -E .................. emulate IoT eUICC (compatibility mode to use consumer eUICCs)\n");
 }
@@ -116,7 +117,7 @@ static void sig_usr1(int signum)
 int main(int argc, char **argv)
 {
 	struct ipa_config cfg = { 0 };
-	struct ipa_context *ctx;
+	struct ipa_context *ctx = NULL;
 	int opt;
 	int rc;
 	char *getopt_initial_eim_cfg_file = NULL;
@@ -137,7 +138,7 @@ int main(int argc, char **argv)
 
 	/* Overwrite configuration values with user defined parameters */
 	while (1) {
-		opt = getopt(argc, argv, "ht:e:r:c:f:mn:SEy:");
+		opt = getopt(argc, argv, "ht:e:r:c:f:mn:C:SEy:");
 		if (opt == -1)
 			break;
 
@@ -167,6 +168,9 @@ int main(int argc, char **argv)
 		case 'n':
 			getopt_nvstate_path = optarg;
 			break;
+		case 'C':
+			cfg.eim_cabundle = optarg;
+			break;
 		case 'S':
 			cfg.eim_disable_ssl = true;
 			break;
@@ -188,11 +192,22 @@ int main(int argc, char **argv)
 	printf(" preferred_eim_id = %s\n", cfg.preferred_eim_id ? cfg.preferred_eim_id : "(first configured eIM)");
 	printf(" reader_num = %d\n", cfg.reader_num);
 	printf(" euicc_channel = %d\n", cfg.euicc_channel);
+	if (cfg.eim_cabundle)
+		printf(" eim_cabundle = %s\n", cfg.eim_cabundle);
 	printf(" eim_disable_ssl = %d\n", cfg.eim_disable_ssl);
 	printf(" tac = %s\n", ipa_hexdump(cfg.tac, sizeof(cfg.tac)));
 	printf(" iot_euicc_emu_enabled = %u\n", cfg.iot_euicc_emu_enabled);
 	printf(" esipa_req_retries = %u\n", cfg.esipa_req_retries);
 	printf("\n");
+
+	if (cfg.eim_cabundle) {
+		rc = access(cfg.eim_cabundle, R_OK);
+		if (rc < 0) {
+			IPA_LOGP(SMAIN, LERROR, "error accessing CA bundle %s: %s\n", cfg.eim_cabundle,
+				 strerror(errno));
+			goto error;
+		}
+	}
 
 	/* Create a new IPA context */
 	nvstate_load = load_nvstate_from_file(getopt_nvstate_path);
