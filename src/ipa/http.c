@@ -1,5 +1,6 @@
 /*
  * Author: Philipp Maier <pmaier@sysmocom.de> / sysmocom - s.f.m.c. GmbH
+ * Author: Harald Welte <hwelte@sysmocom.de> / sysmocom - s.f.m.c. GmbH
  *
  */
 
