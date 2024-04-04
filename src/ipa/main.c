@@ -34,7 +34,7 @@ static void print_help(void)
 	printf(" -f PATH ............. set initial eIM configuration\n");
 	printf(" -m .................. reset eUICC memory\n");
 	printf(" -n PATH ............. path to nvstate file (default: %s)\n", DEFAULT_NVSTATE_PATH);
-	printf(" -y NUM .............. number of retries for ESipa requests (default: %u)", DEFAULT_ESIPA_REQ_RETRIES);
+	printf(" -y NUM .............. number of retries for ESipa requests (default: %u)\n", DEFAULT_ESIPA_REQ_RETRIES);
 	printf(" -C .................. CA (Certificate Authority) Bundle file\n");
 	printf(" -S .................. disable HTTPS\n");
 	printf(" -I .................. disable SSL certificate verification (insecure)\n");
