@@ -20,6 +20,7 @@ add_library(libipa STATIC
   es10c_disable_prfle.c
   es10c_enable_prfle.c
   es10c_get_eid.c
+  es10c_get_prfle_info.c
   es10x.c
   esipa_auth_clnt.c
   esipa.c
