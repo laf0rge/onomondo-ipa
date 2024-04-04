@@ -13,6 +13,7 @@ add_library(libipa STATIC
   es10b_load_bnd_prfle_pkg.c
   es10b_load_euicc_pkg.c
   es10b_prep_dwnld.c
+  es10b_prfle_rollback.c
   es10b_retr_notif_from_lst.c
   es10b_rm_notif_from_lst.c
   es10c_delete_prfle.c

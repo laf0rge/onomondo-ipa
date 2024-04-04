@@ -78,6 +78,11 @@ int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx)
 	if (!prvde_eim_pkg_rslt_res)
 		goto error;
 
+	/* TODO: This step may fail when the IP connectivity is down. In case get an error here, we must perform a
+	 * profile rollback, but only when the user has permitted a rollback (flag in the PSMO). When the rollback
+	 * succeeded, we may retry and continue */
+	
+
 	/* Step #15-17 (ES10b.RemoveNotificationFromList) */
 	/* Remove the notification for the euiccPackageResult. */
 	rc = ipa_es10b_rm_notif_from_lst(ctx,
