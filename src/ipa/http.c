@@ -17,18 +17,18 @@
 #include <onomondo/ipa/log.h>
 #include <onomondo/ipa/mem.h>
 
-//#define SKIP_VERIFICATION
-
 struct http_ctx {
 	bool initialized;
 	const char *cabundle;
+	bool no_verif;
 	CURL *curl;
 };
 
 /*! Initialize HTTP client.
  *  \param[in] cabundle path to a CA bundle.
+ *  \param[in] no_verif skip SSL certificate verification (insecure).
  *  \returns pointer to newly allocated HTTP client context. */
-void *ipa_http_init(const char *cabundle)
+void *ipa_http_init(const char *cabundle, bool no_verif)
 {
 	struct http_ctx *ctx = IPA_ALLOC(struct http_ctx);
 	assert(ctx);
@@ -37,6 +37,7 @@ void *ipa_http_init(const char *cabundle)
 	curl_global_init(CURL_GLOBAL_DEFAULT);
 	ctx->initialized = true;
 	ctx->cabundle = cabundle;
+	ctx->no_verif = no_verif;
 
 	IPA_LOGP(SHTTP, LINFO, "HTTP client initialized.\n");
 
@@ -88,22 +89,23 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res, const struct ipa_buf *req,
 			goto error;
 		}
 	}
-#ifdef SKIP_VERIFICATION
-	/* Bypass SSL certificate verification (only for debug, disable in productive use!) */
-	rc = curl_easy_setopt(ctx->curl, CURLOPT_SSL_VERIFYPEER, 0L);
-	if (rc != CURLE_OK) {
-		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
-		goto error;
-	}
 
-	/* Bypass SSL hostname verification (only for debug, disable in productive use!) */
-	rc = curl_easy_setopt(ctx->curl, CURLOPT_SSL_VERIFYHOST, 0L);
-	if (rc != CURLE_OK) {
-		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
-		goto error;
+	if (ctx->no_verif) {
+		/* Bypass SSL certificate verification (only for debug, disable in productive use!) */
+		rc = curl_easy_setopt(ctx->curl, CURLOPT_SSL_VERIFYPEER, 0L);
+		if (rc != CURLE_OK) {
+			IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
+			goto error;
+		}
+
+		/* Bypass SSL hostname verification (only for debug, disable in productive use!) */
+		rc = curl_easy_setopt(ctx->curl, CURLOPT_SSL_VERIFYHOST, 0L);
+		if (rc != CURLE_OK) {
+			IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
+			goto error;
+		}
+		IPA_LOGP(SHTTP, LINFO, "security disabled: will not verify server certificate and hostname\n");
 	}
-	IPA_LOGP(SHTTP, LINFO, "security disabled: will not verify server certificate and hostname\n");
-#endif
 
 	/* Setup header, see also SGP.32, section 6.1.1 */
 	list = curl_slist_append(list, "Accept:");

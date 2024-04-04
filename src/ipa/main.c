@@ -37,6 +37,7 @@ static void print_help(void)
 	printf(" -y NUM .............. number of retries for ESipa requests (default: %u)", DEFAULT_ESIPA_REQ_RETRIES);
 	printf(" -C .................. CA (Certificate Authority) Bundle file\n");
 	printf(" -S .................. disable HTTPS\n");
+	printf(" -I .................. disable SSL certificate verification (insecure)\n");
 	printf(" -E .................. emulate IoT eUICC (compatibility mode to use consumer eUICCs)\n");
 }
 
@@ -138,7 +139,7 @@ int main(int argc, char **argv)
 
 	/* Overwrite configuration values with user defined parameters */
 	while (1) {
-		opt = getopt(argc, argv, "ht:e:r:c:f:mn:C:SEy:");
+		opt = getopt(argc, argv, "ht:e:r:c:f:mn:C:SEy:I");
 		if (opt == -1)
 			break;
 
@@ -174,6 +175,9 @@ int main(int argc, char **argv)
 		case 'S':
 			cfg.eim_disable_ssl = true;
 			break;
+		case 'I':
+			cfg.eim_disable_ssl_verif = true;
+			break;
 		case 'E':
 			cfg.iot_euicc_emu_enabled = true;
 			break;
@@ -195,6 +199,7 @@ int main(int argc, char **argv)
 	if (cfg.eim_cabundle)
 		printf(" eim_cabundle = %s\n", cfg.eim_cabundle);
 	printf(" eim_disable_ssl = %d\n", cfg.eim_disable_ssl);
+	printf(" eim_disable_ssl_verif = %d\n", cfg.eim_disable_ssl_verif);
 	printf(" tac = %s\n", ipa_hexdump(cfg.tac, sizeof(cfg.tac)));
 	printf(" iot_euicc_emu_enabled = %u\n", cfg.iot_euicc_emu_enabled);
 	printf(" esipa_req_retries = %u\n", cfg.esipa_req_retries);

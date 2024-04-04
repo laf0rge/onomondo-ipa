@@ -49,6 +49,9 @@ struct ipa_config {
 	/*! The caller may choose to disable SSL in a test environment to simplify debugging. */
 	bool eim_disable_ssl;
 
+	/*! The caller may choose to disable SSL certificate verification in a test environment to simplify debugging. */
+	bool eim_disable_ssl_verif;
+
 	/*! Configure the number of retries to apply in case a request (HTTP) to the eIM fails */
 	unsigned int esipa_req_retries;
 
