@@ -232,7 +232,7 @@ static bool check_for_profile_change(const struct EuiccPackageResult *res)
 	struct EuiccResultData *euicc_result_data;
 	if (!res)
 		return false;
-	if (!res->present == EuiccPackageResult_PR_euiccPackageResultSigned)
+	if (res->present != EuiccPackageResult_PR_euiccPackageResultSigned)
 		return false;
 
 	for (i = 0; i < res->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.euiccResult.list.count; i++) {
