@@ -14,6 +14,9 @@ struct ipa_es10b_load_euicc_pkg_res {
 	/*! set to true in case the EuiccPackageRequest contains an enable PSMO that executed successfully, which
 	 *  means that a profile change actually took place. */
 	bool profile_changed;
+
+	/*! set to true in case the EuiccPackageRequest contains an enable PSMO that has the rollbackFlag set. */
+	bool rollback_allowed;
 };
 
 struct ipa_es10b_load_euicc_pkg_res *ipa_es10b_load_euicc_pkg(struct ipa_context *ctx,

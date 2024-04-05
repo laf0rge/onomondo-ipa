@@ -252,6 +252,26 @@ static bool check_for_profile_change(const struct EuiccPackageResult *res)
 	}
 }
 
+/* Check if the euicc package contains an enable PSMO that has the rollback flag set */
+static bool check_for_rollback_flag(const struct EuiccPackageRequest *req)
+{
+	unsigned int i;
+	struct Psmo *psmo;
+	if (!req)
+		return false;
+	if (req->euiccPackageSigned.euiccPackage.present != EuiccPackage_PR_psmoList)
+		return false;
+
+	for (i = 0; i < req->euiccPackageSigned.euiccPackage.choice.psmoList.list.count; i++) {
+		psmo = req->euiccPackageSigned.euiccPackage.choice.psmoList.list.array[i];
+
+		if (psmo->present == Psmo_PR_enable && psmo->choice.enable.rollbackFlag)
+			return true;
+	}
+
+	return false;
+}
+
 /*! Function (ES10b): LoadEuiccPackage.
  *  \param[inout] ctx pointer to ipa_context.
  *  \param[in] req pointer to struct that holds the function parameters.
@@ -267,6 +287,8 @@ struct ipa_es10b_load_euicc_pkg_res *ipa_es10b_load_euicc_pkg(struct ipa_context
 		res = load_euicc_pkg(ctx, req);
 
 	res->profile_changed = check_for_profile_change(res->res);
+	res->rollback_allowed = check_for_rollback_flag(&req->req);
+
 	return res;
 }
 
