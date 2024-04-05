@@ -132,7 +132,6 @@ int eim_init(struct ipa_context *ctx)
 		goto error;
 
 	ipa_es10b_get_eim_cfg_data_free(eim_cfg_data);
-
 	return 0;
 error:
 	IPA_LOGP(SIPA, LERROR, "unable to retrieve EimConfigurationData\n");
@@ -254,10 +253,12 @@ int ipa_poll(struct ipa_context *ctx)
 	ctx->check_scard = false;
 	ctx->check_http = false;
 
-	if (ctx->load_euicc_pkg_res)
+	if (ctx->proc_eucc_pkg_dwnld_exec_res) {
 		/* There is an eUICC package execution ongoing, which we have to finish first */
-		rc = ipa_proc_eucc_pkg_dwnld_exec_onset(ctx);
-	else if (rc < 0)
+		rc = ipa_proc_eucc_pkg_dwnld_exec_onset(ctx, ctx->proc_eucc_pkg_dwnld_exec_res);
+		ipa_proc_eucc_pkg_dwnld_exec_res_free(ctx->proc_eucc_pkg_dwnld_exec_res);
+		ctx->proc_eucc_pkg_dwnld_exec_res = NULL;
+	} else if (rc < 0)
 		return check_canaries(ctx);
 	else {
 		/* Normal operation, we poll the eIM for the next eIM package. */
@@ -271,7 +272,7 @@ int ipa_poll(struct ipa_context *ctx)
 
 	/* There is an eUICC package execution ongoing which has done changes to the currently selected profile.
 	 * the caller of ipa_poll must ensure that ipa_poll is called again once the IP connection has resettled */
-	if (ctx->load_euicc_pkg_res)
+	if (ctx->proc_eucc_pkg_dwnld_exec_res)
 		return IPA_POLL_AGAIN_WHEN_ONLINE;
 
 	/* Tell the caller to continue polling normally */
@@ -298,7 +299,7 @@ struct ipa_buf *ipa_free_ctx(struct ipa_context *ctx)
 
 	IPA_FREE(ctx->eim_id);
 	IPA_FREE(ctx->eim_fqdn);
-	ipa_es10b_load_euicc_pkg_res_free(ctx->load_euicc_pkg_res);
+	ipa_proc_eucc_pkg_dwnld_exec_res_free(ctx->proc_eucc_pkg_dwnld_exec_res);
 
 	if (ctx->scard_ctx)
 		ipa_euicc_close_es10x(ctx);

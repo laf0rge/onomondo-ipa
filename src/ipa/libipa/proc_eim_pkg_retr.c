@@ -57,12 +57,27 @@ error:
 int eim_pkg_exec(struct ipa_context *ctx, const struct ipa_esipa_get_eim_pkg_res *get_eim_pkg_res)
 {
 	struct ipa_buf *allowed_ca_pkid = NULL;
+	struct ipa_proc_eucc_pkg_dwnld_exec_res *proc_eucc_pkg_dwnld_exec_res = NULL;
 	int rc;
 
 	if (get_eim_pkg_res->euicc_package_request) {
-		rc = ipa_proc_eucc_pkg_dwnld_exec(ctx, get_eim_pkg_res->euicc_package_request);
-		if (rc < 0)
+		/* This must not happen. The internal logic in ipad_poll must make sure that
+		 * ipa_proc_eucc_pkg_dwnld_exec_onset runs first in case ctx->proc_eucc_pkg_dwnld_exec_res is
+		 * populated. */
+		assert(!ctx->proc_eucc_pkg_dwnld_exec_res);
+
+		ctx->proc_eucc_pkg_dwnld_exec_res =
+		    ipa_proc_eucc_pkg_dwnld_exec(ctx, get_eim_pkg_res->euicc_package_request);
+		if (!ctx->proc_eucc_pkg_dwnld_exec_res)
 			goto error;
+
+		/* In case the result of ipa_proc_eucc_pkg_dwnld_exec indicates that calling of
+		 * ipa_proc_eucc_pkg_dwnld_exec_onset is not required, we throw away proc_eucc_pkg_dwnld_exec_res
+		 * immediately. */
+		if (ctx->proc_eucc_pkg_dwnld_exec_res && !ctx->proc_eucc_pkg_dwnld_exec_res->call_onset) {
+			ipa_proc_eucc_pkg_dwnld_exec_res_free(ctx->proc_eucc_pkg_dwnld_exec_res);
+			ctx->proc_eucc_pkg_dwnld_exec_res = NULL;
+		}
 	} else if (get_eim_pkg_res->ipa_euicc_data_request) {
 		struct ipa_proc_euicc_data_req_pars euicc_data_req_pars = { 0 };
 		euicc_data_req_pars.ipa_euicc_data_request = get_eim_pkg_res->ipa_euicc_data_request;
