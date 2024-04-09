@@ -102,9 +102,8 @@ struct EuiccResultData *iot_emo_do_enable_psmo(struct ipa_context *ctx, const st
 	enable_prfle_req.req.profileIdentifier.present = EnableProfileRequest__profileIdentifier_PR_iccid;
 	enable_prfle_req.req.profileIdentifier.choice.iccid = enable_psmo->iccid;
 
-	/* There is no way to tell the eUICC via the IoT/PSMO interface when a refresh is required, in order to be safe
-	 * here, we must assume that a refresh is always needed. */
-	enable_prfle_req.req.refreshFlag = true;
+	/* There is no way to tell the eUICC via the IoT/PSMO interface when a refresh is required. */
+	enable_prfle_req.req.refreshFlag = ctx->cfg->refresh_flag;
 	enable_prfle_res = ipa_es10c_enable_prfle(ctx, &enable_prfle_req);
 	euicc_result_data->present = EuiccResultData_PR_enableResult;
 	if (enable_prfle_res)
@@ -126,10 +125,8 @@ struct EuiccResultData *iot_emo_do_disable_psmo(struct ipa_context *ctx, const s
 	disable_prfle_req.req.profileIdentifier.present = DisableProfileRequest__profileIdentifier_PR_iccid;
 	disable_prfle_req.req.profileIdentifier.choice.iccid = disable_psmo->iccid;
 
-	/* There is no way to tell the eUICC via the IoT/PSMO interface when a refresh is required, in order to be safe
-	 * here, we must assume that a refresh is always needed. */
-	disable_prfle_req.req.refreshFlag = true;
-
+	/* There is no way to tell the eUICC via the IoT/PSMO interface when a refresh is required. */
+	disable_prfle_req.req.refreshFlag = ctx->cfg->refresh_flag;
 	disable_prfle_res = ipa_es10c_disable_prfle(ctx, &disable_prfle_req);
 	euicc_result_data->present = EuiccResultData_PR_disableResult;
 	if (disable_prfle_res)

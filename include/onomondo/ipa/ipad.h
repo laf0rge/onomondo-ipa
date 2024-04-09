@@ -55,6 +55,11 @@ struct ipa_config {
 	/*! Configure the number of retries to apply in case a request (HTTP) to the eIM fails */
 	unsigned int esipa_req_retries;
 
+	/*! When a profile rollback is performed an optional refresh flag can be set. (See also SGP.32, section 5.9.16)
+	 *  In case the IoT eUICC emulation is enabled (iot_euicc_emu_enabled), then this flag also plays a role when
+	 *  profiles are disabled or enabled. (See also SGP.22, section 5.7.16 and section 5.7.17) */
+	bool refresh_flag;
+
 	/*! ID number of the cardreader that interfaces the eUICC */
 	unsigned int reader_num;
 

@@ -106,7 +106,7 @@ int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx, struct ipa_proc_
 
 		IPA_LOGP(SIPA, LERROR,
 			 "unable to send the EuiccPackageResult to the eIM. (attempting profile rollback)\n");
-		res->prfle_rollback_res = ipa_es10b_prfle_rollback(ctx, true);
+		res->prfle_rollback_res = ipa_es10b_prfle_rollback(ctx, ctx->cfg->refresh_flag);
 		if (!res->prfle_rollback_res
 		    || res->prfle_rollback_res->res->cmdResult != ProfileRollbackResponse__cmdResult_ok) {
 			IPA_LOGP(SIPA, LERROR, "profile rollback failed!\n");

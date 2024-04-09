@@ -34,7 +34,8 @@ static void print_help(void)
 	printf(" -f PATH ............. set initial eIM configuration\n");
 	printf(" -m .................. reset eUICC memory\n");
 	printf(" -n PATH ............. path to nvstate file (default: %s)\n", DEFAULT_NVSTATE_PATH);
-	printf(" -y NUM .............. number of retries for ESipa requests (default: %u)\n", DEFAULT_ESIPA_REQ_RETRIES);
+	printf(" -y NUM .............. number of retries for ESipa requests (default: %u)\n",
+	       DEFAULT_ESIPA_REQ_RETRIES);
 	printf(" -C .................. CA (Certificate Authority) Bundle file\n");
 	printf(" -S .................. disable HTTPS\n");
 	printf(" -I .................. disable SSL certificate verification (insecure)\n");
@@ -203,6 +204,7 @@ int main(int argc, char **argv)
 	printf(" tac = %s\n", ipa_hexdump(cfg.tac, sizeof(cfg.tac)));
 	printf(" iot_euicc_emu_enabled = %u\n", cfg.iot_euicc_emu_enabled);
 	printf(" esipa_req_retries = %u\n", cfg.esipa_req_retries);
+	printf(" refresh_flag = %u\n", cfg.refresh_flag);
 	printf("\n");
 
 	if (cfg.eim_cabundle) {
