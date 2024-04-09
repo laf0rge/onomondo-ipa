@@ -35,6 +35,11 @@ struct ipa_context {
 	/*! cached eID (read from eUICC when ipa_init is called) */
 	uint8_t eid[IPA_LEN_EID];
 
+	/*! cached ICCID of the currently active profile. This ICCID value will be used when a profile rollback is
+	 *  performed on a consumer eUICC (in IoT eUICC emulation mode). The value is updated when
+	 *  ipa_proc_eucc_pkg_dwnld_exec is called. */
+	struct ipa_buf *rollback_iccid;
+
 	/*! cached eimId (read from eUICC when ipa_init is called) */
 	char *eim_id;
 

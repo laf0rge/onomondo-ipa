@@ -20,6 +20,31 @@
 #include "es10c_enable_prfle.h"
 #include "es10c_disable_prfle.h"
 #include "es10c_delete_prfle.h"
+#include "es10c_get_prfle_info.h"
+
+static void update_rollback_iccid(struct ipa_context *ctx)
+{
+	struct ipa_es10c_get_prfle_info_res *get_prfle_info_res = NULL;
+
+	get_prfle_info_res = ipa_es10c_get_prfle_info(ctx, NULL);
+	if (!get_prfle_info_res || get_prfle_info_res->prfle_info_list_err != 0) {
+		IPA_LOGP(SIPA, LERROR, LERROR, "error reading profile info!\n");
+		return;
+	}
+
+	if (get_prfle_info_res->res && get_prfle_info_res->currently_active_prfle->iccid) {
+		IPA_FREE(ctx->rollback_iccid);
+		ctx->rollback_iccid = IPA_BUF_FROM_ASN(get_prfle_info_res->currently_active_prfle->iccid);
+		IPA_LOGP(SIPA, LINFO, "will use ICCD:%s in case of profile rollback.\n",
+			 ipa_buf_hexdump(ctx->rollback_iccid));
+	} else {
+		IPA_FREE(ctx->rollback_iccid);
+		ctx->rollback_iccid = NULL;
+		IPA_LOGP(SIPA, LINFO, "no profile active, profile rollback not possible.\n");
+	}
+
+	ipa_es10c_get_prfle_info_res_free(get_prfle_info_res);
+}
 
 static int dec_load_euicc_pkg_res(struct ipa_es10b_load_euicc_pkg_res *res, const struct ipa_buf *es10b_res)
 {
@@ -80,8 +105,6 @@ struct EuiccResultData *iot_emo_do_enable_psmo(struct ipa_context *ctx, const st
 	/* There is no way to tell the eUICC via the IoT/PSMO interface when a refresh is required, in order to be safe
 	 * here, we must assume that a refresh is always needed. */
 	enable_prfle_req.req.refreshFlag = true;
-
-	/* TODO: Add missing logic to support the (optional) rollbackFlag */
 	enable_prfle_res = ipa_es10c_enable_prfle(ctx, &enable_prfle_req);
 	euicc_result_data->present = EuiccResultData_PR_enableResult;
 	if (enable_prfle_res)
@@ -153,6 +176,9 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 	IPA_LOGP_ES10X("LoadEuiccPackage", LINFO,
 		       "IoT eUICC emulation active, executing ECOs and PSMOs by calling equivalent consumer eUICC ES10x functions...\n");
 
+	/* Before executing an eUICC package, ensure that the rollback ICCID is up to date. */
+	update_rollback_iccid(ctx);
+
 	/* Setup an (emulated) EuiccPackageResult */
 	res = IPA_ALLOC_ZERO(struct ipa_es10b_load_euicc_pkg_res);
 	asn = IPA_ALLOC_ZERO(struct EuiccPackageResult);
@@ -198,8 +224,8 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 				break;
 			}
 			if (psmo_result)
-				ASN_SEQUENCE_ADD(&asn->choice.euiccPackageResultSigned.
-						 euiccPackageResultDataSigned.euiccResult.list, psmo_result);
+				ASN_SEQUENCE_ADD(&asn->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.
+						 euiccResult.list, psmo_result);
 		}
 		break;
 	case EuiccPackage_PR_ecoList:

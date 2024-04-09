@@ -19,6 +19,7 @@
 #include "esipa_prvde_eim_pkg_rslt.h"
 #include "es10b_rm_notif_from_lst.h"
 #include "proc_euicc_pkg_dwnld_exec.h"
+#include "es10b_prfle_rollback.h"
 
 static int remove_notifications(struct ipa_context *ctx, struct EimAcknowledgements *eim_acknowledgements)
 {
@@ -44,7 +45,7 @@ static int remove_notifications(struct ipa_context *ctx, struct EimAcknowledgeme
  *  \param[inout] ctx pointer to ipa_context.
  *  \param[in] res pointer to intermediate result from ipa_proc_eucc_pkg_dwnld_exec.
  *  \returns 0 on success, negative on failure. */
-int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx, const struct ipa_proc_eucc_pkg_dwnld_exec_res *res)
+int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx, struct ipa_proc_eucc_pkg_dwnld_exec_res *res)
 {
 	struct ipa_es10b_retr_notif_from_lst_req retr_notif_from_lst_req = { 0 };
 	struct ipa_es10b_retr_notif_from_lst_res *retr_notif_from_lst_res = NULL;
@@ -55,7 +56,9 @@ int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx, const struct ipa
 	/* This function should not be called without a result from ipa_proc_eucc_pkg_dwnld_exec. */
 	assert(res);
 
-	/* Step #3-#8 (ES10b.LoadEuiccPackage) */
+	res->call_onset = false;
+
+	/* Make sure Step #3-#8 (ES10b.LoadEuiccPackage) was successful */
 	if (!res->load_euicc_pkg_res)
 		goto error;
 	else if (!res->load_euicc_pkg_res)
@@ -75,15 +78,45 @@ int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx, const struct ipa
 		goto error;
 
 	/* Step #10-#14 (ESipa.ProvideEimPackageResult) */
-	prvde_eim_pkg_rslt_req.euicc_package_result = res->load_euicc_pkg_res->res;
+	if (res->prfle_rollback_res && res->prfle_rollback_res->res->eUICCPackageResult)
+		prvde_eim_pkg_rslt_req.euicc_package_result = res->prfle_rollback_res->res->eUICCPackageResult;
+	else
+		prvde_eim_pkg_rslt_req.euicc_package_result = res->load_euicc_pkg_res->res;
 	prvde_eim_pkg_rslt_req.notification_list = retr_notif_from_lst_res->notification_list;
 	prvde_eim_pkg_rslt_res = ipa_esipa_prvde_eim_pkg_rslt(ctx, &prvde_eim_pkg_rslt_req);
-	if (!prvde_eim_pkg_rslt_res)
-		goto error;
 
-	/* TODO: This step may fail when the IP connectivity is down. In case get an error here, we must perform a
-	 * profile rollback, but only when the user has permitted a rollback (flag in the PSMO). When the rollback
-	 * succeeded, we may retry and continue */
+	if (!prvde_eim_pkg_rslt_res) {
+		/* In case we fail to communicate the EuiccPackageResult back to the eIM we may try to perform a
+		 * profile rollback. However, this maneuver only makes sense when the profile has actually changed.
+		 * The profile rollback can only be tried once and the eIM also must have allowed the profile rollback
+		 * maneuver explicitly.*/
+		if (!res->load_euicc_pkg_res->profile_changed) {
+			IPA_LOGP(SIPA, LERROR,
+				 "unable to send the EuiccPackageResult to the eIM. (active profile not changed, no profile rollback will be performed)\n");
+			goto error;
+		} else if (!res->load_euicc_pkg_res->rollback_allowed) {
+			IPA_LOGP(SIPA, LERROR,
+				 "unable to send the EuiccPackageResult to the eIM. (profile rollback not allowed by eIM)\n");
+			goto error;
+		} else if (res->prfle_rollback_res) {
+			IPA_LOGP(SIPA, LERROR,
+				 "unable to send the EuiccPackageResult to the eIM. (profile rollback already tried)\n");
+			goto error;
+		}
+
+		IPA_LOGP(SIPA, LERROR,
+			 "unable to send the EuiccPackageResult to the eIM. (attempting profile rollback)\n");
+		res->prfle_rollback_res = ipa_es10b_prfle_rollback(ctx, true);
+		if (!res->prfle_rollback_res
+		    || res->prfle_rollback_res->res->cmdResult != ProfileRollbackResponse__cmdResult_ok) {
+			IPA_LOGP(SIPA, LERROR, "profile rollback failed!\n");
+			goto error;
+		}
+
+		IPA_LOGP(SIPA, LINFO, "profile rollback successful!\n");
+		res->call_onset = true;
+		goto error;
+	}
 
 	/* Step #15-17 (ES10b.RemoveNotificationFromList) */
 	/* Remove the notification for the euiccPackageResult. */
@@ -97,16 +130,23 @@ int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx, const struct ipa
 	if (rc < 0)
 		goto error;
 
+	/* Ensure that ctx->iccid is updated with the ICCID of the currently active profile */
 	ipa_es10b_retr_notif_from_lst_res_free(retr_notif_from_lst_res);
 	ipa_esipa_prvde_eim_pkg_rslt_free(prvde_eim_pkg_rslt_res);
 	IPA_LOGP(SIPA, LINFO, "Generic eUICC Package Download and Execution succeeded!\n");
 	return 0;
 error:
-	/* TODO: Do we need to report an error to the eIM? */
 	ipa_es10b_retr_notif_from_lst_res_free(retr_notif_from_lst_res);
 	ipa_esipa_prvde_eim_pkg_rslt_free(prvde_eim_pkg_rslt_res);
-	IPA_LOGP(SIPA, LERROR, "Generic eUICC Package Download and Execution failed!\n");
-	return -EINVAL;
+	if (res->call_onset) {
+		IPA_LOGP(SIPA, LERROR,
+			 "Generic eUICC Package Download and Execution failed to provide the eIM package result to the eIM, retry in progress...\n");
+		return 0;
+	} else {
+		IPA_LOGP(SIPA, LERROR, "Generic eUICC Package Download and Execution failed!\n");
+		res->call_onset = false;
+		return -EINVAL;
+	}
 }
 
 /*! Perform Generic eUICC Package Download and Execution Procedure.
@@ -139,13 +179,13 @@ struct ipa_proc_eucc_pkg_dwnld_exec_res *ipa_proc_eucc_pkg_dwnld_exec(struct ipa
 		/* There were no changes to the currently selected profile, so we may continue normally. */
 		rc = ipa_proc_eucc_pkg_dwnld_exec_onset(ctx, res);
 		if (rc < 0)
-			goto error;
+			goto error_silent;
 		return res;
 	}
 error:
-	/* TODO: Do we need to report an error to the eIM? */
-	ipa_proc_eucc_pkg_dwnld_exec_res_free(res);
 	IPA_LOGP(SIPA, LERROR, "Generic eUICC Package Download and Execution failed!\n");
+error_silent:
+	ipa_proc_eucc_pkg_dwnld_exec_res_free(res);
 	return NULL;
 }
 
@@ -154,6 +194,7 @@ void ipa_proc_eucc_pkg_dwnld_exec_res_free(struct ipa_proc_eucc_pkg_dwnld_exec_r
 	if (!res)
 		return;
 
+	ipa_es10b_prfle_rollback_res_free(res->prfle_rollback_res);
 	ipa_es10b_load_euicc_pkg_res_free(res->load_euicc_pkg_res);
 	IPA_FREE(res);
 }
