@@ -433,3 +433,35 @@ size_t ipa_binary_from_hexstr(uint8_t *binary, size_t binary_len, const char *he
 
 	return binary_count;
 }
+
+/*! Duplicate/Copy an existing decoded ASN.1 struct.
+ *  \param[in] td pointer to asn_TYPE_descriptor.
+ *  \param[in] struct_ptr pointer to decoded ASN.1 struct to be duplicated.
+ *  \returns pointer duplicated ASN.1 struct, NULL on error. */
+void *ipa_asn1c_dup(const struct asn_TYPE_descriptor_s *td, const void *struct_ptr)
+{
+	struct ipa_buf *buf_encoded = NULL;
+	asn_enc_rval_t rc_enc;
+	asn_dec_rval_t rc_dec;
+
+	void *struct_ptr_dup = NULL;
+
+	if (!struct_ptr)
+		return NULL;
+
+	rc_enc = der_encode(td, struct_ptr, ipa_asn1c_consume_bytes_cb, &buf_encoded);
+	if (rc_enc.encoded <= 0) {
+		IPA_FREE(buf_encoded);
+		return NULL;
+	}
+
+	rc_dec = ber_decode(0, td, (void **)&struct_ptr_dup, buf_encoded->data, buf_encoded->len);
+	if (rc_dec.code != RC_OK) {
+		IPA_FREE(buf_encoded);
+		ASN_STRUCT_FREE(*td, struct_ptr_dup);
+		return NULL;
+	}
+
+	IPA_FREE(buf_encoded);
+	return struct_ptr_dup;
+}
