@@ -240,16 +240,21 @@ static bool check_for_profile_change(const struct EuiccPackageResult *res)
 		    res->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.euiccResult.list.array[i];
 		switch (euicc_result_data->present) {
 		case EuiccResultData_PR_enableResult:
-			if (euicc_result_data->choice.rollbackResult == EnableProfileResult_ok)
+			if (euicc_result_data->choice.enableResult == EnableProfileResult_ok)
 				return true;
+			break;
 		case EuiccResultData_PR_disableResult:
 			if (euicc_result_data->choice.disableResult == DisableProfileResult_ok)
 				return true;
+			break;
 		case EuiccResultData_PR_rollbackResult:
 			if (euicc_result_data->choice.rollbackResult == RollbackProfileResult_ok)
 				return true;
+			break;
 		}
 	}
+
+	return false;
 }
 
 /* Check if the euicc package contains an enable PSMO that has the rollback flag set */
