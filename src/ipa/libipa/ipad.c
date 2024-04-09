@@ -256,27 +256,42 @@ int ipa_poll(struct ipa_context *ctx)
 	if (ctx->proc_eucc_pkg_dwnld_exec_res) {
 		/* There is an eUICC package execution ongoing, which we have to finish first */
 		rc = ipa_proc_eucc_pkg_dwnld_exec_onset(ctx, ctx->proc_eucc_pkg_dwnld_exec_res);
-		ipa_proc_eucc_pkg_dwnld_exec_res_free(ctx->proc_eucc_pkg_dwnld_exec_res);
-		ctx->proc_eucc_pkg_dwnld_exec_res = NULL;
-	} else if (rc < 0)
-		return check_canaries(ctx);
-	else {
+		if (rc < 0) {
+			/* ipa_proc_eucc_pkg_dwnld_exec_onset indicates an error that can not be recovered from. */
+			ipa_proc_eucc_pkg_dwnld_exec_res_free(ctx->proc_eucc_pkg_dwnld_exec_res);
+			ctx->proc_eucc_pkg_dwnld_exec_res = NULL;
+			return check_canaries(ctx);
+		} else if (ctx->proc_eucc_pkg_dwnld_exec_res->call_onset == false) {
+			/* ipa_proc_eucc_pkg_dwnld_exec_onset indicates that the procedure is done. */
+			ipa_proc_eucc_pkg_dwnld_exec_res_free(ctx->proc_eucc_pkg_dwnld_exec_res);
+			ctx->proc_eucc_pkg_dwnld_exec_res = NULL;
+			return IPA_POLL_AGAIN;
+		} else {
+			/* There is an eUICC package execution ongoing which has done changes to the currently
+			 * selected profile. the caller of ipa_poll must ensure that ipa_poll is called again
+			 * once the IP connection has resettled */
+			return IPA_POLL_AGAIN_WHEN_ONLINE;
+		}
+	} else {
 		/* Normal operation, we poll the eIM for the next eIM package. */
 		rc = ipa_proc_eim_pkg_retr(ctx);
 		if (rc == -GetEimPackageResponse__eimPackageError_noEimPackageAvailable)
 			/* When no more eIM packages are available it makes sense to relax the poll interval. */
 			return IPA_POLL_AGAIN_LATER;
 		else if (rc < 0)
+			/* ipa_proc_eim_pkg_retr indicates an error that can not be recovered from. */
 			return check_canaries(ctx);
+		else {
+			if (ctx->proc_eucc_pkg_dwnld_exec_res)
+				/* There is an eUICC package execution ongoing which has done changes to the currently
+				 * selected profile. the caller of ipa_poll must ensure that ipa_poll is called again
+				 * once the IP connection has resettled */
+				return IPA_POLL_AGAIN_WHEN_ONLINE;
+			else
+				/* Tell the caller to continue polling normally */
+				return IPA_POLL_AGAIN;
+		}
 	}
-
-	/* There is an eUICC package execution ongoing which has done changes to the currently selected profile.
-	 * the caller of ipa_poll must ensure that ipa_poll is called again once the IP connection has resettled */
-	if (ctx->proc_eucc_pkg_dwnld_exec_res)
-		return IPA_POLL_AGAIN_WHEN_ONLINE;
-
-	/* Tell the caller to continue polling normally */
-	return IPA_POLL_AGAIN;
 }
 
 /*! close connection towards the eIM.
