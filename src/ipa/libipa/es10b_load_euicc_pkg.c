@@ -28,7 +28,7 @@ static void update_rollback_iccid(struct ipa_context *ctx)
 
 	get_prfle_info_res = ipa_es10c_get_prfle_info(ctx, NULL);
 	if (!get_prfle_info_res || get_prfle_info_res->prfle_info_list_err != 0) {
-		IPA_LOGP(SIPA, LERROR, LERROR, "error reading profile info!\n");
+		IPA_LOGP(SIPA, LERROR, "error reading profile info!\n");
 		return;
 	}
 
