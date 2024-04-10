@@ -314,6 +314,9 @@ struct ipa_es10b_load_euicc_pkg_res *ipa_es10b_load_euicc_pkg(struct ipa_context
 	else
 		res = load_euicc_pkg(ctx, req);
 
+	if (!res)
+		return NULL;
+
 	res->profile_changed = check_for_profile_change(res->res);
 	res->rollback_allowed = check_for_rollback_flag(&req->req);
 
