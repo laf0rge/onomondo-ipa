@@ -56,11 +56,10 @@ static void find_currently_active_prfle(struct ipa_es10c_get_prfle_info_res *res
 {
 	unsigned int i;
 	struct ProfileInfo *prfle_info;
+	res->currently_active_prfle = NULL;
 
-	if (res->res->present != ProfileInfoListResponse_PR_profileInfoListOk) {
-		res->currently_active_prfle = NULL;
+	if (res->res->present != ProfileInfoListResponse_PR_profileInfoListOk)
 		return;
-	}
 
 	for (i = 0; i < res->res->choice.profileInfoListOk.list.count; i++) {
 		prfle_info = res->res->choice.profileInfoListOk.list.array[i];
