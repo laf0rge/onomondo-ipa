@@ -4,7 +4,7 @@
 #include <onomondo/ipa/ipad.h>
 #include <onomondo/ipa/utils.h>
 
-#define IPA_NVSTATE_VERSION 1
+#define IPA_NVSTATE_VERSION 2
 
 /* Non volatile state: All struct members in this struct are automatically backed up to a non volatile memory location.
  * (see below). However, this only covers statically allocated struct members. When struct members contain a pointer
@@ -16,6 +16,7 @@ struct ipa_nvstate {
 
 	/*! internal storage for IoT eUICC emulation. */
 	struct {
+		int association_token_counter;
 		struct ipa_buf *eim_cfg_ber;
 	} iot_euicc_emu;
 

@@ -89,19 +89,74 @@ error:
 	return NULL;
 }
 
+int complete_eim_cfg(struct ipa_context *ctx, struct EimConfigurationData *eim_cfg)
+{
+	/* The eimFqdn is not strictly mandatory, but it is necessary to reach the eIM at all. This makes eimFqdn a
+	 * mandatory IE in this implementation. */
+	if (!eim_cfg->eimFqdn) {
+		IPA_LOGP_ES10X("AddInitialEim", LERROR, "eimFqdn is missing from eimConfigurationData!\n");
+		return -1;
+	}
+
+	/* Mandatory, See also SGP.32, section 5.9.4 */
+	if (!eim_cfg->counterValue) {
+		IPA_LOGP_ES10X("AddInitialEim", LERROR, "counterValue is missing from eimConfigurationData!\n");
+		return -1;
+	}
+
+	/* Mandatory, See also SGP.32, section 5.9.4 */
+	if (!eim_cfg->eimPublicKeyData) {
+		IPA_LOGP_ES10X("AddInitialEim", LERROR, "eimPublicKeyData is missing from eimConfigurationData!\n");
+		return -1;
+	}
+
+	/* Calculate a new associationToken if requested */
+	if (eim_cfg->associationToken && *eim_cfg->associationToken == -1) {
+		ctx->nvstate.iot_euicc_emu.association_token_counter++;
+		*eim_cfg->associationToken = ctx->nvstate.iot_euicc_emu.association_token_counter;
+	}
+
+	/* TODO: do more validation (and modify if necessary) of the input data as described in SGP.32, section 5.9.4 */
+	return 0;
+}
+
+struct AddInitialEimRequest *complete_eim_cfg_list(struct ipa_context *ctx, const struct AddInitialEimRequest *req)
+{
+	struct AddInitialEimRequest *req_dup;
+	unsigned int i;
+	int rc;
+
+	req_dup = ipa_asn1c_dup(&asn_DEF_AddInitialEimRequest, req);
+
+	for (i = 0; i < req_dup->eimConfigurationDataList.list.count; i++) {
+		rc = complete_eim_cfg(ctx, req_dup->eimConfigurationDataList.list.array[i]);
+		if (rc < 0)
+			goto error;
+	}
+
+	return req_dup;
+error:
+	ASN_STRUCT_FREE(asn_DEF_AddInitialEimRequest, req_dup);
+	return NULL;
+}
+
 static struct ipa_es10b_add_init_eim_res *add_init_eim_iot_emu(struct ipa_context *ctx,
 							       const struct ipa_es10b_add_init_eim_req *req)
 {
 	struct ipa_buf *eim_cfg_new = NULL;
+	struct AddInitialEimRequest *req_cfg_new_decoded = NULL;
 	struct ipa_es10b_add_init_eim_res *res = IPA_ALLOC_ZERO(struct ipa_es10b_add_init_eim_res);
 	int rc;
-
-	/* TODO: validate (and modify if necessary) the input data as described in SGP.32, section 5.9.4 */
 
 	IPA_LOGP_ES10X("AddInitialEim", LINFO,
 		       "IoT eUICC emulation active, pretending to query eUICC to set eIM configuration...\n");
 
-	eim_cfg_new = ipa_es10x_req_enc(&asn_DEF_AddInitialEimRequest, &req->req, "AddInitialEim");
+	req_cfg_new_decoded = complete_eim_cfg_list(ctx, &req->req);
+	if (!req_cfg_new_decoded) {
+		IPA_LOGP_ES10X("AddInitialEim", LERROR, "unable to complete ES10b request\n");
+		goto error;
+	}
+	eim_cfg_new = ipa_es10x_req_enc(&asn_DEF_AddInitialEimRequest, req_cfg_new_decoded, "AddInitialEim");
 	if (!eim_cfg_new) {
 		IPA_LOGP_ES10X("AddInitialEim", LERROR, "unable to encode ES10b request\n");
 		goto error;
@@ -117,10 +172,12 @@ static struct ipa_es10b_add_init_eim_res *add_init_eim_iot_emu(struct ipa_contex
 	IPA_LOGP_ES10X("AddInitialEim", LINFO, "done, eIM configuration stored in memory.\n");
 
 	/* TODO: fill in an appropriate response */
+	ASN_STRUCT_FREE(asn_DEF_AddInitialEimRequest, req_cfg_new_decoded);
 	return res;
 error:
 	IPA_FREE(eim_cfg_new);
 	ipa_es10b_add_init_eim_res_free(res);
+	ASN_STRUCT_FREE(asn_DEF_AddInitialEimRequest, req_cfg_new_decoded);
 	return NULL;
 }
 
