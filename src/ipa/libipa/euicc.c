@@ -340,6 +340,57 @@ struct ipa_buf *ipa_euicc_transceive_es10x(struct ipa_context *ctx, const struct
 	return es10x_res;
 }
 
+/* Send terminal capablilities, see also 3gpp TS 102.221 V16.2.0, section 11.1.19.2.4 */
+static int send_termcap(struct ipa_context *ctx)
+{
+	const uint8_t termcap[] = { 0xA9, 0x03, 0x83, 0x01, 0x07};
+	int rc;
+	struct req_apdu req_apdu = { 0 };
+	struct res_apdu res_apdu = { 0 };
+	struct ipa_buf *buf_req = NULL;
+	struct ipa_buf *buf_res = NULL;
+
+	buf_res = ipa_buf_alloc(MAX_BLOCKSIZE_RX + 2);
+	assert(buf_res);
+
+	/* send TERMINAL CAPABILITIES */
+	req_apdu.cla = 0x80;
+	req_apdu.ins = 0xAA;
+	req_apdu.p1 = 0x00;
+	req_apdu.p2 = 0x00;
+	req_apdu.lc = sizeof(termcap);
+	memcpy(req_apdu.data, termcap, sizeof(termcap));
+	buf_req = format_req_apdu(&req_apdu);
+
+	rc = ipa_scard_transceive(ctx->scard_ctx, buf_res, buf_req);
+	if (rc < 0) {
+		IPA_LOGP(SEUICC, LERROR, "unable to send TERMINAL CAPABILITIES due to communication error\n");
+		ctx->check_scard = true;
+		rc = -EIO;
+		goto exit;
+	}
+
+	rc = parse_res_apdu(&res_apdu, buf_res);
+	if (rc < 0) {
+		IPA_LOGP(SEUICC, LERROR, "invalid response while sending TERMINAL CAPABILITIES\n");
+		rc = -EINVAL;
+		goto exit;
+	}
+
+	if ((res_apdu.sw & 0xFF00) != 0x9000) {
+		IPA_LOGP(SEUICC, LERROR, "failed to send TERMINAL CAPABILITIES, sw=%04x\n", res_apdu.sw);
+		rc = -EINVAL;
+		goto exit;
+	}
+
+	IPA_LOGP(SEUICC, LINFO, "TERMINAL CAPABILITIES sent\n");
+exit:
+	IPA_FREE(buf_req);
+	IPA_FREE(buf_res);
+	return rc;
+}
+
+
 static int select_isd_r(struct ipa_context *ctx)
 {
 	const uint8_t aid_isd_r[] =
@@ -467,6 +518,11 @@ exit:
 int ipa_euicc_init_es10x(struct ipa_context *ctx)
 {
 	int rc;
+
+	rc = send_termcap(ctx);
+	if (rc < 0)
+		return rc;
+
 	rc = manage_channel(ctx, false);
 	if (rc < 0)
 		return rc;
