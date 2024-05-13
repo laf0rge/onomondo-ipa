@@ -35,7 +35,7 @@ add_library(libipa STATIC
   log.c
   proc_cmn_cancel_sess.c
   proc_cmn_mtl_auth.c
-  proc_direct_prfle_dwnld.c
+  proc_indirect_prfle_dwnld.c
   proc_eim_pkg_retr.c
   proc_euicc_data_req.c
   proc_euicc_pkg_dwnld_exec.c

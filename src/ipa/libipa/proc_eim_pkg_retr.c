@@ -18,7 +18,7 @@
 #include "es10b_get_eim_cfg_data.h"
 #include "proc_cmn_mtl_auth.h"
 #include "proc_cmn_cancel_sess.h"
-#include "proc_direct_prfle_dwnld.h"
+#include "proc_indirect_prfle_dwnld.h"
 #include "proc_euicc_pkg_dwnld_exec.h"
 #include "proc_euicc_data_req.h"
 #include "proc_eim_pkg_retr.h"
@@ -85,7 +85,7 @@ int eim_pkg_exec(struct ipa_context *ctx, const struct ipa_esipa_get_eim_pkg_res
 		if (rc < 0)
 			goto error;
 	} else if (get_eim_pkg_res->dwnld_trigger_request) {
-		struct ipa_proc_direct_prfle_dwnlod_pars direct_prfle_dwnlod_pars = { 0 };
+		struct ipa_proc_indirect_prfle_dwnlod_pars indirect_prfle_dwnlod_pars = { 0 };
 		if (!get_eim_pkg_res->dwnld_trigger_request->profileDownloadData) {
 			/* TODO: Perhaps there is a way to continue anyway. The ProfileDownloadTriggerRequest still
 			 * contains a eimTransactionId, which is also optional. Maybe this eimTransactionId can be
@@ -112,13 +112,13 @@ int eim_pkg_exec(struct ipa_context *ctx, const struct ipa_esipa_get_eim_pkg_res
 			goto error;
 		}
 
-		direct_prfle_dwnlod_pars.allowed_ca = allowed_ca_pkid;
-		direct_prfle_dwnlod_pars.tac = ctx->cfg->tac;
-		direct_prfle_dwnlod_pars.ac =
+		indirect_prfle_dwnlod_pars.allowed_ca = allowed_ca_pkid;
+		indirect_prfle_dwnlod_pars.tac = ctx->cfg->tac;
+		indirect_prfle_dwnlod_pars.ac =
 		    IPA_STR_FROM_ASN(&get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->choice.
 				     activationCode);
-		rc = ipa_proc_direct_prfle_dwnlod(ctx, &direct_prfle_dwnlod_pars);
-		IPA_FREE((void *)direct_prfle_dwnlod_pars.ac);
+		rc = ipa_proc_indirect_prfle_dwnlod(ctx, &indirect_prfle_dwnlod_pars);
+		IPA_FREE((void *)indirect_prfle_dwnlod_pars.ac);
 		if (rc < 0)
 			goto error;
 	} else {

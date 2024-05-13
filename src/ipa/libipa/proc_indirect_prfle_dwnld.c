@@ -1,6 +1,6 @@
 /*
  * Author: Philipp Maier <pmaier@sysmocom.de> / sysmocom - s.f.m.c. GmbH
- * See also: GSMA SGP.32, section 3.2.3.1: Direct Profile Download
+ * See also: GSMA SGP.32, section 3.2.3.2: Indirect Profile Download
  *
  */
 
@@ -20,13 +20,13 @@
 #include "esipa_get_bnd_prfle_pkg.h"
 #include "proc_cmn_cancel_sess.h"
 #include "proc_prfle_inst.h"
-#include "proc_direct_prfle_dwnld.h"
+#include "proc_indirect_prfle_dwnld.h"
 
-/*! Perform Direct Profile Download Procedure.
+/*! Perform Indirect Profile Download Procedure.
  *  \param[inout] ctx pointer to ipa_context.
  *  \param[in] pars pointer to struct that holds the procedure parameters.
  *  \returns 0 on success, negative on failure. */
-int ipa_proc_direct_prfle_dwnlod(struct ipa_context *ctx, const struct ipa_proc_direct_prfle_dwnlod_pars *pars)
+int ipa_proc_indirect_prfle_dwnlod(struct ipa_context *ctx, const struct ipa_proc_indirect_prfle_dwnlod_pars *pars)
 {
 	struct ipa_activation_code *activation_code = NULL;
 	struct ipa_esipa_auth_clnt_res *auth_clnt_res = NULL;
