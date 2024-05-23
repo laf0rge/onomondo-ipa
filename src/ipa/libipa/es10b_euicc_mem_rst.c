@@ -75,6 +75,22 @@ int ipa_es10b_euicc_mem_rst(struct ipa_context *ctx, const struct ipa_es10b_euic
 	if (req->default_smdp_addr)
 		rst_opt |= (1 << EuiccMemoryResetRequest__resetOptions_resetDefaultSmdpAddress);
 
+	/* TODO: It is a bit unclear how the eIM configuration should be treated when the eUICC memory is reset.
+	 * in SGP.22 v2.5, the specification we use, there is no extra bit for this in resetOptions. But in
+	 * SGP.32 v1.0.1, there is resetEimConfigData(3), which is ambiguously assigned since in SGP.22 v3.1
+	 * the same bit means deletePreLoadedTestProfiles(3). This is something that should be closer
+	 * investigated and perhaps confirmed with real sample consumer and IoT eUICCs
+	 * (The same problem also exists with resetAutoEnableConfig(4) and deleteProvisioningProfiles(4)) */
+	if (ctx->cfg->iot_euicc_emu_enabled) {
+		IPA_LOGP_ES10X("eUICCMemoryReset", LINFO,
+			       "IoT eUICC emulation active, also clearing memory with eIM configuration...\n");
+		IPA_FREE(ctx->nvstate.iot_euicc_emu.eim_cfg_ber);
+		ctx->nvstate.iot_euicc_emu.eim_cfg_ber = ipa_buf_alloc_data(sizeof(empty_eim_cfg), empty_eim_cfg);
+	} else {
+		/* Set resetEimConfigData(3), see also TODO above */
+		rst_opt |= (1 << 3);
+	}
+
 	es10b_req = ipa_es10x_req_enc(&asn_DEF_EuiccMemoryResetRequest, &mem_rst_req, "eUICCMemoryReset");
 	if (!es10b_req) {
 		IPA_LOGP_ES10X("eUICCMemoryReset", LERROR, "unable to encode ES10b request\n");
@@ -90,20 +106,6 @@ int ipa_es10b_euicc_mem_rst(struct ipa_context *ctx, const struct ipa_es10b_euic
 	rc = dec_euicc_mem_rst_res(es10b_res);
 	if (rc < 0)
 		goto error;
-
-	/* TODO: It is a bit unclear how the eIM configuration should be treated when the eUICC memory is reset.
-	 * in SGP.22 v2.5, the specification we use, there is no extra bit for this in resetOptions. But in
-	 * SGP.32 v1.0.1, there is resetEimConfigData(3), which is ambiguously assigned since in SGP.22 v3.1
-	 * the same bit means deletePreLoadedTestProfiles(3). This is something that should be closer
-	 * investigated and perhaps confirmed with real sample consumer and IoT eUICCs
-	 * (The same problem also exists with resetAutoEnableConfig(4) and deleteProvisioningProfiles(4)) */
-
-	if (ctx->cfg->iot_euicc_emu_enabled) {
-		IPA_LOGP_ES10X("eUICCMemoryReset", LINFO,
-			       "IoT eUICC emulation active, also clearing memory with eIM configuration...\n");
-		IPA_FREE(ctx->nvstate.iot_euicc_emu.eim_cfg_ber);
-		ctx->nvstate.iot_euicc_emu.eim_cfg_ber = ipa_buf_alloc_data(sizeof(empty_eim_cfg), empty_eim_cfg);
-	}
 
 error:
 	IPA_FREE(es10b_req);
