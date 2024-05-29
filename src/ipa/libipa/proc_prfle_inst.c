@@ -75,6 +75,9 @@ int ipa_proc_prfle_inst(struct ipa_context *ctx, const struct ipa_proc_prfle_ins
 		} else if (rc == 0 && i == segments->count - 1) {
 			IPA_LOGP(SIPA, LERROR, "eUICC didn't respond with ProfileInstallationResult!\n");
 			goto error;
+		} else if (rc == 1 && i != segments->count - 1) {
+			IPA_LOGP(SIPA, LERROR, "profile installation aborted by eUICC!\n");
+			goto error;
 		}
 	}
 
