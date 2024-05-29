@@ -163,6 +163,38 @@ struct EuiccResultData *iot_emo_do_delete_psmo(struct ipa_context *ctx, const st
 	return euicc_result_data;
 }
 
+struct EuiccResultData *iot_emo_do_listProfileInfo_psmo(struct ipa_context *ctx,
+							const struct ProfileInfoListRequest *listProfileInfo_psmo)
+{
+	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+	struct ipa_es10c_get_prfle_info_req get_prfle_info_req = { 0 };
+	struct ipa_es10c_get_prfle_info_res *get_prfle_info_res = NULL;
+	struct SGP32_ProfileInfoListResponse *prfle_info_res;
+
+	euicc_result_data->present = EuiccResultData_PR_listProfileInfoResult;
+
+	get_prfle_info_req.req = *listProfileInfo_psmo;
+	get_prfle_info_res = ipa_es10c_get_prfle_info(ctx, &get_prfle_info_req);
+	if (!get_prfle_info_res) {
+		prfle_info_res = IPA_ALLOC_ZERO(struct SGP32_ProfileInfoListResponse);
+		assert(prfle_info_res);
+		prfle_info_res->present = SGP32_ProfileInfoListResponse_PR_profileInfoListError;
+		prfle_info_res->choice.profileInfoListError = SGP32_ProfileInfoListError_undefinedError;
+		euicc_result_data->choice.listProfileInfoResult = *prfle_info_res;
+	} else {
+		/* Place a full copy of the contents of get_prfle_info_res->sgp32_res into
+		 * euicc_result_data->choice.listProfileInfoResult. This is necessary because we want to free
+		 * get_prfle_info_res on return */
+		prfle_info_res = ipa_asn1c_dup(&asn_DEF_SGP32_ProfileInfoListResponse, get_prfle_info_res->sgp32_res);
+		assert(prfle_info_res);
+		euicc_result_data->choice.listProfileInfoResult = *prfle_info_res;
+		IPA_FREE(prfle_info_res);	/* free outer shell only */
+	}
+
+	ipa_es10c_get_prfle_info_res_free(get_prfle_info_res);
+	return euicc_result_data;
+}
+
 struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *ctx,
 							    const struct ipa_es10b_load_euicc_pkg_req *req)
 {
@@ -209,8 +241,7 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 				psmo_result = iot_emo_do_delete_psmo(ctx, &psmo->choice.Delete);
 				break;
 			case Psmo_PR_listProfileInfo:
-				/* TODO */
-				assert(false);
+				psmo_result = iot_emo_do_listProfileInfo_psmo(ctx, &psmo->choice.listProfileInfo);
 				break;
 			case Psmo_PR_getRAT:
 				/* TODO */

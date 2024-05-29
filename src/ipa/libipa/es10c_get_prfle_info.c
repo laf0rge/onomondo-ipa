@@ -72,6 +72,46 @@ static void find_currently_active_prfle(struct ipa_es10c_get_prfle_info_res *res
 	}
 }
 
+/* Convert the response into SGP32 format */
+struct SGP32_ProfileInfoListResponse *convert_res_to_sgp32(struct ProfileInfoListResponse *res)
+{
+	struct SGP32_ProfileInfoListResponse *sgp32_res;
+	struct ProfileInfo *prfle_info_item;
+	unsigned int i;
+
+	if (!res)
+		return NULL;
+
+	sgp32_res = IPA_ALLOC_ZERO(struct SGP32_ProfileInfoListResponse);
+	assert(sgp32_res);
+
+	switch (res->present) {
+	case ProfileInfoListResponse_PR_profileInfoListOk:
+		for (i = 0; i < res->choice.profileInfoListOk.list.count; i++) {
+			prfle_info_item = IPA_ALLOC(struct ProfileInfo);
+			*prfle_info_item = *res->choice.profileInfoListOk.list.array[i];
+			ASN_SEQUENCE_ADD(&sgp32_res->choice.profileInfoListOk.list, prfle_info_item);
+		}
+
+		sgp32_res->present = SGP32_ProfileInfoListResponse_PR_profileInfoListOk;
+		break;
+	case ProfileInfoListResponse_PR_profileInfoListError:
+		switch (res->choice.profileInfoListError) {
+		case ProfileInfoListError_incorrectInputValues:
+			sgp32_res->choice.profileInfoListError = SGP32_ProfileInfoListError_incorrectInputValues;
+			break;
+		default:
+			sgp32_res->choice.profileInfoListError = ProfileInfoListError_undefinedError;
+		}
+		break;
+		sgp32_res->present = SGP32_ProfileInfoListResponse_PR_profileInfoListError;
+	default:
+		sgp32_res->present = SGP32_ProfileInfoListResponse_PR_NOTHING;
+	}
+
+	return sgp32_res;
+}
+
 /*! Function (Es10c): GetProfilesInfo.
  *  \param[inout] ctx pointer to ipa_context.
  *  \param[in] req pointer to struct that holds the function parameters (may be NULL to request full info).
@@ -105,6 +145,7 @@ struct ipa_es10c_get_prfle_info_res *ipa_es10c_get_prfle_info(struct ipa_context
 		goto error;
 
 	find_currently_active_prfle(res);
+	res->sgp32_res = convert_res_to_sgp32(res->res);
 
 	IPA_FREE(es10c_req);
 	IPA_FREE(es10c_res);
@@ -120,5 +161,16 @@ error:
  *  \param[in] res pointer to function result. */
 void ipa_es10c_get_prfle_info_res_free(struct ipa_es10c_get_prfle_info_res *res)
 {
+	unsigned int i;
+
+	if (res->sgp32_res) {
+		if (res->sgp32_res->present == ProfileInfoListResponse_PR_profileInfoListOk) {
+			for (i = 0; i < res->sgp32_res->choice.profileInfoListOk.list.count; i++)
+				IPA_FREE(res->sgp32_res->choice.profileInfoListOk.list.array[i]);
+			IPA_FREE(res->sgp32_res->choice.profileInfoListOk.list.array);
+		}
+		IPA_FREE(res->sgp32_res);
+	}
+
 	IPA_ES10X_RES_FREE(asn_DEF_ProfileInfoListResponse, res);
 }
