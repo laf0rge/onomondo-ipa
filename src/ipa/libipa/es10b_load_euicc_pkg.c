@@ -21,6 +21,7 @@
 #include "es10c_disable_prfle.h"
 #include "es10c_delete_prfle.h"
 #include "es10c_get_prfle_info.h"
+#include "es10b_get_eim_cfg_data.h"
 
 static void update_rollback_iccid(struct ipa_context *ctx)
 {
@@ -34,7 +35,8 @@ static void update_rollback_iccid(struct ipa_context *ctx)
 
 	if (get_prfle_info_res->res && get_prfle_info_res->currently_active_prfle) {
 		if (!get_prfle_info_res->currently_active_prfle->iccid) {
-			IPA_LOGP(SIPA, LERROR, "a profile is active, but it does not have an ICCID, cannot use this profile for rollback!\n");
+			IPA_LOGP(SIPA, LERROR,
+				 "a profile is active, but it does not have an ICCID, cannot use this profile for rollback!\n");
 			return;
 		}
 		IPA_FREE(ctx->rollback_iccid);
@@ -195,6 +197,52 @@ struct EuiccResultData *iot_emo_do_listProfileInfo_psmo(struct ipa_context *ctx,
 	return euicc_result_data;
 }
 
+struct EuiccResultData *iot_emo_do_listEim_eco(struct ipa_context *ctx, const struct Eco__listEim *listEim_eco)
+{
+	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+	struct ipa_es10b_eim_cfg_data *eim_cfg_data = NULL;
+	struct EimIdInfo *eim_id_info;
+	struct EimConfigurationData *eim_cfg_data_item;
+	unsigned int i;
+
+	euicc_result_data->present = EuiccResultData_PR_listEimResult;
+
+	/* This eCO Has no parameters, so listEim_eco is just an empty struct that has to be present */
+	assert(listEim_eco);
+
+	eim_cfg_data = ipa_es10b_get_eim_cfg_data(ctx);
+	if (!eim_cfg_data) {
+		euicc_result_data->choice.listEimResult.present = ListEimResult_PR_listEimError;
+		euicc_result_data->choice.listEimResult.choice.listEimError = ListEimResult__listEimError_commandError;
+	} else {
+		euicc_result_data->choice.listEimResult.present = ListEimResult_PR_eimIdList;
+
+		for (i = 0; i < eim_cfg_data->res->eimConfigurationDataList.list.count; i++) {
+			eim_cfg_data_item = eim_cfg_data->res->eimConfigurationDataList.list.array[i];
+			eim_id_info = IPA_ALLOC_ZERO(struct EimIdInfo);
+			assert(eim_id_info);
+
+			/* Copy eimId */
+			eim_id_info->eimId.size = eim_cfg_data_item->eimId.size;
+			eim_id_info->eimId.buf = IPA_ALLOC_N(eim_cfg_data_item->eimId.size);
+			assert(eim_id_info->eimId.buf);
+			memcpy(eim_id_info->eimId.buf, eim_cfg_data_item->eimId.buf, eim_cfg_data_item->eimId.size);
+
+			/* Copy eimIdType */
+			if (eim_cfg_data_item->eimIdType) {
+				eim_id_info->eimIdType = IPA_ALLOC_N(sizeof(eim_cfg_data_item->eimIdType));
+				assert(eim_id_info->eimIdType);
+				*eim_id_info->eimIdType = *eim_cfg_data_item->eimIdType;
+			}
+
+			ASN_SEQUENCE_ADD(&euicc_result_data->choice.listEimResult.choice.eimIdList.list, eim_id_info);
+		}
+	}
+
+	ipa_es10b_get_eim_cfg_data_free(eim_cfg_data);
+	return euicc_result_data;
+}
+
 struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *ctx,
 							    const struct ipa_es10b_load_euicc_pkg_req *req)
 {
@@ -202,6 +250,8 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 	struct EuiccPackageResult *asn = NULL;
 	const struct Psmo *psmo = NULL;
 	struct EuiccResultData *psmo_result = NULL;
+	const struct Eco *eco = NULL;
+	struct EuiccResultData *eco_result = NULL;
 	struct ipa_buf eim_id = { 0 };
 	struct ipa_buf euicc_sign_epr = { 0 };
 	unsigned int i;
@@ -261,8 +311,33 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 		}
 		break;
 	case EuiccPackage_PR_ecoList:
-		/* TODO */
-		assert(false);
+		for (i = 0; i < req->req.euiccPackageSigned.euiccPackage.choice.ecoList.list.count; i++) {
+			eco = req->req.euiccPackageSigned.euiccPackage.choice.ecoList.list.array[i];
+			eco_result = NULL;
+			switch (eco->present) {
+			case Eco_PR_addEim:
+				/* TODO */
+				assert(false);
+				break;
+			case Eco_PR_deleteEim:
+				/* TODO */
+				assert(false);
+				break;
+			case Eco_PR_updateEim:
+				/* TODO */
+				assert(false);
+				break;
+			case Eco_PR_listEim:
+				eco_result = iot_emo_do_listEim_eco(ctx, &eco->choice.listEim);
+				break;
+			default:
+				IPA_LOGP_ES10X("LoadEuiccPackage", LERROR, "ignoring invalid or unsupported eCO!\n");
+				break;
+			}
+			if (eco_result)
+				ASN_SEQUENCE_ADD(&asn->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.
+						 euiccResult.list, eco_result);
+		}
 		break;
 	default:
 		IPA_LOGP_ES10X("LoadEuiccPackage", LERROR,
