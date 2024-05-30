@@ -200,6 +200,68 @@ struct EuiccResultData *iot_emo_do_listProfileInfo_psmo(struct ipa_context *ctx,
 	return euicc_result_data;
 }
 
+struct EuiccResultData *iot_emo_do_getRAT_psmo(struct ipa_context *ctx, const struct Psmo__getRAT *getRAT_psmo)
+{
+	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+
+	euicc_result_data->present = EuiccResultData_PR_getRATResult;
+
+	/* TODO: finish implementation of this PSMO */
+
+	return euicc_result_data;
+}
+
+struct EuiccResultData *iot_emo_do_configureAutoEnable_psmo(struct ipa_context *ctx, const struct Psmo__configureAutoEnable
+							    *configureAutoEnable_psmo)
+{
+	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+
+	euicc_result_data->present = EuiccResultData_PR_configureAutoEnableResult;
+
+	/* TODO: finish implementation of this PSMO */
+	euicc_result_data->choice.configureAutoEnableResult = ConfigureAutoEnableResult_undefinedError;
+
+	return euicc_result_data;
+}
+
+struct EuiccResultData *iot_emo_do_addEim_eco(struct ipa_context *ctx, const struct EimConfigurationData *addEim_eco)
+{
+	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+
+	euicc_result_data->present = EuiccResultData_PR_addEimResult;
+
+	/* TODO: finish implementation of this eCO */
+	euicc_result_data->choice.addEimResult.present = AddEimResult_PR_addEimResultCode;
+	euicc_result_data->choice.addEimResult.choice.addEimResultCode = AddEimResult__addEimResultCode_undefinedError;
+
+	return euicc_result_data;
+}
+
+struct EuiccResultData *iot_emo_do_deleteEim_eco(struct ipa_context *ctx, const struct Eco__deleteEim *deleteEim_eco)
+{
+	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+
+	euicc_result_data->present = EuiccResultData_PR_deleteEimResult;
+
+	/* TODO: finish implementation of this eCO */
+	euicc_result_data->choice.deleteEimResult = DeleteEimResult_undefinedError;
+
+	return euicc_result_data;
+}
+
+struct EuiccResultData *iot_emo_do_updateEim_eco(struct ipa_context *ctx,
+						 const struct EimConfigurationData *updateEim_eco)
+{
+	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+
+	euicc_result_data->present = EuiccResultData_PR_updateEimResult;
+
+	/* TODO: finish implementation of this eCO */
+	euicc_result_data->choice.updateEimResult = UpdateEimResult_undefinedError;
+
+	return euicc_result_data;
+}
+
 struct EuiccResultData *iot_emo_do_listEim_eco(struct ipa_context *ctx, const struct Eco__listEim *listEim_eco)
 {
 	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
@@ -297,12 +359,11 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 				psmo_result = iot_emo_do_listProfileInfo_psmo(ctx, &psmo->choice.listProfileInfo);
 				break;
 			case Psmo_PR_getRAT:
-				/* TODO */
-				assert(false);
+				psmo_result = iot_emo_do_getRAT_psmo(ctx, &psmo->choice.getRAT);
 				break;
 			case Psmo_PR_configureAutoEnable:
-				/* TODO */
-				assert(false);
+				psmo_result =
+				    iot_emo_do_configureAutoEnable_psmo(ctx, &psmo->choice.configureAutoEnable);
 				break;
 			default:
 				IPA_LOGP_ES10X("LoadEuiccPackage", LERROR, "ignoring invalid or unsupported PSMO!\n");
@@ -319,16 +380,13 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 			eco_result = NULL;
 			switch (eco->present) {
 			case Eco_PR_addEim:
-				/* TODO */
-				assert(false);
+				eco_result = iot_emo_do_addEim_eco(ctx, &eco->choice.addEim);
 				break;
 			case Eco_PR_deleteEim:
-				/* TODO */
-				assert(false);
+				eco_result = iot_emo_do_deleteEim_eco(ctx, &eco->choice.deleteEim);
 				break;
 			case Eco_PR_updateEim:
-				/* TODO */
-				assert(false);
+				eco_result = iot_emo_do_updateEim_eco(ctx, &eco->choice.updateEim);
 				break;
 			case Eco_PR_listEim:
 				eco_result = iot_emo_do_listEim_eco(ctx, &eco->choice.listEim);
