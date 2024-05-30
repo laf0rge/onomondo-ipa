@@ -146,7 +146,6 @@ static struct ipa_es10b_add_init_eim_res *add_init_eim_iot_emu(struct ipa_contex
 	struct ipa_buf *eim_cfg_new = NULL;
 	struct AddInitialEimRequest *req_cfg_new_decoded = NULL;
 	struct ipa_es10b_add_init_eim_res *res = IPA_ALLOC_ZERO(struct ipa_es10b_add_init_eim_res);
-	int rc;
 
 	IPA_LOGP_ES10X("AddInitialEim", LINFO,
 		       "IoT eUICC emulation active, pretending to query eUICC to set eIM configuration...\n");

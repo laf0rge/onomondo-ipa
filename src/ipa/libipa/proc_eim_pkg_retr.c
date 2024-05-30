@@ -57,7 +57,6 @@ error:
 int eim_pkg_exec(struct ipa_context *ctx, const struct ipa_esipa_get_eim_pkg_res *get_eim_pkg_res)
 {
 	struct ipa_buf *allowed_ca_pkid = NULL;
-	struct ipa_proc_eucc_pkg_dwnld_exec_res *proc_eucc_pkg_dwnld_exec_res = NULL;
 	int rc;
 
 	if (get_eim_pkg_res->euicc_package_request) {

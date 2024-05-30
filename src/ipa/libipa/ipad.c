@@ -145,7 +145,6 @@ error:
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg, struct ipa_buf *nvstate)
 {
 	struct ipa_context *ctx;
-	int rc;
 
 	ctx = IPA_ALLOC_ZERO(struct ipa_context);
 	assert(ctx);

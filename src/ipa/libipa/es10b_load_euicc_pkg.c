@@ -332,11 +332,11 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 	asn = IPA_ALLOC_ZERO(struct EuiccPackageResult);
 	res->res = asn;
 	asn->present = EuiccPackageResult_PR_euiccPackageResultSigned;
-	ipa_buf_assign(&eim_id, ctx->eim_id, strlen(ctx->eim_id));
+	ipa_buf_assign(&eim_id, (uint8_t *) ctx->eim_id, strlen(ctx->eim_id));
 	IPA_COPY_IPA_BUF_TO_ASN(&asn->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.eimId, &eim_id);
 	asn->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.counterValue = 0;
 	asn->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.seqNumber = 0;
-	ipa_buf_assign(&euicc_sign_epr, "", 0);	/* Return an empty signature as we are unable to sign anything here */
+	ipa_buf_assign(&euicc_sign_epr, (uint8_t *) "", 0);	/* Return an empty signature as we are unable to sign anything here */
 	IPA_COPY_IPA_BUF_TO_ASN(&asn->choice.euiccPackageResultSigned.euiccSignEPR, &euicc_sign_epr);
 
 	/* Go through the list of PSMOs and ECOs and execute the corresponding iot_emo_do... functions */
@@ -413,8 +413,7 @@ error:
 	asn = IPA_ALLOC_ZERO(struct EuiccPackageResult);
 	res->res = asn;
 	asn->present = EuiccPackageResult_PR_euiccPackageErrorUnsigned;
-	asn->choice.euiccPackageErrorUnsigned;
-	ipa_buf_assign(&eim_id, ctx->eim_id, strlen(ctx->eim_id));
+	ipa_buf_assign(&eim_id, (uint8_t *) ctx->eim_id, strlen(ctx->eim_id));
 	IPA_COPY_IPA_BUF_TO_ASN(&asn->choice.euiccPackageErrorUnsigned.eimId, &eim_id);
 	return res;
 }
@@ -444,6 +443,8 @@ static bool check_for_profile_change(const struct EuiccPackageResult *res)
 		case EuiccResultData_PR_rollbackResult:
 			if (euicc_result_data->choice.rollbackResult == RollbackProfileResult_ok)
 				return true;
+			break;
+		default:
 			break;
 		}
 	}

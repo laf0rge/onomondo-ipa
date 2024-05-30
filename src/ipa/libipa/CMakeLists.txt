@@ -46,3 +46,4 @@ add_library(libipa STATIC
 
 target_include_directories(libipa PUBLIC ${CMAKE_SOURCE_DIR}/include PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(libipa PUBLIC libasn)
+target_compile_options(libipa PRIVATE -Wall)

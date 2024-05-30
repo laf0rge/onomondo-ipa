@@ -200,7 +200,6 @@ static struct ipa_es10b_eim_cfg_data *get_eim_cfg_data_iot_emu(struct ipa_contex
 	struct ipa_buf *es10a_req = NULL;
 	struct ipa_buf *es10a_res = NULL;
 	struct ipa_es10b_eim_cfg_data *eim_cfg_data = IPA_ALLOC_ZERO(struct ipa_es10b_eim_cfg_data);
-	struct GetEimConfigurationDataRequest get_eim_cfg_data_req = { 0 };
 	uint8_t empty_eim_cfg[] = { 0xBF, 0x55, 0x02, 0xA0, 0x00 };
 	int rc;
 

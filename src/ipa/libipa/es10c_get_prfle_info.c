@@ -164,7 +164,7 @@ void ipa_es10c_get_prfle_info_res_free(struct ipa_es10c_get_prfle_info_res *res)
 	unsigned int i;
 
 	if (res->sgp32_res) {
-		if (res->sgp32_res->present == ProfileInfoListResponse_PR_profileInfoListOk) {
+		if (res->sgp32_res->present == SGP32_ProfileInfoListResponse_PR_profileInfoListOk) {
 			for (i = 0; i < res->sgp32_res->choice.profileInfoListOk.list.count; i++)
 				IPA_FREE(res->sgp32_res->choice.profileInfoListOk.list.array[i]);
 			IPA_FREE(res->sgp32_res->choice.profileInfoListOk.list.array);
