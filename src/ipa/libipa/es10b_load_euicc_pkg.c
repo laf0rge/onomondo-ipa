@@ -100,9 +100,11 @@ error:
 
 struct EuiccResultData *iot_emo_do_enable_psmo(struct ipa_context *ctx, const struct Psmo__enable *enable_psmo)
 {
+	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
 	struct ipa_es10c_enable_prfle_req enable_prfle_req = { 0 };
 	struct ipa_es10c_enable_prfle_res *enable_prfle_res = NULL;
-	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+
+	euicc_result_data->present = EuiccResultData_PR_enableResult;
 
 	/* With the IoT/PSMO interface we can only identify the profile via its ICCID */
 	enable_prfle_req.req.profileIdentifier.present = EnableProfileRequest__profileIdentifier_PR_iccid;
@@ -111,7 +113,6 @@ struct EuiccResultData *iot_emo_do_enable_psmo(struct ipa_context *ctx, const st
 	/* There is no way to tell the eUICC via the IoT/PSMO interface when a refresh is required. */
 	enable_prfle_req.req.refreshFlag = ctx->cfg->refresh_flag;
 	enable_prfle_res = ipa_es10c_enable_prfle(ctx, &enable_prfle_req);
-	euicc_result_data->present = EuiccResultData_PR_enableResult;
 	if (enable_prfle_res)
 		euicc_result_data->choice.enableResult = enable_prfle_res->res->enableResult;
 	else
@@ -123,9 +124,11 @@ struct EuiccResultData *iot_emo_do_enable_psmo(struct ipa_context *ctx, const st
 
 struct EuiccResultData *iot_emo_do_disable_psmo(struct ipa_context *ctx, const struct Psmo__disable *disable_psmo)
 {
+	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
 	struct ipa_es10c_disable_prfle_req disable_prfle_req = { 0 };
 	struct ipa_es10c_disable_prfle_res *disable_prfle_res = NULL;
-	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+
+	euicc_result_data->present = EuiccResultData_PR_disableResult;
 
 	/* With the IoT/PSMO interface we can only identify the profile via its ICCID */
 	disable_prfle_req.req.profileIdentifier.present = DisableProfileRequest__profileIdentifier_PR_iccid;
@@ -134,7 +137,6 @@ struct EuiccResultData *iot_emo_do_disable_psmo(struct ipa_context *ctx, const s
 	/* There is no way to tell the eUICC via the IoT/PSMO interface when a refresh is required. */
 	disable_prfle_req.req.refreshFlag = ctx->cfg->refresh_flag;
 	disable_prfle_res = ipa_es10c_disable_prfle(ctx, &disable_prfle_req);
-	euicc_result_data->present = EuiccResultData_PR_disableResult;
 	if (disable_prfle_res)
 		euicc_result_data->choice.disableResult = disable_prfle_res->res->disableResult;
 	else
@@ -146,16 +148,17 @@ struct EuiccResultData *iot_emo_do_disable_psmo(struct ipa_context *ctx, const s
 
 struct EuiccResultData *iot_emo_do_delete_psmo(struct ipa_context *ctx, const struct Psmo__delete *delete_psmo)
 {
+	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
 	struct ipa_es10c_delete_prfle_req delete_prfle_req = { 0 };
 	struct ipa_es10c_delete_prfle_res *delete_prfle_res = NULL;
-	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+
+	euicc_result_data->present = EuiccResultData_PR_deleteResult;
 
 	/* With the IoT/PSMO interface we can only identify the profile via its ICCID */
 	delete_prfle_req.req.present = DeleteProfileRequest_PR_iccid;
 	delete_prfle_req.req.choice.iccid = delete_psmo->iccid;
 
 	delete_prfle_res = ipa_es10c_delete_prfle(ctx, &delete_prfle_req);
-	euicc_result_data->present = EuiccResultData_PR_deleteResult;
 	if (delete_prfle_res)
 		euicc_result_data->choice.deleteResult = delete_prfle_res->res->deleteResult;
 	else
