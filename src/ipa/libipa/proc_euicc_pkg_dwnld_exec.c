@@ -74,7 +74,7 @@ int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx, struct ipa_proc_
 		goto error;
 	else if (retr_notif_from_lst_res->notif_lst_result_err)
 		goto error;
-	else if (!retr_notif_from_lst_res->notification_list)
+	else if (!retr_notif_from_lst_res->sgp32_notification_list)
 		goto error;
 
 	/* Step #10-#14 (ESipa.ProvideEimPackageResult) */
@@ -82,7 +82,7 @@ int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx, struct ipa_proc_
 		prvde_eim_pkg_rslt_req.euicc_package_result = res->prfle_rollback_res->res->eUICCPackageResult;
 	else
 		prvde_eim_pkg_rslt_req.euicc_package_result = res->load_euicc_pkg_res->res;
-	prvde_eim_pkg_rslt_req.notification_list = retr_notif_from_lst_res->notification_list;
+	prvde_eim_pkg_rslt_req.sgp32_notification_list = retr_notif_from_lst_res->sgp32_notification_list;
 	prvde_eim_pkg_rslt_res = ipa_esipa_prvde_eim_pkg_rslt(ctx, &prvde_eim_pkg_rslt_req);
 
 	if (!prvde_eim_pkg_rslt_res) {
@@ -121,8 +121,8 @@ int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx, struct ipa_proc_
 	/* Step #15-17 (ES10b.RemoveNotificationFromList) */
 	/* Remove the notification for the euiccPackageResult. */
 	rc = ipa_es10b_rm_notif_from_lst(ctx,
-					 res->load_euicc_pkg_res->res->choice.
-					 euiccPackageResultSigned.euiccPackageResultDataSigned.seqNumber);
+					 res->load_euicc_pkg_res->res->choice.euiccPackageResultSigned.
+					 euiccPackageResultDataSigned.seqNumber);
 	if (rc < 0)
 		goto error;
 	/* Remove the notifications that the eIM has requested to remove in the provideEimPackageResultResponse. */

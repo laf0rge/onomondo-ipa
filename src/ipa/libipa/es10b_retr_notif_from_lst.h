@@ -17,7 +17,6 @@ struct ipa_es10b_retr_notif_from_lst_req {
 
 struct ipa_es10b_retr_notif_from_lst_res {
 	struct RetrieveNotificationsListResponse *res;
-	struct RetrieveNotificationsListResponse__notificationList *notification_list;
 	struct SGP32_RetrieveNotificationsListResponse__notificationList *sgp32_notification_list;
 	long notif_lst_result_err;
 };

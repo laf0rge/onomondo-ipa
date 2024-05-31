@@ -19,6 +19,60 @@
 #include "esipa.h"
 #include "es10b_retr_notif_from_lst.h"
 
+/* Convert a notificationList (RetrieveNotificationsListResponse) from RSP to SGP32 format. */
+void convert_notification_list(struct SGP32_RetrieveNotificationsListResponse__notificationList *lst_out,
+			       const struct RetrieveNotificationsListResponse__notificationList *lst_in)
+{
+	unsigned int i;
+	struct PendingNotification *pending_notif_item;
+	struct SGP32_PendingNotification *sgp32_pending_notif_item;
+
+	OtherSignedNotification_t *other_signed_notification;
+	ProfileInstallationResultData_t *profile_Installation_result_data;
+	EuiccSignPIR_t *euicc_sign_PIR;
+
+	for (i = 0; i < lst_in->list.count; i++) {
+		pending_notif_item = lst_in->list.array[i];
+
+		switch (pending_notif_item->present) {
+		case PendingNotification_PR_profileInstallationResult:
+			profile_Installation_result_data =
+			    &pending_notif_item->choice.profileInstallationResult.profileInstallationResultData;
+			euicc_sign_PIR = &pending_notif_item->choice.profileInstallationResult.euiccSignPIR;
+
+			sgp32_pending_notif_item = IPA_ALLOC(struct SGP32_PendingNotification);
+			ASN_SEQUENCE_ADD(&lst_out->list, sgp32_pending_notif_item);
+			sgp32_pending_notif_item->present = SGP32_PendingNotification_PR_profileInstallationResult;
+			sgp32_pending_notif_item->choice.profileInstallationResult.profileInstallationResultData =
+			    *profile_Installation_result_data;
+			sgp32_pending_notif_item->choice.profileInstallationResult.euiccSignPIR = *euicc_sign_PIR;
+			break;
+		case PendingNotification_PR_otherSignedNotification:
+			other_signed_notification = &pending_notif_item->choice.otherSignedNotification;
+
+			sgp32_pending_notif_item = IPA_ALLOC(struct SGP32_PendingNotification);
+			ASN_SEQUENCE_ADD(&lst_out->list, sgp32_pending_notif_item);
+			sgp32_pending_notif_item->present = SGP32_PendingNotification_PR_otherSignedNotification;
+			sgp32_pending_notif_item->choice.otherSignedNotification = *other_signed_notification;
+			break;
+		default:
+			IPA_LOGP_ESIPA("ProvideEimPackageResult", LERROR, "skipping empty PendingNotification item\n");
+			break;
+		}
+	}
+}
+
+/*! Free a converted notificationList (RetrieveNotificationsListResponse). */
+void free_converted_notification_list(struct SGP32_RetrieveNotificationsListResponse__notificationList *lst)
+{
+	int i;
+	if (!lst)
+		return;
+	for (i = 0; i < lst->list.count; i++)
+		IPA_FREE(lst->list.array[i]);
+	IPA_FREE(lst->list.array);
+}
+
 static const struct num_str_map error_code_strings[] = {
 	{ RetrieveNotificationsListResponse__notificationsListResultError_undefinedError, "undefinedError" },
 	{ 0, NULL }
@@ -34,7 +88,11 @@ static int dec_retr_notif_from_lst_res(struct ipa_es10b_retr_notif_from_lst_res 
 
 	switch (asn->present) {
 	case RetrieveNotificationsListResponse_PR_notificationList:
-		res->notification_list = &asn->choice.notificationList;
+		res->sgp32_notification_list =
+		    IPA_ALLOC(struct SGP32_RetrieveNotificationsListResponse__notificationList);
+		memset(res->sgp32_notification_list, 0, sizeof(*res->sgp32_notification_list));
+		convert_notification_list(res->sgp32_notification_list, &asn->choice.notificationList);
+
 		break;
 	case RetrieveNotificationsListResponse_PR_notificationsListResultError:
 		res->notif_lst_result_err = asn->choice.notificationsListResultError;
@@ -45,15 +103,6 @@ static int dec_retr_notif_from_lst_res(struct ipa_es10b_retr_notif_from_lst_res 
 	default:
 		IPA_LOGP_ES10X("RetrieveNotificationsList", LERROR, "unexpected response content!\n");
 		res->notif_lst_result_err = -1;
-	}
-
-	if (res->notification_list) {
-		res->sgp32_notification_list =
-		    IPA_ALLOC(struct SGP32_RetrieveNotificationsListResponse__notificationList);
-		memset(res->sgp32_notification_list, 0, sizeof(*res->sgp32_notification_list));
-		ipa_convert_notification_list(res->sgp32_notification_list, res->notification_list);
-	} else {
-		res->sgp32_notification_list = NULL;
 	}
 
 	res->res = asn;
@@ -144,7 +193,7 @@ void ipa_es10b_retr_notif_from_lst_res_free(struct ipa_es10b_retr_notif_from_lst
 {
 	if (!res)
 		return;
-	ipa_free_converted_notification_list(res->sgp32_notification_list);
+	free_converted_notification_list(res->sgp32_notification_list);
 	IPA_FREE(res->sgp32_notification_list);
 	IPA_ES10X_RES_FREE(asn_DEF_RetrieveNotificationsListResponse, res);
 }

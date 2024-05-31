@@ -21,22 +21,20 @@ static struct ipa_buf *enc_prvde_eim_pkg_rslt_req(const struct ipa_esipa_prvde_e
 {
 	struct EsipaMessageFromIpaToEim msg_to_eim = { 0 };
 	struct ipa_buf *enc;
-	bool notification_list_allocated = false;
 
 	msg_to_eim.present = EsipaMessageFromIpaToEim_PR_provideEimPackageResult;
 
 	if (req->eim_pkg_err != 0) {
 		msg_to_eim.choice.provideEimPackageResult.present = ProvideEimPackageResult_PR_eimPackageError;
 		msg_to_eim.choice.provideEimPackageResult.choice.eimPackageError = req->eim_pkg_err;
-	} else if (req->euicc_package_result && req->notification_list) {
+	} else if (req->euicc_package_result && req->sgp32_notification_list) {
 		msg_to_eim.choice.provideEimPackageResult.present = ProvideEimPackageResult_PR_ePRAndNotifications;
 		msg_to_eim.choice.provideEimPackageResult.choice.ePRAndNotifications.euiccPackageResult =
 		    *req->euicc_package_result;
 		msg_to_eim.choice.provideEimPackageResult.choice.ePRAndNotifications.notificationList.present =
 		    SGP32_RetrieveNotificationsListResponse_PR_notificationList;
-		ipa_convert_notification_list(&msg_to_eim.choice.provideEimPackageResult.choice.ePRAndNotifications.
-					      notificationList.choice.notificationList, req->notification_list);
-		notification_list_allocated = true;
+		msg_to_eim.choice.provideEimPackageResult.choice.ePRAndNotifications.notificationList.choice.
+		    notificationList = *req->sgp32_notification_list;
 	} else if (req->euicc_package_result) {
 		msg_to_eim.choice.provideEimPackageResult.present = ProvideEimPackageResult_PR_euiccPackageResult;
 		msg_to_eim.choice.provideEimPackageResult.choice.euiccPackageResult = *req->euicc_package_result;
@@ -60,12 +58,6 @@ static struct ipa_buf *enc_prvde_eim_pkg_rslt_req(const struct ipa_esipa_prvde_e
 	}
 
 	enc = ipa_esipa_msg_to_eim_enc(&msg_to_eim, "ProvideEimPackageResult");
-
-	if (notification_list_allocated) {
-		ipa_free_converted_notification_list(&msg_to_eim.choice.provideEimPackageResult.
-						     choice.ePRAndNotifications.notificationList.choice.
-						     notificationList);
-	}
 
 	return enc;
 }
