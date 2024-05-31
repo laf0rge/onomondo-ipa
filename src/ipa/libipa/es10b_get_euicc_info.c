@@ -110,6 +110,19 @@ static int dec_get_euicc_info2(struct ipa_es10b_euicc_info *euicc_info, const st
 	return 0;
 }
 
+static int dec_get_euicc_info2_sgp32(struct ipa_es10b_euicc_info *euicc_info, const struct ipa_buf *es10b_res)
+{
+	struct SGP32_EUICCInfo2 *asn = NULL;
+
+	asn = ipa_es10x_res_dec(&asn_DEF_SGP32_EUICCInfo2, es10b_res, "GetEuiccInfo2Request");
+	if (!asn)
+		return -EINVAL;
+
+	euicc_info->sgp32_euicc_info_2 = asn;
+
+	return 0;
+}
+
 static struct ipa_es10b_euicc_info *get_euicc_info2(struct ipa_context *ctx)
 {
 	struct ipa_buf *es10b_req = NULL;
@@ -131,9 +144,15 @@ static struct ipa_es10b_euicc_info *get_euicc_info2(struct ipa_context *ctx)
 		goto error;
 	}
 
-	rc = dec_get_euicc_info2(euicc_info, es10b_res);
+	if (ctx->cfg->iot_euicc_emu_enabled) {
+		IPA_LOGP_ES10X("GetEuiccInfo2Request", LINFO, "IoT eUICC emulation active, will derive SGP32-EUICCInfo2 from (SGP.22) EUICCInfo2.\n");
+		rc = dec_get_euicc_info2(euicc_info, es10b_res);
+	} else {
+		rc = dec_get_euicc_info2_sgp32(euicc_info, es10b_res);
+	}
 	if (rc < 0)
 		goto error;
+
 
 	IPA_FREE(es10b_req);
 	IPA_FREE(es10b_res);
@@ -164,9 +183,14 @@ void ipa_es10b_get_euicc_info_free(struct ipa_es10b_euicc_info *res)
 	if (!res)
 		return;
 
-	IPA_FREE(res->sgp32_euicc_info_2);
 	ASN_STRUCT_FREE(asn_DEF_EUICCInfo1, res->euicc_info_1);
-	ASN_STRUCT_FREE(asn_DEF_EUICCInfo2, res->euicc_info_2);
+
+	if (res->euicc_info_2) {
+		IPA_FREE(res->sgp32_euicc_info_2);
+		ASN_STRUCT_FREE(asn_DEF_EUICCInfo2, res->euicc_info_2);
+	} else {
+		ASN_STRUCT_FREE(asn_DEF_SGP32_EUICCInfo2, res->euicc_info_2);
+	}
 
 	IPA_FREE(res);
 }
