@@ -31,10 +31,8 @@ static struct ipa_buf *enc_prvde_eim_pkg_rslt_req(const struct ipa_esipa_prvde_e
 		msg_to_eim.choice.provideEimPackageResult.present = ProvideEimPackageResult_PR_ePRAndNotifications;
 		msg_to_eim.choice.provideEimPackageResult.choice.ePRAndNotifications.euiccPackageResult =
 		    *req->euicc_package_result;
-		msg_to_eim.choice.provideEimPackageResult.choice.ePRAndNotifications.notificationList.present =
-		    SGP32_RetrieveNotificationsListResponse_PR_notificationList;
-		msg_to_eim.choice.provideEimPackageResult.choice.ePRAndNotifications.notificationList.choice.
-		    notificationList = *req->sgp32_notification_list;
+		msg_to_eim.choice.provideEimPackageResult.choice.ePRAndNotifications.notificationList =
+		    *req->sgp32_notification_list;
 	} else if (req->euicc_package_result) {
 		msg_to_eim.choice.provideEimPackageResult.present = ProvideEimPackageResult_PR_euiccPackageResult;
 		msg_to_eim.choice.provideEimPackageResult.choice.euiccPackageResult = *req->euicc_package_result;

@@ -74,7 +74,7 @@ int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx, struct ipa_proc_
 		goto error;
 	else if (retr_notif_from_lst_res->notif_lst_result_err)
 		goto error;
-	else if (!retr_notif_from_lst_res->sgp32_notification_list)
+	else if (!retr_notif_from_lst_res->sgp32_res)
 		goto error;
 
 	/* Step #10-#14 (ESipa.ProvideEimPackageResult) */
@@ -82,7 +82,7 @@ int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx, struct ipa_proc_
 		prvde_eim_pkg_rslt_req.euicc_package_result = res->prfle_rollback_res->res->eUICCPackageResult;
 	else
 		prvde_eim_pkg_rslt_req.euicc_package_result = res->load_euicc_pkg_res->res;
-	prvde_eim_pkg_rslt_req.sgp32_notification_list = retr_notif_from_lst_res->sgp32_notification_list;
+	prvde_eim_pkg_rslt_req.sgp32_notification_list = retr_notif_from_lst_res->sgp32_res;
 	prvde_eim_pkg_rslt_res = ipa_esipa_prvde_eim_pkg_rslt(ctx, &prvde_eim_pkg_rslt_req);
 
 	if (!prvde_eim_pkg_rslt_res) {

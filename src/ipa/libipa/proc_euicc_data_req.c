@@ -95,7 +95,6 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 	struct ipa_esipa_prvde_eim_pkg_rslt_res *prvde_eim_pkg_rslt_res = NULL;
 
 	/* Final response */
-	struct SGP32_RetrieveNotificationsListResponse notifications_list = { 0 };
 	struct IpaEuiccDataResponse ipa_euicc_data_response = { 0 };
 
 	/* Preventively prepare IpaEuiccDataResponse with an error code, in case something fails. */
@@ -113,8 +112,7 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 			IPA_LOGP(SIPA, LINFO, "eUICC did not return a defaultDpAddress!\n");
 			goto handle_error;
 		}
-		ipa_euicc_data_response.choice.ipaEuiccData.defaultSmdpAddress =
-		    euicc_cfg_addr->res->defaultDpAddress;
+		ipa_euicc_data_response.choice.ipaEuiccData.defaultSmdpAddress = euicc_cfg_addr->res->defaultDpAddress;
 	}
 	if (ipa_tag_in_taglist(0xBF20, tag_list)) {
 		IPA_LOGP(SIPA, LINFO, "eIM asks for eUICCInfo1\n");
@@ -140,8 +138,7 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 			if (!euicc_cfg_addr)
 				goto error;
 		}
-		ipa_euicc_data_response.choice.ipaEuiccData.rootSmdsAddress =
-		    &euicc_cfg_addr->res->rootDsAddress;
+		ipa_euicc_data_response.choice.ipaEuiccData.rootSmdsAddress = &euicc_cfg_addr->res->rootDsAddress;
 	}
 	if (ipa_tag_in_taglist(0x84, tag_list)) {
 		struct EimConfigurationData *eim_cfg_data_item;
@@ -192,12 +189,10 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 			goto handle_error;
 		else if (retr_notif_from_lst_res->notif_lst_result_err)
 			goto handle_error;
-		else if (!retr_notif_from_lst_res->sgp32_notification_list)
+		else if (!retr_notif_from_lst_res->sgp32_res)
 			goto handle_error;
 
-		notifications_list.present = SGP32_RetrieveNotificationsListResponse_PR_notificationList;
-		notifications_list.choice.notificationList = *retr_notif_from_lst_res->sgp32_notification_list;
-		ipa_euicc_data_response.choice.ipaEuiccData.notificationsList = &notifications_list;
+		ipa_euicc_data_response.choice.ipaEuiccData.notificationsList = retr_notif_from_lst_res->sgp32_res;
 	}
 
 	/* The procedure was executed without errors so far. Now we can return the collected data to the eIM */

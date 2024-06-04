@@ -12,7 +12,7 @@ struct ipa_context;
 struct ipa_esipa_prvde_eim_pkg_rslt_req {
 	long eim_pkg_err;
 	const struct EuiccPackageResult *euicc_package_result;
-	const struct SGP32_RetrieveNotificationsListResponse__notificationList *sgp32_notification_list;
+	struct SGP32_RetrieveNotificationsListResponse *sgp32_notification_list;
 	const struct IpaEuiccDataResponse *ipa_euicc_data_resp;
 	const struct ProfileDownloadTriggerResult *prfle_dwnld_trig_req_rslt;
 };
