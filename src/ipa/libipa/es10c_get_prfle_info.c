@@ -33,14 +33,14 @@ static int dec_get_prfle_info_res(struct ipa_es10c_get_prfle_info_res *res, cons
 		return -EINVAL;
 
 	switch (asn->present) {
-	case ProfileInfoListResponse_PR_profileInfoListOk:
-		res->prfle_info_lst = &asn->choice.profileInfoListOk;
-		break;
 	case ProfileInfoListResponse_PR_profileInfoListError:
 		res->prfle_info_list_err = asn->choice.profileInfoListError;
 		IPA_LOGP_ES10X("GetProfilesInfo", LERROR, "function failed with error code %ld=%s!\n",
 			       res->prfle_info_list_err, ipa_str_from_num(error_code_strings, res->prfle_info_list_err,
 									  "(unknown)"));
+		break;
+	case ProfileInfoListResponse_PR_profileInfoListOk:
+		/* Nothing to do */
 		break;
 	default:
 		IPA_LOGP_ES10X("GetProfilesInfo", LERROR, "unexpected response content!\n");

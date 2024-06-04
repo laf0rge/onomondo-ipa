@@ -12,7 +12,6 @@ struct ipa_es10c_get_prfle_info_req {
 struct ipa_es10c_get_prfle_info_res {
 	struct ProfileInfoListResponse *res;
 	struct SGP32_ProfileInfoListResponse *sgp32_res;
-	struct ProfileInfoListResponse__profileInfoListOk *prfle_info_lst;
 	struct ProfileInfo *currently_active_prfle;
 	long prfle_info_list_err;
 };
