@@ -189,7 +189,7 @@ void ipa_es10b_get_euicc_info_free(struct ipa_es10b_euicc_info *res)
 		IPA_FREE(res->sgp32_euicc_info_2);
 		ASN_STRUCT_FREE(asn_DEF_EUICCInfo2, res->euicc_info_2);
 	} else {
-		ASN_STRUCT_FREE(asn_DEF_SGP32_EUICCInfo2, res->euicc_info_2);
+		ASN_STRUCT_FREE(asn_DEF_SGP32_EUICCInfo2, res->sgp32_euicc_info_2);
 	}
 
 	IPA_FREE(res);
