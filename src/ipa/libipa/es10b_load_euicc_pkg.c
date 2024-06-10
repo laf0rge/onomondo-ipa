@@ -320,6 +320,7 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 	struct ipa_buf eim_id = { 0 };
 	struct ipa_buf euicc_sign_epr = { 0 };
 	unsigned int i;
+	const uint8_t euiccSignEPR_dummy[64] = {"RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"};
 
 	IPA_LOGP_ES10X("LoadEuiccPackage", LINFO,
 		       "IoT eUICC emulation active, executing ECOs and PSMOs by calling equivalent consumer eUICC ES10x functions...\n");
@@ -341,7 +342,7 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 		    ipa_asn1c_dup(&asn_DEF_TransactionId, req->req.euiccPackageSigned.transactionId);
 	}
 	asn->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.seqNumber = 0;
-	ipa_buf_assign(&euicc_sign_epr, (uint8_t *) "", 0);	/* Return an empty signature as we are unable to sign anything here */
+	ipa_buf_assign(&euicc_sign_epr, euiccSignEPR_dummy, sizeof(euiccSignEPR_dummy));
 	IPA_COPY_IPA_BUF_TO_ASN(&asn->choice.euiccPackageResultSigned.euiccSignEPR, &euicc_sign_epr);
 
 	/* Go through the list of PSMOs and ECOs and execute the corresponding iot_emo_do... functions */
