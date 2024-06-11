@@ -165,7 +165,11 @@ static struct ipa_es10b_add_init_eim_res *add_init_eim_iot_emu(struct ipa_contex
 	 * AddInitialEimRequest encoded ASN.1 data to GetEimConfigurationDataResponse */
 	eim_cfg_new->data[1] = 0x55;
 
-	/* Replace the current eIM configuration with the new eIM configuration */
+	/* Replace the current eIM configuration with the new eIM configuration. If there is already an eIM
+	 * configuration in place it will be deleted and replaced with the new eIM configuration. This
+	 * behaviour contradicts the behaviour of a real IoT eUICC, which would reject any new eIM configuration
+	 * in that case. However, since this is an emulation and there is no reasonable security around that
+	 * eIM configuration anyway, we decided to allow unconditional overwriting an existing eIM configuration. */
 	IPA_FREE(ctx->nvstate.iot_euicc_emu.eim_cfg_ber);
 	ctx->nvstate.iot_euicc_emu.eim_cfg_ber = eim_cfg_new;
 	IPA_LOGP_ES10X("AddInitialEim", LINFO, "done, eIM configuration stored in memory.\n");
