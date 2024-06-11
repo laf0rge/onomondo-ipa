@@ -320,7 +320,7 @@ struct ipa_es10b_load_euicc_pkg_res *load_euicc_pkg_iot_emu(struct ipa_context *
 	struct ipa_buf eim_id = { 0 };
 	struct ipa_buf euicc_sign_epr = { 0 };
 	unsigned int i;
-	const uint8_t euiccSignEPR_dummy[64] = {"RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"};
+	const uint8_t euiccSignEPR_dummy[64] = { "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS" };
 
 	IPA_LOGP_ES10X("LoadEuiccPackage", LINFO,
 		       "IoT eUICC emulation active, executing ECOs and PSMOs by calling equivalent consumer eUICC ES10x functions...\n");
