@@ -140,6 +140,42 @@ error:
 	return NULL;
 }
 
+struct AddInitialEimResponse *generate_add_init_eim_response(struct ipa_context *ctx,
+							     const struct AddInitialEimRequest *req)
+{
+	struct AddInitialEimResponse *res = IPA_ALLOC_ZERO(struct AddInitialEimResponse);
+	struct AddInitialEimResponse__addInitialEimOk__Member *add_init_eim_item;
+	unsigned int i;
+
+	assert(res);
+	res->present = AddInitialEimResponse_PR_addInitialEimOk;
+	for (i = 0; i < req->eimConfigurationDataList.list.count; i++) {
+		add_init_eim_item = IPA_ALLOC_ZERO(struct AddInitialEimResponse__addInitialEimOk__Member);
+		assert(add_init_eim_item);
+		if (req->eimConfigurationDataList.list.array[i]->associationToken) {
+			add_init_eim_item->present = AddInitialEimResponse__addInitialEimOk__Member_PR_associationToken;
+			add_init_eim_item->choice.associationToken =
+			    *req->eimConfigurationDataList.list.array[i]->associationToken;
+		} else {
+			add_init_eim_item->present = AddInitialEimResponse__addInitialEimOk__Member_PR_addOk;
+			add_init_eim_item->choice.addOk = 0;
+		}
+		ASN_SEQUENCE_ADD(&res->choice.addInitialEimOk.list, add_init_eim_item);
+	}
+
+	return res;
+}
+
+struct AddInitialEimResponse *generate_add_init_eim_response_err(void)
+{
+	struct AddInitialEimResponse *res = IPA_ALLOC_ZERO(struct AddInitialEimResponse);
+
+	assert(res);
+	res->present = AddInitialEimResponse_PR_addInitialEimError;
+	res->choice.addInitialEimError = AddInitialEimResponse__addInitialEimError_undefinedError;
+	return res;
+}
+
 static struct ipa_es10b_add_init_eim_res *add_init_eim_iot_emu(struct ipa_context *ctx,
 							       const struct ipa_es10b_add_init_eim_req *req)
 {
@@ -172,16 +208,19 @@ static struct ipa_es10b_add_init_eim_res *add_init_eim_iot_emu(struct ipa_contex
 	 * eIM configuration anyway, we decided to allow unconditional overwriting an existing eIM configuration. */
 	IPA_FREE(ctx->nvstate.iot_euicc_emu.eim_cfg_ber);
 	ctx->nvstate.iot_euicc_emu.eim_cfg_ber = eim_cfg_new;
+	eim_cfg_new = NULL;	/* Ownership is now at ctx->nvstate.iot_euicc_emu.eim_cfg_ber */
 	IPA_LOGP_ES10X("AddInitialEim", LINFO, "done, eIM configuration stored in memory.\n");
 
-	/* TODO: fill in an appropriate response */
+	res->res = generate_add_init_eim_response(ctx, req_cfg_new_decoded);
+	IPA_FREE(eim_cfg_new);
 	ASN_STRUCT_FREE(asn_DEF_AddInitialEimRequest, req_cfg_new_decoded);
 	return res;
 error:
+	res->res = generate_add_init_eim_response_err();
+	res->add_init_eim_err = res->res->choice.addInitialEimError;
 	IPA_FREE(eim_cfg_new);
-	ipa_es10b_add_init_eim_res_free(res);
 	ASN_STRUCT_FREE(asn_DEF_AddInitialEimRequest, req_cfg_new_decoded);
-	return NULL;
+	return res;
 }
 
 /*! Function (ES10b): AddInitialEim.
