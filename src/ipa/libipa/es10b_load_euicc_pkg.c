@@ -22,6 +22,7 @@
 #include "es10c_delete_prfle.h"
 #include "es10c_get_prfle_info.h"
 #include "es10b_get_eim_cfg_data.h"
+#include "es10b_add_init_eim.h"
 
 static void update_rollback_iccid(struct ipa_context *ctx)
 {
@@ -227,13 +228,72 @@ struct EuiccResultData *iot_emo_do_configureAutoEnable_psmo(struct ipa_context *
 struct EuiccResultData *iot_emo_do_addEim_eco(struct ipa_context *ctx, const struct EimConfigurationData *addEim_eco)
 {
 	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+	struct ipa_es10b_eim_cfg_data *eim_cfg_data = NULL;
+	struct ipa_es10b_add_init_eim_req add_init_eim_req = { 0 };
+	struct ipa_es10b_add_init_eim_res *add_init_eim_res = NULL;
+	unsigned int i;
+	struct EimConfigurationData *eim_cfg_data_item;
 
 	euicc_result_data->present = EuiccResultData_PR_addEimResult;
 
-	/* TODO: finish implementation of this eCO */
+	/* Decode existing eIM configuration */
+	eim_cfg_data = ipa_es10b_get_eim_cfg_data(ctx);
+	if (!eim_cfg_data || !eim_cfg_data->res) {
+		IPA_LOGP_ES10X("LoadEuiccPackage", LERROR,
+			       "IoT eUICC emulation active, unable to retrieve eimConfigurationData!\n");
+		goto error;
+	}
+
+	/* First: copy all existing eimConfiguration entries */
+	for (i = 0; i < eim_cfg_data->res->eimConfigurationDataList.list.count; i++) {
+		eim_cfg_data_item = eim_cfg_data->res->eimConfigurationDataList.list.array[i];
+		ASN_SEQUENCE_ADD(&add_init_eim_req.req.eimConfigurationDataList.list, eim_cfg_data_item);
+	}
+
+	/* Second: copy the eimConfiguration entry we want to add */
+	eim_cfg_data_item = (struct EimConfigurationData *)addEim_eco;
+	ASN_SEQUENCE_ADD(&add_init_eim_req.req.eimConfigurationDataList.list, eim_cfg_data_item);
+
+	/* Write new eIM configuration by executing ES10b:AddInitialEim. This will work since the IoT eUICC emulation
+	 * does not check if there is already an eIM configuration in place. It will just overwrite the existing
+	 * configuration with the one we have just assembled above. */
+	add_init_eim_res = ipa_es10b_add_init_eim(ctx, &add_init_eim_req);
+	if (!add_init_eim_res || add_init_eim_res->add_init_eim_err || !add_init_eim_res->res
+	    || add_init_eim_res->res->present != AddInitialEimResponse_PR_addInitialEimOk) {
+		IPA_LOGP_ES10X("LoadEuiccPackage", LERROR,
+			       "IoT eUICC emulation active, unable to write eimConfigurationData!\n");
+		goto error;
+	}
+
+	/* Look at the last item of the response list, there we will find the result for the eIM configuration
+	 * that we have just added. */
+	switch (add_init_eim_res->res->choice.addInitialEimOk.
+		list.array[add_init_eim_res->res->choice.addInitialEimOk.list.count - 1]->present) {
+	case AddInitialEimResponse__addInitialEimOk__Member_PR_associationToken:
+		euicc_result_data->choice.addEimResult.present = AddEimResult_PR_associationToken;
+		euicc_result_data->choice.addEimResult.choice.associationToken =
+		    add_init_eim_res->res->choice.addInitialEimOk.list.array[add_init_eim_res->res->
+									     choice.addInitialEimOk.list.count -
+									     1]->choice.associationToken;
+		break;
+	case AddInitialEimResponse__addInitialEimOk__Member_PR_addOk:
+		euicc_result_data->choice.addEimResult.present = AddEimResult_PR_addEimResultCode;
+		euicc_result_data->choice.addEimResult.choice.addEimResultCode = AddEimResult__addEimResultCode_ok;
+		break;
+	default:
+		goto error;
+	}
+
+	ipa_es10b_get_eim_cfg_data_free(eim_cfg_data);
+	ipa_es10b_add_init_eim_res_free(add_init_eim_res);
+	IPA_FREE(add_init_eim_req.req.eimConfigurationDataList.list.array);
+	return euicc_result_data;
+error:
+	ipa_es10b_get_eim_cfg_data_free(eim_cfg_data);
+	ipa_es10b_add_init_eim_res_free(add_init_eim_res);
+	IPA_FREE(add_init_eim_req.req.eimConfigurationDataList.list.array);
 	euicc_result_data->choice.addEimResult.present = AddEimResult_PR_addEimResultCode;
 	euicc_result_data->choice.addEimResult.choice.addEimResultCode = AddEimResult__addEimResultCode_undefinedError;
-
 	return euicc_result_data;
 }
 
