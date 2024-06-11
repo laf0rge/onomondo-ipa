@@ -304,12 +304,60 @@ error:
 struct EuiccResultData *iot_emo_do_deleteEim_eco(struct ipa_context *ctx, const struct Eco__deleteEim *deleteEim_eco)
 {
 	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+	struct ipa_es10b_eim_cfg_data *eim_cfg_data = NULL;
+	struct ipa_es10b_add_init_eim_req add_init_eim_req = { 0 };
+	struct ipa_es10b_add_init_eim_res *add_init_eim_res = NULL;
+	unsigned int i;
+	struct EimConfigurationData *eim_cfg_data_item;
+	bool eimFound = false;
 
 	euicc_result_data->present = EuiccResultData_PR_deleteEimResult;
-
-	/* TODO: finish implementation of this eCO */
 	euicc_result_data->choice.deleteEimResult = DeleteEimResult_undefinedError;
 
+	/* Decode existing eIM configuration */
+	eim_cfg_data = ipa_es10b_get_eim_cfg_data(ctx);
+	if (!eim_cfg_data || !eim_cfg_data->res) {
+		IPA_LOGP_ES10X("LoadEuiccPackage", LERROR,
+			       "IoT eUICC emulation active, deleteEim eCO failed, unable to retrieve eimConfigurationData!\n");
+		goto error;
+	}
+
+	/* Copy all existing eimConfiguration entries */
+	for (i = 0; i < eim_cfg_data->res->eimConfigurationDataList.list.count; i++) {
+		eim_cfg_data_item = eim_cfg_data->res->eimConfigurationDataList.list.array[i];
+
+		/* Skip the item we want to delete */
+		if (IPA_ASN_STR_CMP(&eim_cfg_data_item->eimId, &deleteEim_eco->eimId)) {
+			euicc_result_data->choice.deleteEimResult = DeleteEimResult_ok;
+			eimFound = true;
+			continue;
+		}
+
+		ASN_SEQUENCE_ADD(&add_init_eim_req.req.eimConfigurationDataList.list, eim_cfg_data_item);
+	}
+	if (!eimFound) {
+		euicc_result_data->choice.deleteEimResult = DeleteEimResult_eimNotFound;
+		IPA_LOGP_ES10X("LoadEuiccPackage", LERROR,
+			       "IoT eUICC emulation active, deleteEim eCO failed, unable to find eIM!\n");
+		goto error;
+	}
+
+	/* Write new eIM configuration by executing ES10b:AddInitialEim. This will work since the IoT eUICC emulation
+	 * does not check if there is already an eIM configuration in place. It will just overwrite the existing
+	 * configuration with the one we have just assembled above. */
+	add_init_eim_res = ipa_es10b_add_init_eim(ctx, &add_init_eim_req);
+	if (!add_init_eim_res || add_init_eim_res->add_init_eim_err || !add_init_eim_res->res
+	    || add_init_eim_res->res->present != AddInitialEimResponse_PR_addInitialEimOk) {
+		IPA_LOGP_ES10X("LoadEuiccPackage", LERROR,
+			       "IoT eUICC emulation active, deleteEim eCO failed, unable to write eimConfigurationData!\n");
+		euicc_result_data->choice.deleteEimResult = DeleteEimResult_undefinedError;
+		goto error;
+	}
+
+error:
+	ipa_es10b_get_eim_cfg_data_free(eim_cfg_data);
+	ipa_es10b_add_init_eim_res_free(add_init_eim_res);
+	IPA_FREE(add_init_eim_req.req.eimConfigurationDataList.list.array);
 	return euicc_result_data;
 }
 
