@@ -40,6 +40,7 @@ static void print_help(void)
 	printf(" -S .................. disable HTTPS\n");
 	printf(" -I .................. disable SSL certificate verification (insecure)\n");
 	printf(" -E .................. emulate IoT eUICC (compatibility mode to use consumer eUICCs)\n");
+	printf(" -1 .................. force the IPAd to process only one eUICC package (debug, use with caution)\n");
 }
 
 struct ipa_buf *load_ber_from_file(char *dir, char *file)
@@ -127,6 +128,7 @@ int main(int argc, char **argv)
 	char *getopt_nvstate_path = DEFAULT_NVSTATE_PATH;
 	struct ipa_buf *nvstate_load = NULL;
 	struct ipa_buf *nvstate_save = NULL;
+	bool getopt_one_euicc_pkg_only = false;
 
 	signal(SIGUSR1, sig_usr1);
 
@@ -140,7 +142,7 @@ int main(int argc, char **argv)
 
 	/* Overwrite configuration values with user defined parameters */
 	while (1) {
-		opt = getopt(argc, argv, "ht:e:r:c:f:mn:C:SEy:I");
+		opt = getopt(argc, argv, "ht:e:r:c:f:mn:C:SEy:I1");
 		if (opt == -1)
 			break;
 
@@ -185,6 +187,9 @@ int main(int argc, char **argv)
 		case 'y':
 			cfg.esipa_req_retries = atoi(optarg);
 			break;
+		case '1':
+			getopt_one_euicc_pkg_only = true;
+			break;
 		default:
 			printf("unhandled option: %c!\n", opt);
 			break;
@@ -212,7 +217,7 @@ int main(int argc, char **argv)
 		if (rc < 0) {
 			IPA_LOGP(SMAIN, LERROR, "error accessing CA bundle %s: %s\n", cfg.eim_cabundle,
 				 strerror(errno));
-			goto error;
+			goto leave;
 		}
 	}
 
@@ -222,7 +227,7 @@ int main(int argc, char **argv)
 	if (!ctx) {
 		IPA_LOGP(SMAIN, LERROR, "cannot create context!\n");
 		rc = -EINVAL;
-		goto error;
+		goto leave;
 	}
 
 	/* Initialize IPA */
@@ -231,7 +236,7 @@ int main(int argc, char **argv)
 	if (rc < 0) {
 		IPA_LOGP(SMAIN, LERROR, "IPAd initialization failed!\n");
 		rc = -EINVAL;
-		goto error;
+		goto leave;
 	}
 
 	if (getopt_initial_eim_cfg_file) {
@@ -248,7 +253,7 @@ int main(int argc, char **argv)
 		if (rc < 0) {
 			IPA_LOGP(SMAIN, LERROR, "eIM initialization failed!\n");
 			rc = -EINVAL;
-			goto error;
+			goto leave;
 		}
 
 		while (running) {
@@ -271,7 +276,7 @@ int main(int argc, char **argv)
 				/* ipa_poll tells us that we may poll less frequently, so just exit. */
 				IPA_LOGP(SMAIN, LERROR, "poll cycle ends normally\n");
 				rc = 0;
-				goto error;
+				goto leave;
 			default:
 				/* We got a negative return code from ipa_poll. This means something does not work
 				 * normally. In a productive setup we would continue calling ipa_poll a few more times
@@ -279,12 +284,17 @@ int main(int argc, char **argv)
 				 * using ipa_free_ctx and start over. */
 				IPA_LOGP(SMAIN, LERROR, "poll cycle ends due to error (%d)\n", rc);
 				rc = -EINVAL;
-				goto error;
+				goto leave;
+			}
+
+			if (getopt_one_euicc_pkg_only) {
+				IPA_LOGP(SMAIN, LERROR, "forcefully stopping poll cycle upon user decision!\n");
+				goto leave;
 			}
 		}
 	}
 
-error:
+leave:
 	IPA_LOGP(SMAIN, LINFO, "-----------------------------8<-----------------------------\n");
 	nvstate_save = ipa_free_ctx(ctx);
 	if (nvstate_save)
