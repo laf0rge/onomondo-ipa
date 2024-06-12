@@ -364,12 +364,89 @@ struct EuiccResultData *iot_emo_do_updateEim_eco(struct ipa_context *ctx,
 						 const struct EimConfigurationData *updateEim_eco)
 {
 	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+	struct ipa_es10b_eim_cfg_data *eim_cfg_data = NULL;
+	struct ipa_es10b_add_init_eim_req add_init_eim_req = { 0 };
+	struct ipa_es10b_add_init_eim_res *add_init_eim_res = NULL;
+	unsigned int i;
+	struct EimConfigurationData *eim_cfg_data_item;
+	struct EimConfigurationData *eim_cfg_data_item_updated;
+	bool eimFound = false;
 
 	euicc_result_data->present = EuiccResultData_PR_updateEimResult;
+	euicc_result_data->choice.deleteEimResult = UpdateEimResult_undefinedError;
 
-	/* TODO: finish implementation of this eCO */
-	euicc_result_data->choice.updateEimResult = UpdateEimResult_undefinedError;
+	/* Decode existing eIM configuration */
+	eim_cfg_data = ipa_es10b_get_eim_cfg_data(ctx);
+	if (!eim_cfg_data || !eim_cfg_data->res) {
+		IPA_LOGP_ES10X("LoadEuiccPackage", LERROR,
+			       "IoT eUICC emulation active, updateEim eCO failed, unable to retrieve eimConfigurationData!\n");
+		goto error;
+	}
 
+	/* Copy all existing eimConfiguration entries */
+	for (i = 0; i < eim_cfg_data->res->eimConfigurationDataList.list.count; i++) {
+		eim_cfg_data_item = eim_cfg_data->res->eimConfigurationDataList.list.array[i];
+
+		/* Modify the item we want to update */
+		if (IPA_ASN_STR_CMP(&eim_cfg_data_item->eimId, &updateEim_eco->eimId) && !eimFound) {
+			eim_cfg_data_item_updated = IPA_ALLOC_ZERO(struct EimConfigurationData);
+			*eim_cfg_data_item_updated = *eim_cfg_data_item;
+
+			/* In the following we will check which of the configuration parameters to update. It should be noted
+			 * that it is not possible to update the eimId, which is obvious. However the spec also dictates that
+			 * the updateEim eCO should not contain an associationToken. In case there is an associationToken
+			 * anyway, we will silently ignore it. */
+			if (updateEim_eco->eimFqdn)
+				eim_cfg_data_item_updated->eimFqdn = updateEim_eco->eimFqdn;
+			if (updateEim_eco->eimIdType)
+				eim_cfg_data_item_updated->eimIdType = updateEim_eco->eimIdType;
+			if (updateEim_eco->counterValue) {
+				if (updateEim_eco->counterValue >= eim_cfg_data_item->counterValue)
+					eim_cfg_data_item_updated->counterValue = updateEim_eco->counterValue;
+				else if (updateEim_eco->eimPublicKeyData)
+					eim_cfg_data_item_updated->counterValue = updateEim_eco->counterValue;
+			}
+			if (updateEim_eco->eimPublicKeyData)
+				eim_cfg_data_item_updated->eimPublicKeyData = updateEim_eco->eimPublicKeyData;
+			if (updateEim_eco->trustedPublicKeyDataTls)
+				eim_cfg_data_item_updated->trustedPublicKeyDataTls =
+				    updateEim_eco->trustedPublicKeyDataTls;
+			if (updateEim_eco->eimSupportedProtocol)
+				eim_cfg_data_item_updated->eimSupportedProtocol = updateEim_eco->eimSupportedProtocol;
+			if (updateEim_eco->euiccCiPKId)
+				eim_cfg_data_item_updated->euiccCiPKId = updateEim_eco->euiccCiPKId;
+
+			euicc_result_data->choice.deleteEimResult = DeleteEimResult_ok;
+			eimFound = true;
+			ASN_SEQUENCE_ADD(&add_init_eim_req.req.eimConfigurationDataList.list,
+					 eim_cfg_data_item_updated);
+		} else {
+			ASN_SEQUENCE_ADD(&add_init_eim_req.req.eimConfigurationDataList.list, eim_cfg_data_item);
+		}
+	}
+	if (!eimFound) {
+		euicc_result_data->choice.deleteEimResult = UpdateEimResult_eimNotFound;
+		IPA_LOGP_ES10X("LoadEuiccPackage", LERROR,
+			       "IoT eUICC emulation active, updateEim eCO failed, unable to find eIM!\n");
+		goto error;
+	}
+
+	/* Write new eIM configuration by executing ES10b:AddInitialEim. This will work since the IoT eUICC emulation
+	 * does not check if there is already an eIM configuration in place. It will just overwrite the existing
+	 * configuration with the one we have just assembled above. */
+	add_init_eim_res = ipa_es10b_add_init_eim(ctx, &add_init_eim_req);
+	if (!add_init_eim_res || add_init_eim_res->add_init_eim_err || !add_init_eim_res->res
+	    || add_init_eim_res->res->present != AddInitialEimResponse_PR_addInitialEimOk) {
+		IPA_LOGP_ES10X("LoadEuiccPackage", LERROR,
+			       "IoT eUICC emulation active, updateEim eCO failed, unable to write eimConfigurationData!\n");
+		goto error;
+	}
+
+error:
+	ipa_es10b_get_eim_cfg_data_free(eim_cfg_data);
+	ipa_es10b_add_init_eim_res_free(add_init_eim_res);
+	IPA_FREE(add_init_eim_req.req.eimConfigurationDataList.list.array);
+	IPA_FREE(eim_cfg_data_item_updated);
 	return euicc_result_data;
 }
 
