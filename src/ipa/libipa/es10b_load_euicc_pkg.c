@@ -350,7 +350,6 @@ struct EuiccResultData *iot_emo_do_deleteEim_eco(struct ipa_context *ctx, const 
 	    || add_init_eim_res->res->present != AddInitialEimResponse_PR_addInitialEimOk) {
 		IPA_LOGP_ES10X("LoadEuiccPackage", LERROR,
 			       "IoT eUICC emulation active, deleteEim eCO failed, unable to write eimConfigurationData!\n");
-		euicc_result_data->choice.deleteEimResult = DeleteEimResult_undefinedError;
 		goto error;
 	}
 
