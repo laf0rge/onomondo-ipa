@@ -10,6 +10,7 @@ add_library(libipa STATIC
   es10b_get_eim_cfg_data.c
   es10b_get_euicc_chlg.c
   es10b_get_euicc_info.c
+  es10b_get_rat.c
   es10b_load_bnd_prfle_pkg.c
   es10b_load_euicc_pkg.c
   es10b_prep_dwnld.c

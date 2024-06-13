@@ -23,6 +23,7 @@
 #include "es10c_get_prfle_info.h"
 #include "es10b_get_eim_cfg_data.h"
 #include "es10b_add_init_eim.h"
+#include "es10b_get_rat.h"
 
 static void update_rollback_iccid(struct ipa_context *ctx)
 {
@@ -204,11 +205,27 @@ struct EuiccResultData *iot_emo_do_listProfileInfo_psmo(struct ipa_context *ctx,
 struct EuiccResultData *iot_emo_do_getRAT_psmo(struct ipa_context *ctx, const struct Psmo__getRAT *getRAT_psmo)
 {
 	struct EuiccResultData *euicc_result_data = IPA_ALLOC_ZERO(struct EuiccResultData);
+	struct ipa_es10b_get_rat_res *get_rat_res = NULL;
+	struct ProfilePolicyAuthorisationRule *ppr_item;
+	unsigned int i;
 
 	euicc_result_data->present = EuiccResultData_PR_getRATResult;
 
-	/* TODO: finish implementation of this PSMO */
+	get_rat_res = ipa_es10b_get_rat(ctx);
+	if (!get_rat_res || !get_rat_res->res) {
+		/* The protocol does not allow to communicate an error back to the eIM. Errors are communicated
+		 * implicitly by sending back an empty RAT. */
+		IPA_LOGP_ES10X("LoadEuiccPackage", LERROR,
+			       "IoT eUICC emulation active, getRAT PSMO failed, unable to retrieve RulesAuthorisationTable!\n");
+	} else {
+		for (i = 0; i < get_rat_res->res->rat.list.count; i++) {
+			ppr_item =
+			    ipa_asn1c_dup(&asn_DEF_ProfilePolicyAuthorisationRule, get_rat_res->res->rat.list.array[i]);
+			ASN_SEQUENCE_ADD(&euicc_result_data->choice.getRATResult.list, ppr_item);
+		}
+	}
 
+	ipa_es10b_get_rat_res_free(get_rat_res);
 	return euicc_result_data;
 }
 
