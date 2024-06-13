@@ -1,6 +1,6 @@
 /*
  * Author: Philipp Maier <pmaier@sysmocom.de> / sysmocom - s.f.m.c. GmbH
- * See also: GSMA SGP.22, 5.9.10: Function (ES10b): GetCerts
+ * See also: GSMA SGP.32, 5.9.10: Function (ES10b): GetCerts
  *
  */
 
