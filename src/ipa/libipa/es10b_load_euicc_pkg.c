@@ -41,13 +41,13 @@ static void update_rollback_iccid(struct ipa_context *ctx)
 				 "a profile is active, but it does not have an ICCID, cannot use this profile for rollback!\n");
 			return;
 		}
-		IPA_FREE(ctx->rollback_iccid);
-		ctx->rollback_iccid = IPA_BUF_FROM_ASN(get_prfle_info_res->currently_active_prfle->iccid);
+		IPA_FREE(ctx->iot_euicc_emu.rollback_iccid);
+		ctx->iot_euicc_emu.rollback_iccid = IPA_BUF_FROM_ASN(get_prfle_info_res->currently_active_prfle->iccid);
 		IPA_LOGP(SIPA, LINFO, "will use ICCD:%s in case of profile rollback.\n",
-			 ipa_buf_hexdump(ctx->rollback_iccid));
+			 ipa_buf_hexdump(ctx->iot_euicc_emu.rollback_iccid));
 	} else {
-		IPA_FREE(ctx->rollback_iccid);
-		ctx->rollback_iccid = NULL;
+		IPA_FREE(ctx->iot_euicc_emu.rollback_iccid);
+		ctx->iot_euicc_emu.rollback_iccid = NULL;
 		IPA_LOGP(SIPA, LINFO, "no profile active, profile rollback not possible.\n");
 	}
 

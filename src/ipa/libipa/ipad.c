@@ -324,7 +324,7 @@ struct ipa_buf *ipa_free_ctx(struct ipa_context *ctx)
 
 	nvstate = nvstate_serialize(&ctx->nvstate);
 
-	IPA_FREE(ctx->rollback_iccid);
+	IPA_FREE(ctx->iot_euicc_emu.rollback_iccid);
 	IPA_FREE(ctx->eim_id);
 	IPA_FREE(ctx->eim_fqdn);
 	ipa_proc_eucc_pkg_dwnld_exec_res_free(ctx->proc_eucc_pkg_dwnld_exec_res);

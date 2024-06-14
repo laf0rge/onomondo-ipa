@@ -106,19 +106,19 @@ static struct ipa_es10b_prfle_rollback_res *prfle_rollback_emu(struct ipa_contex
 	IPA_LOGP_ES10X("ProfileRollback", LINFO,
 		       "IoT eUICC emulation active, using ES10c function EnableProfile to rollback the profile ...\n");
 
-	if (!ctx->rollback_iccid) {
+	if (!ctx->iot_euicc_emu.rollback_iccid) {
 		IPA_LOGP_ES10X("ProfileRollback", LERROR,
 			       "cannot perform profile rollback, no rollback iccid known!\n");
 		return NULL;
 	}
 
 	IPA_LOGP_ES10X("ProfileRollback", LINFO, "attempting to roll back to profile ICCD:%s...\n",
-		       ipa_buf_hexdump(ctx->rollback_iccid));
+		       ipa_buf_hexdump(ctx->iot_euicc_emu.rollback_iccid));
 
 	/* An IoT eUICC would store a rollback ICCID internally. Here we have to rely on the rollback_euicc that we
 	 * have recorded before we attempted to select a different profile (via PSMO) */
 	enable_prfle_req.req.profileIdentifier.present = EnableProfileRequest__profileIdentifier_PR_iccid;
-	IPA_ASSIGN_IPA_BUF_TO_ASN(enable_prfle_req.req.profileIdentifier.choice.iccid, ctx->rollback_iccid);
+	IPA_ASSIGN_IPA_BUF_TO_ASN(enable_prfle_req.req.profileIdentifier.choice.iccid, ctx->iot_euicc_emu.rollback_iccid);
 
 	enable_prfle_req.req.refreshFlag = refresh_flag;
 	enable_prfle_res = ipa_es10c_enable_prfle(ctx, &enable_prfle_req);
