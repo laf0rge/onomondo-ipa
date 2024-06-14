@@ -4,7 +4,7 @@
 #include <onomondo/ipa/ipad.h>
 #include <onomondo/ipa/utils.h>
 
-#define IPA_NVSTATE_VERSION 2
+#define IPA_NVSTATE_VERSION 3
 
 /* Non volatile state: All struct members in this struct are automatically backed up to a non volatile memory location.
  * (see below). However, this only covers statically allocated struct members. When struct members contain a pointer
@@ -20,6 +20,13 @@ struct ipa_nvstate {
 	struct {
 		int association_token_counter;
 		struct ipa_buf *eim_cfg_ber;
+
+		/*! Automatic Profile Enabling configuration (set via configureAutoEnable PSMO) */
+		struct {
+			bool flag;
+			struct ipa_buf *smdp_oid;
+			struct ipa_buf *smdp_address;
+		} auto_enable;
 	} iot_euicc_emu;
 
 } __attribute__((packed));
@@ -44,6 +51,13 @@ struct ipa_context {
 		 *  performed on a consumer eUICC (in IoT eUICC emulation mode). The value is updated when
 		 *  ipa_proc_eucc_pkg_dwnld_exec is called. */
 		struct ipa_buf *rollback_iccid;
+
+		/*! cached data to support the emulation of the ES10b function EnableUsingDD */
+		struct {
+			struct ipa_buf *smdp_oid;
+			struct ipa_buf *smdp_address;
+			struct ipa_buf *profile_aid;
+		} auto_enable;
 	} iot_euicc_emu;
 
 	/*! cached eimId (read from eUICC when ipa_init is called) */

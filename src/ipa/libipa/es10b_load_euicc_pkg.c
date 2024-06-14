@@ -236,8 +236,26 @@ struct EuiccResultData *iot_emo_do_configureAutoEnable_psmo(struct ipa_context *
 
 	euicc_result_data->present = EuiccResultData_PR_configureAutoEnableResult;
 
-	/* TODO: finish implementation of this PSMO */
-	euicc_result_data->choice.configureAutoEnableResult = ConfigureAutoEnableResult_undefinedError;
+	/* Update autoEnableFlag */
+	if (configureAutoEnable_psmo->autoEnableFlag)
+		ctx->nvstate.iot_euicc_emu.auto_enable.flag = true;
+	else
+		ctx->nvstate.iot_euicc_emu.auto_enable.flag = false;
+
+	/* Update smdpOid */
+	ipa_buf_free(ctx->nvstate.iot_euicc_emu.auto_enable.smdp_oid);
+	ctx->nvstate.iot_euicc_emu.auto_enable.smdp_oid = NULL;
+	if (configureAutoEnable_psmo->smdpOid)
+		ctx->nvstate.iot_euicc_emu.auto_enable.smdp_oid = IPA_BUF_FROM_ASN(configureAutoEnable_psmo->smdpOid);
+
+	/* Update smdpAddress */
+	ipa_buf_free(ctx->nvstate.iot_euicc_emu.auto_enable.smdp_address);
+	ctx->nvstate.iot_euicc_emu.auto_enable.smdp_address = NULL;
+	if (configureAutoEnable_psmo->smdpAddress)
+		ctx->nvstate.iot_euicc_emu.auto_enable.smdp_address =
+		    IPA_BUF_FROM_ASN(configureAutoEnable_psmo->smdpAddress);
+
+	euicc_result_data->choice.configureAutoEnableResult = ConfigureAutoEnableResult_ok;
 
 	return euicc_result_data;
 }
