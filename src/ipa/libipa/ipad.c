@@ -26,6 +26,7 @@
 
 static void nvstate_free_contents(struct ipa_nvstate *nvstate)
 {
+	/* free dynamically allocated struct members (append code for new members here) */
 	IPA_FREE(nvstate->iot_euicc_emu.eim_cfg_ber);
 }
 
@@ -38,12 +39,19 @@ static void nvstate_reset(struct ipa_nvstate *nvstate)
 
 static struct ipa_buf *nvstate_serialize_ipa_buf(struct ipa_buf *nvstate_bin, struct ipa_buf *buf)
 {
+	struct ipa_buf *buf_ser = buf;
+
+	/* To maintain the structure and consistency of the generated serialization result we must serialize something.
+	 * This means that in case we receive a null pointer as buf, we must serialize a dummy buffer */
 	if (!buf)
-		return nvstate_bin;
-	nvstate_bin = ipa_buf_realloc(nvstate_bin, nvstate_bin->len + buf->data_len + sizeof(*buf));
+		buf_ser = ipa_buf_alloc(0);
+	nvstate_bin = ipa_buf_realloc(nvstate_bin, nvstate_bin->len + buf_ser->data_len + sizeof(*buf_ser));
 	assert(nvstate_bin);
-	memcpy(nvstate_bin->data + nvstate_bin->len, buf, buf->data_len + sizeof(*buf));
-	nvstate_bin->len += buf->data_len + sizeof(*buf);
+	memcpy(nvstate_bin->data + nvstate_bin->len, buf_ser, buf_ser->data_len + sizeof(*buf_ser));
+	nvstate_bin->len += buf_ser->data_len + sizeof(*buf_ser);
+
+	if (!buf)
+		ipa_buf_free(buf_ser);
 	return nvstate_bin;
 }
 
@@ -60,15 +68,21 @@ static struct ipa_buf *nvstate_serialize(struct ipa_nvstate *nvstate)
 	return nvstate_bin;
 }
 
-struct ipa_buf *nvstate_deserialize_ipa_buf(uint8_t ** nvstate_data, size_t *nvstate_data_len, struct ipa_buf *buf)
+struct ipa_buf *nvstate_deserialize_ipa_buf(uint8_t ** nvstate_data, size_t *nvstate_data_len)
 {
-	if (!buf)
-		return NULL;
+	struct ipa_buf *buf;
 
 	buf = ipa_buf_deserialize(*nvstate_data, *nvstate_data_len);
 
-	*nvstate_data += buf->data_len;
-	*nvstate_data_len -= buf->data_len;
+	*nvstate_data += buf->data_len + sizeof(*buf);
+	*nvstate_data_len -= (buf->data_len + sizeof(*buf));
+
+	/* (see comment in nvstate_serialize_ipa_buf), check if we have de-serialized a dummy buffer (an ipa_buf with
+	 * len and data_len set to 0). In case we hit a dummy buffer, free it and return NULL. */
+	if (buf->len == 0 && buf->data_len == 0) {
+		ipa_buf_free(buf);
+		return NULL;
+	}
 
 	return buf;
 }
@@ -97,8 +111,7 @@ static void nvstate_deserialize(struct ipa_nvstate *nvstate, struct ipa_buf *nvs
 	}
 
 	/* deserialize dynamically allocated struct members (append code for new members here) */
-	nvstate->iot_euicc_emu.eim_cfg_ber =
-	    nvstate_deserialize_ipa_buf(&nvstate_data, &nvstate_data_len, nvstate->iot_euicc_emu.eim_cfg_ber);
+	nvstate->iot_euicc_emu.eim_cfg_ber = nvstate_deserialize_ipa_buf(&nvstate_data, &nvstate_data_len);
 }
 
 /*! Read eIM configuration from eUICC and pick a suitable eIM.
