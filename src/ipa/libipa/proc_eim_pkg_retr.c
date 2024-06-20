@@ -14,6 +14,7 @@
 #include <onomondo/ipa/ipad.h>
 #include "context.h"
 #include "utils.h"
+#include "esipa.h"
 #include "esipa_get_eim_pkg.h"
 #include "es10b_get_eim_cfg_data.h"
 #include "proc_cmn_mtl_auth.h"
@@ -114,8 +115,8 @@ int eim_pkg_exec(struct ipa_context *ctx, const struct ipa_esipa_get_eim_pkg_res
 		indirect_prfle_dwnlod_pars.allowed_ca = allowed_ca_pkid;
 		indirect_prfle_dwnlod_pars.tac = ctx->cfg->tac;
 		indirect_prfle_dwnlod_pars.ac =
-		    IPA_STR_FROM_ASN(&get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->choice.
-				     activationCode);
+		    IPA_STR_FROM_ASN(&get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->
+				     choice.activationCode);
 		rc = ipa_proc_indirect_prfle_dwnlod(ctx, &indirect_prfle_dwnlod_pars);
 		IPA_FREE((void *)indirect_prfle_dwnlod_pars.ac);
 		if (rc < 0)
@@ -144,6 +145,9 @@ int ipa_proc_eim_pkg_retr(struct ipa_context *ctx)
 	struct ipa_esipa_get_eim_pkg_res *get_eim_pkg_res = NULL;
 	int rc;
 
+	/* Ensure that we start with a fresh connection */
+	ipa_esipa_close(ctx);
+
 	/* Poll eIM */
 	get_eim_pkg_res = ipa_esipa_get_eim_pkg(ctx, ctx->eid);
 	if (!get_eim_pkg_res) {
@@ -160,9 +164,11 @@ int ipa_proc_eim_pkg_retr(struct ipa_context *ctx)
 	IPA_LOGP(SIPA, LINFO, "eIM Package Retrieval succeeded!\n");
 	rc = eim_pkg_exec(ctx, get_eim_pkg_res);
 	ipa_esipa_get_eim_pkg_free(get_eim_pkg_res);
+	ipa_esipa_close(ctx);
 	return rc;
 error:
 	ipa_esipa_get_eim_pkg_free(get_eim_pkg_res);
 	IPA_LOGP(SIPA, LINFO, "eIM Package Retrieval failed!\n");
+	ipa_esipa_close(ctx);
 	return rc;
 }
