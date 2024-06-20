@@ -36,7 +36,7 @@ const char *ipa_str_from_num(const struct num_str_map *map, long num, const char
  *  \param[in] len length of binary data.
  *  \returns pointer to generated human readable string. */
 #define IPA_HEXDUMP_MAX 4
-#define IPA_HEXDUMP_BUFSIZE 1024
+#define IPA_HEXDUMP_BUFSIZE 256
 char *ipa_hexdump(const uint8_t *data, size_t len)
 {
 	static char out[IPA_HEXDUMP_MAX][IPA_HEXDUMP_BUFSIZE];
