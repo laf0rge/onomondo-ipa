@@ -229,7 +229,7 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	}
 	if (es10x_res_ptr->len + res_apdu.le > es10x_res_ptr->data_len) {
 		IPA_LOGP(SEUICC, LDEBUG,
-			 "eUICC response encoder buffer exhausted, reallocating more memory (have: %zu bytes, required: %zu bytes)\n",
+			 "eUICC response buffer exhausted, reallocating more memory (have: %zu bytes, required: %zu bytes)\n",
 			 es10x_res_ptr->data_len, es10x_res_ptr->len + res_apdu.le);
 
 		/* Reallocate the buffer with enough space for one additional block of size MAX_BLOCKSIZE_RX */
