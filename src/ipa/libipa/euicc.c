@@ -167,7 +167,7 @@ exit:
 }
 
 static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
-			    struct ipa_buf *es10x_res, uint16_t block_len, uint8_t block_nr)
+			    struct ipa_buf **es10x_res, uint16_t block_len, uint8_t block_nr)
 {
 	int rc;
 	struct req_apdu req_apdu = { 0 };
@@ -175,6 +175,8 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	struct ipa_buf *buf_req = NULL;
 	struct ipa_buf *buf_res = NULL;
 	uint8_t channel = ctx->cfg->euicc_channel;
+	struct ipa_buf *es10x_res_ptr = *es10x_res;
+	size_t realloc_size;
 
 	/* We only support channel 0-3 */
 	assert(channel <= 3);
@@ -203,7 +205,8 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	buf_req = format_req_apdu(&req_apdu);
 	rc = ipa_scard_transceive(ctx->scard_ctx, buf_res, buf_req);
 	if (rc < 0) {
-		IPA_LOGP(SEUICC, LERROR, "unable to receive ES10x block %u, offset=%zu\n", block_nr, es10x_res->len);
+		IPA_LOGP(SEUICC, LERROR, "unable to receive ES10x block %u, offset=%zu\n", block_nr,
+			 es10x_res_ptr->len);
 		ctx->check_scard = true;
 		rc = -EIO;
 		goto exit;
@@ -213,41 +216,45 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 	rc = parse_res_apdu(&res_apdu, buf_res);
 	if (rc < 0) {
 		IPA_LOGP(SEUICC, LERROR,
-			 "invalid response while receiving ES10x block %u, offset=%zu\n", block_nr, es10x_res->len);
+			 "invalid response while receiving ES10x block %u, offset=%zu\n", block_nr, es10x_res_ptr->len);
 		rc = -EINVAL;
 		goto exit;
 	}
 	if (res_apdu.le != block_len) {
 		IPA_LOGP(SEUICC, LERROR,
 			 "unexpected block length (expected:%u, got:%u) while sending ES10x block %u, offset=%zu\n",
-			 block_len, res_apdu.le, block_nr, es10x_res->len);
+			 block_len, res_apdu.le, block_nr, es10x_res_ptr->len);
 		rc = -EINVAL;
 		goto exit;
 	}
-	if (es10x_res->len + res_apdu.le > es10x_res->data_len) {
-		IPA_LOGP(SEUICC, LERROR,
-			 "out of memory (have:%zu, needed:%zu) while sending ES10x block %u, offset=%zu\n",
-			 es10x_res->data_len, es10x_res->len + res_apdu.le, block_nr, es10x_res->len);
-		rc = -EINVAL;
-		goto exit;
+	if (es10x_res_ptr->len + res_apdu.le > es10x_res_ptr->data_len) {
+		IPA_LOGP(SEUICC, LDEBUG,
+			 "eUICC response encoder buffer exhausted, reallocating more memory (have: %zu bytes, required: %zu bytes)\n",
+			 es10x_res_ptr->data_len, es10x_res_ptr->len + res_apdu.le);
+
+		/* Reallocate the buffer with enough space for one additional block of size MAX_BLOCKSIZE_RX */
+		realloc_size = es10x_res_ptr->data_len + MAX_BLOCKSIZE_RX;
+		es10x_res_ptr = ipa_buf_realloc(es10x_res_ptr, realloc_size);
+		assert(es10x_res_ptr);
 	}
 
-	memcpy(es10x_res->data + es10x_res->len, res_apdu.data, res_apdu.le);
-	es10x_res->len += res_apdu.le;
+	memcpy(es10x_res_ptr->data + es10x_res_ptr->len, res_apdu.data, res_apdu.le);
+	es10x_res_ptr->len += res_apdu.le;
 	*sw = res_apdu.sw;
 
 	IPA_LOGP(SEUICC, LINFO,
-		 "successfully received ES10x block %u, offset=%zu, sw=%04x\n", block_nr, es10x_res->len, *sw);
+		 "successfully received ES10x block %u, offset=%zu, sw=%04x\n", block_nr, es10x_res_ptr->len, *sw);
 
 	/* Return how many data we have received. */
 	rc = res_apdu.le;
 exit:
 	IPA_FREE(buf_req);
 	IPA_FREE(buf_res);
+	*es10x_res = es10x_res_ptr;
 	return rc;
 }
 
-static int euicc_transceive_es10x(struct ipa_context *ctx, struct ipa_buf *es10x_res, const struct ipa_buf *es10x_req)
+static int euicc_transceive_es10x(struct ipa_context *ctx, struct ipa_buf **es10x_res, const struct ipa_buf *es10x_req)
 {
 	uint16_t sw;
 	uint16_t block_len = 0;
@@ -323,14 +330,14 @@ static int euicc_transceive_es10x(struct ipa_context *ctx, struct ipa_buf *es10x
 
 /*! Transceive eUICC/es10x APDU.
  *  \param[inout] ctx pointer to ipa_context.
- *  \param[out] es10x_res buffer with eUICC/es10x request.
+ *  \param[in] es10x_req buffer with eUICC/es10x request.
  *  \returns IPA_BUF with ES10x response on success, NULL on failure. */
 struct ipa_buf *ipa_euicc_transceive_es10x(struct ipa_context *ctx, const struct ipa_buf *es10x_req)
 {
-	struct ipa_buf *es10x_res = ipa_buf_alloc(IPA_EUICC_RESPONSE_BUF_SIZE);
+	struct ipa_buf *es10x_res = ipa_buf_alloc(MAX_BLOCKSIZE_RX);
 	int rc;
 
-	rc = euicc_transceive_es10x(ctx, es10x_res, es10x_req);
+	rc = euicc_transceive_es10x(ctx, &es10x_res, es10x_req);
 
 	if (rc < 0) {
 		IPA_FREE(es10x_res);
@@ -343,7 +350,7 @@ struct ipa_buf *ipa_euicc_transceive_es10x(struct ipa_context *ctx, const struct
 /* Send terminal capablilities, see also 3gpp TS 102.221 V16.2.0, section 11.1.19.2.4 */
 static int send_termcap(struct ipa_context *ctx)
 {
-	const uint8_t termcap[] = { 0xA9, 0x03, 0x83, 0x01, 0x07};
+	const uint8_t termcap[] = { 0xA9, 0x03, 0x83, 0x01, 0x07 };
 	int rc;
 	struct req_apdu req_apdu = { 0 };
 	struct res_apdu res_apdu = { 0 };
@@ -389,7 +396,6 @@ exit:
 	IPA_FREE(buf_res);
 	return rc;
 }
-
 
 static int select_isd_r(struct ipa_context *ctx)
 {
