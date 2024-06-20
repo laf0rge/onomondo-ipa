@@ -38,9 +38,3 @@ struct ipa_es10b_eim_cfg_data *ipa_es10b_get_eim_cfg_data(struct ipa_context *ct
 void ipa_es10b_get_eim_cfg_data_free(struct ipa_es10b_eim_cfg_data *res);
 
 struct EimConfigurationData *ipa_es10b_get_eim_cfg_data_filter(struct ipa_es10b_eim_cfg_data *res, char *eim_id);
-
-void ipa_es10b_get_eim_cfg_data_dump_item(struct ipa_eim_cfg_data *eim_cfg_data, uint8_t indent,
-					  enum log_subsys log_subsys, enum log_level log_level);
-void ipa_es10b_get_eim_cfg_data_dump_list(struct ipa_eim_cfg_data **eim_cfg_data_list, long eim_cfg_data_list_count,
-					  uint8_t indent, enum log_subsys log_subsys, enum log_level log_level);
-void ipa_es10b_get_eim_cfg_data_free_list(struct ipa_eim_cfg_data **eim_cfg_data_list, long eim_cfg_data_list_count);

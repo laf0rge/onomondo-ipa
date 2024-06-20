@@ -238,6 +238,37 @@ struct ipa_es10b_eim_cfg_data *ipa_es10b_get_eim_cfg_data(struct ipa_context *ct
 		return get_eim_cfg_data(ctx);
 }
 
+static void get_eim_cfg_data_free_list(struct ipa_eim_cfg_data **eim_cfg_data_list, long eim_cfg_data_list_count)
+{
+	long i;
+
+	if (!eim_cfg_data_list)
+		return;
+	if (!eim_cfg_data_list_count)
+		return;
+
+	for (i = 0; i < eim_cfg_data_list_count; i++) {
+		IPA_FREE(eim_cfg_data_list[i]->eim_id);
+		IPA_FREE(eim_cfg_data_list[i]->eim_fqdn);
+
+		IPA_FREE(eim_cfg_data_list[i]->eim_id_type);
+		IPA_FREE(eim_cfg_data_list[i]->counter_value);
+		IPA_FREE(eim_cfg_data_list[i]->association_token);
+
+		IPA_FREE(eim_cfg_data_list[i]->eim_public_key_data.eim_public_key);
+		IPA_FREE(eim_cfg_data_list[i]->eim_public_key_data.eim_certificate);
+
+		IPA_FREE(eim_cfg_data_list[i]->trusted_public_key_data_tls.trusted_eim_pk_tls);
+		IPA_FREE(eim_cfg_data_list[i]->trusted_public_key_data_tls.trusted_certificate_tls);
+
+		IPA_FREE(eim_cfg_data_list[i]->eim_supported_protocol);
+		IPA_FREE(eim_cfg_data_list[i]->euicc_ci_pkid);
+
+		IPA_FREE(eim_cfg_data_list[i]);
+	}
+	IPA_FREE(eim_cfg_data_list);
+}
+
 /*! Free results of function (ES10b): GetEimConfigurationData.
  *  \param[in] res pointer to function result. */
 void ipa_es10b_get_eim_cfg_data_free(struct ipa_es10b_eim_cfg_data *res)
@@ -245,7 +276,7 @@ void ipa_es10b_get_eim_cfg_data_free(struct ipa_es10b_eim_cfg_data *res)
 	if (!res)
 		return;
 
-	ipa_es10b_get_eim_cfg_data_free_list(res->eim_cfg_data_list, res->eim_cfg_data_list_count);
+	get_eim_cfg_data_free_list(res->eim_cfg_data_list, res->eim_cfg_data_list_count);
 	IPA_ES10X_RES_FREE(asn_DEF_GetEimConfigurationDataResponse, res);
 }
 
@@ -283,113 +314,4 @@ struct EimConfigurationData *ipa_es10b_get_eim_cfg_data_filter(struct ipa_es10b_
 	IPA_LOGP_ES10X("GetEimConfigurationData", LERROR, "cannot find eimId %s in EimConfigurationData list\n",
 		       eim_id);
 	return NULL;
-}
-
-/*! Log contents of an struct ipa_eim_cfg_data item.
- *  \param[in] eim_cfg_data pointer to struct ipa_eim_cfg_data item.
- *  \param[in] indent indentation level of the generated output.
- *  \param[in] log_subsys log subsystem to generate the output for.
- *  \param[in] log_level log level to generate the output for. */
-void ipa_es10b_get_eim_cfg_data_dump_item(struct ipa_eim_cfg_data *eim_cfg_data, uint8_t indent,
-					  enum log_subsys log_subsys, enum log_level log_level)
-{
-	char indent_str[256];
-
-	memset(indent_str, ' ', indent);
-	indent_str[indent] = '\0';
-
-	IPA_LOGP(log_subsys, log_level, "%seIM configuration: \n", indent_str);
-
-	if (!eim_cfg_data) {
-		IPA_LOGP(log_subsys, log_level, "%s (none)\n", indent_str);
-		return;
-	}
-
-	IPA_LOGP(log_subsys, log_level, "%s eimId: \"%s\"\n", indent_str, eim_cfg_data->eim_id);
-	if (eim_cfg_data->eim_fqdn)
-		IPA_LOGP(log_subsys, log_level, "%s eimFqdn: \"%s\"\n", indent_str, eim_cfg_data->eim_fqdn);
-	else
-		IPA_LOGP(log_subsys, log_level, "%s eimFqdn: (none)\n", indent_str);
-
-	if (eim_cfg_data->eim_id_type)
-		IPA_LOGP(log_subsys, log_level, "%s eimIdType: \"%ld\"\n", indent_str, *eim_cfg_data->eim_id_type);
-	else
-		IPA_LOGP(log_subsys, log_level, "%s eimIdType: (none)\n", indent_str);
-
-	if (eim_cfg_data->counter_value)
-		IPA_LOGP(log_subsys, log_level, "%s counterValue: \"%ld\"\n", indent_str, *eim_cfg_data->counter_value);
-	else
-		IPA_LOGP(log_subsys, log_level, "%s counterValue: (none)\n", indent_str);
-
-	if (eim_cfg_data->association_token)
-		IPA_LOGP(log_subsys, log_level, "%s associationToken: \"%ld\"\n", indent_str,
-			 *eim_cfg_data->association_token);
-	else
-		IPA_LOGP(log_subsys, log_level, "%s associationToken: (none)\n", indent_str);
-
-	IPA_LOGP(log_subsys, log_level, "%s eimPublicKeyData->eimPublicKey: %s\n", indent_str,
-		 ipa_buf_hexdump(eim_cfg_data->eim_public_key_data.eim_public_key));
-	IPA_LOGP(log_subsys, log_level, "%s eimPublicKeyData->eimCertificate:\n", indent_str);
-	ipa_buf_hexdump_multiline(eim_cfg_data->eim_public_key_data.eim_certificate, 32, indent + 2, log_subsys,
-				  log_level);
-
-	IPA_LOGP(log_subsys, log_level, "%s trustedPublicKeyDataTls->trustedEimPkTls: %s\n", indent_str,
-		 ipa_buf_hexdump(eim_cfg_data->trusted_public_key_data_tls.trusted_eim_pk_tls));
-	IPA_LOGP(log_subsys, log_level, "%s trustedPublicKeyDataTls->trustedCertificateTls:\n", indent_str);
-	ipa_buf_hexdump_multiline(eim_cfg_data->trusted_public_key_data_tls.trusted_certificate_tls, 32, indent + 2,
-				  log_subsys, log_level);
-
-	IPA_LOGP(log_subsys, log_level, "%s eimSupportedProtocol: %s\n", indent_str,
-		 ipa_buf_hexdump(eim_cfg_data->eim_supported_protocol));
-	IPA_LOGP(log_subsys, log_level, "%s euiccCiPKId: %s\n", indent_str,
-		 ipa_buf_hexdump(eim_cfg_data->euicc_ci_pkid));
-}
-
-/*! Log contents of eim_cfg_data_list in struct ipa_es10b_eim_cfg_data.
- *  \param[in] eim_cfg_data_list pointer to pointer array that holds the list items.
- *  \param[in] eim_cfg_data_list_count number of list items.
- *  \param[in] indent indentation level of the generated output.
- *  \param[in] log_subsys log subsystem to generate the output for.
- *  \param[in] log_level log level to generate the output for. */
-void ipa_es10b_get_eim_cfg_data_dump_list(struct ipa_eim_cfg_data **eim_cfg_data_list, long eim_cfg_data_list_count,
-					  uint8_t indent, enum log_subsys log_subsys, enum log_level log_level)
-{
-	unsigned int i;
-	for (i = 0; i < eim_cfg_data_list_count; i++) {
-		ipa_es10b_get_eim_cfg_data_dump_item(eim_cfg_data_list[i], indent, log_subsys, log_level);
-	}
-}
-
-/*! Free list of struct ipa_eim_cfg_data.
- *  \param[in] eim_cfg_data_list pointer to pointer array that holds the list items.
- *  \param[in] eim_cfg_data_list_count number of list items. */
-void ipa_es10b_get_eim_cfg_data_free_list(struct ipa_eim_cfg_data **eim_cfg_data_list, long eim_cfg_data_list_count)
-{
-	long i;
-
-	if (!eim_cfg_data_list)
-		return;
-	if (!eim_cfg_data_list_count)
-		return;
-
-	for (i = 0; i < eim_cfg_data_list_count; i++) {
-		IPA_FREE(eim_cfg_data_list[i]->eim_id);
-		IPA_FREE(eim_cfg_data_list[i]->eim_fqdn);
-
-		IPA_FREE(eim_cfg_data_list[i]->eim_id_type);
-		IPA_FREE(eim_cfg_data_list[i]->counter_value);
-		IPA_FREE(eim_cfg_data_list[i]->association_token);
-
-		IPA_FREE(eim_cfg_data_list[i]->eim_public_key_data.eim_public_key);
-		IPA_FREE(eim_cfg_data_list[i]->eim_public_key_data.eim_certificate);
-
-		IPA_FREE(eim_cfg_data_list[i]->trusted_public_key_data_tls.trusted_eim_pk_tls);
-		IPA_FREE(eim_cfg_data_list[i]->trusted_public_key_data_tls.trusted_certificate_tls);
-
-		IPA_FREE(eim_cfg_data_list[i]->eim_supported_protocol);
-		IPA_FREE(eim_cfg_data_list[i]->euicc_ci_pkid);
-
-		IPA_FREE(eim_cfg_data_list[i]);
-	}
-	IPA_FREE(eim_cfg_data_list);
 }
