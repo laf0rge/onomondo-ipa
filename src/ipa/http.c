@@ -47,11 +47,17 @@ void *ipa_http_init(const char *cabundle, bool no_verif)
 /* Callback function to extract the HTTP response */
 static size_t store_response_cb(void *ptr, size_t size, size_t nmemb, void *clientp)
 {
-	struct ipa_buf *buf = clientp;
+	struct ipa_buf *buf = *(struct ipa_buf **)clientp;
+	size_t realloc_size;
 
 	if (buf->len + size * nmemb > buf->data_len) {
-		IPA_LOGP(SHTTP, LERROR, "HTTP response exceeds buffer limit!\n");
-		return 0;
+		IPA_LOGP(SIPA, LDEBUG,
+			 "HTTP response buffer exhausted, reallocating more memory (have: %zu bytes, required: %zu bytes)\n",
+			 buf->data_len, buf->len + size * nmemb);
+		realloc_size = ((buf->len + size * nmemb) / IPA_LEN_HTTP_RESPONSE_BUF + 1) * IPA_LEN_HTTP_RESPONSE_BUF;
+		buf = ipa_buf_realloc(buf, realloc_size);
+		assert(buf);
+		*(struct ipa_buf **)clientp = buf;
 	}
 
 	memcpy(buf->data + buf->len, ptr, size * nmemb);
@@ -62,15 +68,15 @@ static size_t store_response_cb(void *ptr, size_t size, size_t nmemb, void *clie
 
 /*! Open a TCP connection (if not already present) and Perform HTTP request.
  *  \param[inout] http_ctx HTTP client context.
- *  \param[out] res buffer with HTTP response.
- *  \param[out] req buffer with HTTP request (POST).
+ *  \param[in] req buffer with HTTP request (POST).
  *  \param[in] url URL with HTTP request.
- *  \returns 0 on success, -EIO on failure. */
-int ipa_http_req(void *http_ctx, struct ipa_buf *res, const struct ipa_buf *req, const char *url)
+ *  \returns HTTP response on success, NULL on failure. */
+struct ipa_buf *ipa_http_req(void *http_ctx, const struct ipa_buf *req, const char *url)
 {
 	struct http_ctx *ctx = http_ctx;
 	CURLcode rc;
 	struct curl_slist *list = NULL;
+	struct ipa_buf *res = ipa_buf_alloc(IPA_LEN_HTTP_RESPONSE_BUF);
 
 	assert(ctx->initialized);
 
@@ -139,7 +145,7 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res, const struct ipa_buf *req,
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
 	}
-	rc = curl_easy_setopt(ctx->curl, CURLOPT_WRITEDATA, (void *)res);
+	rc = curl_easy_setopt(ctx->curl, CURLOPT_WRITEDATA, (void *)&res);
 	if (rc != CURLE_OK) {
 		IPA_LOGP(SHTTP, LERROR, "internal HTTP-client failure: %s\n", curl_easy_strerror(rc));
 		goto error;
@@ -158,11 +164,12 @@ int ipa_http_req(void *http_ctx, struct ipa_buf *res, const struct ipa_buf *req,
 	IPA_LOGP(SHTTP, LINFO, "HTTP request to %s successful: %s\n", url, curl_easy_strerror(rc));
 
 	curl_slist_free_all(list);
-	return 0;
+	return res;
 error:
 	ipa_http_close(http_ctx);
 	curl_slist_free_all(list);
-	return -EIO;
+	ipa_buf_free(res);
+	return NULL;
 }
 
 /*! Close the TCP underlying TCP connection (to be called after the last request).

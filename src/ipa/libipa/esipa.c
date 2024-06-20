@@ -142,7 +142,6 @@ struct ipa_buf *ipa_esipa_msg_to_eim_enc(const struct EsipaMessageFromIpaToEim *
 struct ipa_buf *ipa_esipa_req(struct ipa_context *ctx, const struct ipa_buf *esipa_req, const char *function_name)
 {
 	struct ipa_buf *esipa_res;
-	int rc;
 	unsigned int i;
 	unsigned int wait_time;
 
@@ -151,19 +150,16 @@ struct ipa_buf *ipa_esipa_req(struct ipa_context *ctx, const struct ipa_buf *esi
 		return NULL;
 	}
 
-	esipa_res = ipa_buf_alloc(IPA_LIMIT_HTTP_REQ);
-	assert(esipa_res);
-
 	for (i = 0; i < ctx->cfg->esipa_req_retries + 1; i++) {
-		rc = ipa_http_req(ctx->http_ctx, esipa_res, esipa_req, ipa_esipa_get_eim_url(ctx));
-		if (rc < 0 && ctx->cfg->esipa_req_retries == 0) {
+		esipa_res = ipa_http_req(ctx->http_ctx, esipa_req, ipa_esipa_get_eim_url(ctx));
+		if (!esipa_res && ctx->cfg->esipa_req_retries == 0) {
 			IPA_LOGP_ESIPA(function_name, LERROR, "eIM request failed!\n");
 			goto error;
-		} else if (rc < 0 && i >= ctx->cfg->esipa_req_retries) {
+		} else if (!esipa_res && i >= ctx->cfg->esipa_req_retries) {
 			IPA_LOGP_ESIPA(function_name, LERROR,
 				       "eIM request failed, giving up after retrying %u times!\n", i);
 			goto error;
-		} else if (rc < 0) {
+		} else if (!esipa_res) {
 			wait_time = (i + 1) * (i + 1);
 			IPA_LOGP_ESIPA(function_name, LERROR, "eIM request failed, will retry in %u seconds...!\n",
 				       wait_time);
