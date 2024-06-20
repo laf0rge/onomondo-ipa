@@ -78,8 +78,9 @@ void ipa_hexdump_multiline(const uint8_t *data, size_t len, size_t width, uint8_
 {
 	size_t l;
 	size_t bsize;
-	char indent_str[256];
+	char indent_str[8];
 
+	assert(indent < sizeof(indent_str));
 	memset(indent_str, ' ', indent);
 	indent_str[indent] = '\0';
 
@@ -106,8 +107,9 @@ void ipa_hexdump_multiline(const uint8_t *data, size_t len, size_t width, uint8_
 void ipa_buf_hexdump_multiline(const struct ipa_buf *buf, size_t width, uint8_t indent, enum log_subsys log_subsys,
 			       enum log_level log_level)
 {
-	char indent_str[256];
+	char indent_str[8];
 
+	assert(indent < sizeof(indent_str));
 	memset(indent_str, ' ', indent);
 	indent_str[indent] = '\0';
 
@@ -203,9 +205,10 @@ static int ipa_asn1c_dump_consume(const void *buffer, size_t size, void *app_key
 void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_ptr, uint8_t indent,
 		    enum log_subsys log_subsys, enum log_level log_level)
 {
-	char indent_str[256];
+	char indent_str[8];
 	struct ipa_asn1c_dump_buf buf = { 0 };
 
+	assert(indent < sizeof(indent_str));
 	memset(indent_str, ' ', indent);
 	indent_str[indent] = '\0';
 

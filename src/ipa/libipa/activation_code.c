@@ -124,8 +124,9 @@ struct ipa_activation_code *ipa_activation_code_parse(const char *ac)
 void ipa_activation_code_dump(const struct ipa_activation_code *ac_decoded,
 			      uint8_t indent, enum log_subsys log_subsys, enum log_level log_level)
 {
-	char indent_str[256];
+	char indent_str[8];
 
+	assert(indent < sizeof(indent_str));
 	memset(indent_str, ' ', indent);
 	indent_str[indent] = '\0';
 
