@@ -228,12 +228,13 @@ static int recv_es10x_block(struct ipa_context *ctx, uint16_t *sw,
 		goto exit;
 	}
 	if (es10x_res_ptr->len + res_apdu.le > es10x_res_ptr->data_len) {
+		realloc_size = es10x_res_ptr->data_len + MAX_BLOCKSIZE_RX;
+
 		IPA_LOGP(SEUICC, LDEBUG,
-			 "eUICC response buffer exhausted, reallocating more memory (have: %zu bytes, required: %zu bytes)\n",
-			 es10x_res_ptr->data_len, es10x_res_ptr->len + res_apdu.le);
+			 "eUICC response buffer exhausted, reallocating more memory (have: %zu bytes, required: %zu bytes, will allocate: %zu bytes)\n",
+			 es10x_res_ptr->data_len, es10x_res_ptr->len + res_apdu.le, realloc_size);
 
 		/* Reallocate the buffer with enough space for one additional block of size MAX_BLOCKSIZE_RX */
-		realloc_size = es10x_res_ptr->data_len + MAX_BLOCKSIZE_RX;
 		es10x_res_ptr = ipa_buf_realloc(es10x_res_ptr, realloc_size);
 		assert(es10x_res_ptr);
 	}
@@ -337,12 +338,18 @@ struct ipa_buf *ipa_euicc_transceive_es10x(struct ipa_context *ctx, const struct
 	struct ipa_buf *es10x_res = ipa_buf_alloc(MAX_BLOCKSIZE_RX);
 	int rc;
 
+	IPA_LOGP(SEUICC, LDEBUG, "sending %zu bytes to eUICC (buffer size: %zu bytes)\n", es10x_req->len,
+		 es10x_req->data_len);
+
 	rc = euicc_transceive_es10x(ctx, &es10x_res, es10x_req);
 
 	if (rc < 0) {
 		IPA_FREE(es10x_res);
 		return NULL;
 	}
+
+	IPA_LOGP(SEUICC, LDEBUG, "received %zu bytes from eUICC (buffer size: %zu bytes)\n", es10x_res->len,
+		 es10x_req->data_len);
 
 	return es10x_res;
 }

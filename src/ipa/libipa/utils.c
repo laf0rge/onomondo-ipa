@@ -145,11 +145,10 @@ int ipa_asn1c_consume_bytes_cb(const void *buffer, size_t size, void *priv)
 	/* Check whether we still have enough space to store the encoding
 	 * results. */
 	if (buf_encoded->data_len < buf_encoded->len + size) {
-		IPA_LOGP(SIPA, LDEBUG,
-			 "ASN.1 encoder buffer exhausted, reallocating more memory (have: %zu bytes, required: %zu bytes)\n",
-			 buf_encoded->data_len, buf_encoded->len + size);
-
 		realloc_size = ((buf_encoded->len + size) / IPA_LEN_ASN1_ENCODER_BUF + 1) * IPA_LEN_ASN1_ENCODER_BUF;
+		IPA_LOGP(SIPA, LDEBUG,
+			 "ASN.1 encoder buffer exhausted, reallocating more memory (have: %zu bytes, required: %zu bytes, will allocate: %zu bytes)\n",
+			 buf_encoded->data_len, buf_encoded->len + size, realloc_size);
 		buf_encoded = ipa_buf_realloc(buf_encoded, realloc_size);
 		assert(buf_encoded);
 		*buf_encoded_ptr = buf_encoded;

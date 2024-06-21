@@ -151,6 +151,8 @@ struct ipa_buf *ipa_esipa_req(struct ipa_context *ctx, const struct ipa_buf *esi
 	}
 
 	for (i = 0; i < ctx->cfg->esipa_req_retries + 1; i++) {
+		IPA_LOGP_ESIPA(function_name, LDEBUG, "sending %zu bytes to eIM (buffer size: %zu bytes)\n",
+			       esipa_req->len, esipa_req->data_len);
 		esipa_res = ipa_http_req(ctx->http_ctx, esipa_req, ipa_esipa_get_eim_url(ctx));
 		if (!esipa_res && ctx->cfg->esipa_req_retries == 0) {
 			IPA_LOGP_ESIPA(function_name, LERROR, "eIM request failed!\n");
@@ -166,6 +168,8 @@ struct ipa_buf *ipa_esipa_req(struct ipa_context *ctx, const struct ipa_buf *esi
 			sleep(wait_time);
 		} else {
 			/* Successful request */
+			IPA_LOGP_ESIPA(function_name, LDEBUG, "received %zu bytes from eIM (buffer size: %zu bytes)\n",
+				       esipa_res->len, esipa_res->data_len);
 			break;
 		}
 	}
