@@ -44,13 +44,19 @@ To compile the IPAd the run the following four steps:
 ```
 mkdir build
 cd build
-cmake -DENABLE_SANITIZE=ON ../
+cmake -DENABLE_SANITIZE=ON -DSHOW_ASN1_OUTPUT=ON ../
 make
 ```
 
 The option `-DENABLE_SANITIZE` is entirely optional and results in a build
 with AddressSanitizer which helps to find out-of-bounds memory accesses
 during development and testing.
+
+The option -DSHOW_ASN1_OUTPUT enables decoded printing of the ASN.1 encoded
+messages that are exchanged between eIM and eUICC. The decoded ASN.1 output
+may result in large log output, so it is recommended to use this option
+only for development/testing. (The hexadecimal representation of messages is
+still printed)
 
 ## Running
 
