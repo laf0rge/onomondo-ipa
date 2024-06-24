@@ -58,6 +58,10 @@ may result in large log output, so it is recommended to use this option
 only for development/testing. (The hexadecimal representation of messages is
 still printed)
 
+The code that is used to encode/decode ASN.1 encoded messages has been
+generated using asn1c. This ASN.1 compiler also adds debug messages, which can
+be enabled by adding the option -DASN_EMIT_DEBUG=ON.
+
 ## Running
 
 The resulting IPAd binary can be executed without parameters:
