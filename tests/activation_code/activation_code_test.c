@@ -42,3 +42,49 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+
+/* Stubs */
+void *ipa_http_init(const char *cabundle, bool no_verif)
+{
+	return NULL;
+}
+
+struct ipa_buf *ipa_http_req(void *http_ctx, const struct ipa_buf *req, const char *url)
+{
+	return NULL;
+}
+
+void ipa_http_close(void *http_ctx)
+{
+	return;
+}
+
+void ipa_http_free(void *http_ctx)
+{
+	return;
+}
+
+void *ipa_scard_init(unsigned int reader_num)
+{
+	return NULL;
+}
+
+int ipa_scard_reset(void *scard_ctx)
+{
+	return 0;
+}
+
+int ipa_scard_atr(void *scard_ctx, struct ipa_buf *atr)
+{
+	return 0;
+}
+
+int ipa_scard_transceive(void *scard_ctx, struct ipa_buf *res, const struct ipa_buf *req)
+{
+	return 0;
+}
+
+int ipa_scard_free(void *scard_ctx)
+{
+	return 0;
+}
