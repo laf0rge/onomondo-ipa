@@ -165,7 +165,7 @@ struct ipa_asn1c_dump_buf {
 	size_t printbuf_size;
 };
 
-#ifdef SHOW_ASN1_OUTPUT
+#ifdef SHOW_ASN_OUTPUT
 static int ipa_asn1c_dump_consume(const void *buffer, size_t size, void *app_key)
 {
 
@@ -206,7 +206,7 @@ static int ipa_asn1c_dump_consume(const void *buffer, size_t size, void *app_key
 void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_ptr, uint8_t indent,
 		    enum log_subsys log_subsys, enum log_level log_level)
 {
-#ifdef SHOW_ASN1_OUTPUT
+#ifdef SHOW_ASN_OUTPUT
 	struct ipa_asn1c_dump_buf buf = { 0 };
 #endif
 	char indent_str[8];
@@ -214,7 +214,7 @@ void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_p
 	memset(indent_str, ' ', indent);
 	indent_str[indent] = '\0';
 
-#ifdef SHOW_ASN1_OUTPUT
+#ifdef SHOW_ASN_OUTPUT
 	buf.printbuf = IPA_ALLOC_N_ZERO(IPA_LEN_ASN1_PRINTER_BUF);
 	buf.printbuf_ptr = buf.printbuf;
 	buf.printbuf_size = IPA_LEN_ASN1_PRINTER_BUF;
@@ -230,7 +230,7 @@ void ipa_asn1c_dump(const struct asn_TYPE_descriptor_s *td, const void *struct_p
 	IPA_FREE(buf.printbuf);
 #else
 	IPA_LOGP(log_subsys, log_level,
-		 "%s (decoded ASN.1 output omitted, compile with -DSHOW_ASN1_OUTPUT to display decoed ASN.1)\n",
+		 "%s (decoded ASN.1 output omitted, compile with -DSHOW_ASN_OUTPUT to display decoed ASN.1)\n",
 		 indent_str);
 #endif
 }
