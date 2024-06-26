@@ -24,10 +24,11 @@ extern "C" {
 #define	ASN1C_ENVIRONMENT_VERSION	923	/* Compile-time version */
 int get_asn1c_environment_version(void);	/* Run-time version */
 
-#define	CALLOC(nmemb, size)	calloc(nmemb, size)
-#define	MALLOC(size)		malloc(size)
-#define	REALLOC(oldptr, size)	realloc(oldptr, size)
-#define	FREEMEM(ptr)		free(ptr)
+#include <onomondo/ipa/mem.h>
+#define	CALLOC(nmemb, size)	IPA_CALLOC(nmemb, size)
+#define	MALLOC(size)		IPA_ALLOC_N(size)
+#define	REALLOC(oldptr, size)	IPA_REALLOC(oldptr, size)
+#define	FREEMEM(ptr)		IPA_FREE(ptr)
 
 #define	asn_debug_indent	0
 #define ASN_DEBUG_INDENT_ADD(i) do{}while(0)

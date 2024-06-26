@@ -28,3 +28,4 @@ echo 'target_compile_options(libasn PRIVATE -Wall)' >> CMakeLists.txt
 # Re-apply patches to generated sourcecode
 cd ../../../
 patch -p1 < ./asn1/0001-PKIX1Explicit88-remove-broken-constraint-check-in-Ce.patch
+patch -p1 < ./asn1/0001-asn_internal-use-custom-memory-allocator-functions.patch

@@ -62,6 +62,13 @@ The code that is used to encode/decode ASN.1 encoded messages has been
 generated using asn1c. This ASN.1 compiler also adds debug messages, which can
 be enabled by adding the option -DASN_EMIT_DEBUG=ON.
 
+To debug the usage of heap memory the option -DMEM_EMIT_DEBUG=ON can be used.
+When this option is enabled IPA_ALLOC, IPA_ALLOC_N, IPA_REALLOC, and IPA_FREE
+will keep track on how much memory is currently allocated. The current memory
+usage and the peak memory usage is then displayed. The feature relys on the
+function malloc_usable_size(), which is a non standard API. However, the
+function is available on GNU LINUX and FreeBSD (see also man malloc_usable_size)
+
 ## Running
 
 The resulting IPAd binary can be executed without parameters:

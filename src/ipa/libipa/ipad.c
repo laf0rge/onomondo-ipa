@@ -24,6 +24,12 @@
 #include "es10b_load_euicc_pkg.h"
 #include "proc_euicc_pkg_dwnld_exec.h"
 
+/* Counters to monitor heap memory usage, see also: onomondo/ipa/mem.h */
+#ifdef MEM_EMIT_DEBUG
+long int ___mem_counter = 0;
+long int ___mem_peak = 0;
+#endif
+
 static void nvstate_free_contents(struct ipa_nvstate *nvstate)
 {
 	/* free dynamically allocated struct members (append code for new members here) */
