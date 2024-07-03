@@ -6,6 +6,9 @@ include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 target_link_libraries(bpp_segments_test libipa)
+if (M32)
+  set_target_properties(bpp_segments_test PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+endif()
 
 add_test(NAME bpp_segments_test
     COMMAND sh -c "$<TARGET_FILE:bpp_segments_test> ../../../tests/bpp_segments/bpp.ber > bpp_segments_test.out 2> bpp_segments_test.err")

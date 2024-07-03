@@ -49,3 +49,6 @@ add_library(libipa STATIC
 target_include_directories(libipa PUBLIC ${CMAKE_SOURCE_DIR}/include PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(libipa PUBLIC libasn)
 target_compile_options(libipa PRIVATE -Wall)
+if (M32)
+  set_target_properties(libipa PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+endif()

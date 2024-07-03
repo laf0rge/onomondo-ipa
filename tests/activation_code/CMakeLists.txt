@@ -6,6 +6,9 @@ include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 target_link_libraries(activation_code_test libipa)
+if (M32)
+  set_target_properties(activation_code_test PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+endif()
 
 add_test(NAME activation_code_test
     COMMAND sh -c "$<TARGET_FILE:activation_code_test> > activation_code_test.out 2> activation_code_test.err")

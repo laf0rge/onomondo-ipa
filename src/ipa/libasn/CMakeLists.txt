@@ -941,3 +941,6 @@ xer_support.h
 )
 target_include_directories(libasn PUBLIC ${CMAKE_SOURCE_DIR}/include PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(libasn PRIVATE -Wall)
+if (M32)
+  set_target_properties(libasn PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+endif()

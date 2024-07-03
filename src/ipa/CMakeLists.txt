@@ -15,3 +15,8 @@ target_compile_options(ipa PRIVATE -Wall)
 target_include_directories(ipa PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(ipa libipa http scard pcsclite curl)
 
+if (M32)
+  set_target_properties(http PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+  set_target_properties(scard PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+  set_target_properties(ipa PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+endif()

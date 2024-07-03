@@ -48,26 +48,31 @@ cmake -DENABLE_SANITIZE=ON -DSHOW_ASN_OUTPUT=ON ../
 make
 ```
 
-The option `-DENABLE_SANITIZE` is entirely optional and results in a build
-with AddressSanitizer which helps to find out-of-bounds memory accesses
-during development and testing.
+### Options
 
-The option -DSHOW_ASN_OUTPUT enables decoded printing of the ASN.1 encoded
-messages that are exchanged between eIM and eUICC. The decoded ASN.1 output
-may result in large log output, so it is recommended to use this option
-only for development/testing. (The hexadecimal representation of messages is
-still printed)
+*`-DENABLE_SANITIZE`: This feature is entirely optional and results in a build
+with AddressSanitizer which helps to find out-of-bounds memory accesses during
+development and testing.
 
-The code that is used to encode/decode ASN.1 encoded messages has been
-generated using asn1c. This ASN.1 compiler also adds debug messages, which can
-be enabled by adding the option -DASN_EMIT_DEBUG=ON.
+*`-DSHOW_ASN_OUTPUT`: enables decoded printing of the ASN.1 encoded messages
+that are exchanged between eIM and eUICC. The decoded ASN.1 output may result
+in large log output, so it is recommended to use this option only for
+development/testing. (The hexadecimal representation of messages is still
+printed)
 
-To debug the usage of heap memory the option -DMEM_EMIT_DEBUG=ON can be used.
+*`-DASN_EMIT_DEBUG`: The code that is used to encode/decode ASN.1 encoded
+messages has been generated using asn1c. This ASN.1 compiler also adds debug
+messages, which can be enabled by adding this option.
+
+*`-DMEM_EMIT_DEBUG`: This option can be used to debug the usage of heap memory.
 When this option is enabled IPA_ALLOC, IPA_ALLOC_N, IPA_REALLOC, and IPA_FREE
 will keep track on how much memory is currently allocated. The current memory
 usage and the peak memory usage is then displayed. The feature relys on the
 function malloc_usable_size(), which is a non standard API. However, the
 function is available on GNU LINUX and FreeBSD (see also man malloc_usable_size)
+
+*`-DM32`: Use this option to compile onomondo-ipa for 32-BIT x86 architectures,
+see also GCC manual, section 3.19.54 x86 Options.
 
 ## Running
 
