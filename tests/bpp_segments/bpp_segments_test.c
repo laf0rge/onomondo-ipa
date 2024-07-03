@@ -26,7 +26,7 @@ void ipa_bpp_segments_encode_test(char *test_vector_path)
 	assert(bpp_file);
 	bpp_len = fread(&bpp, sizeof(char), sizeof(bpp), bpp_file);
 	fclose(bpp_file);
-	printf("bpp size: %ld\n", bpp_len);
+	printf("bpp size: %zu\n", bpp_len);
 
 	/* Decode BPP test vector */
 	rc = ber_decode(0, &asn_DEF_BoundProfilePackage, (void **)&bpp_dec, bpp, bpp_len);
