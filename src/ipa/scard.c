@@ -104,7 +104,7 @@ int ipa_scard_transceive(void *scard_ctx, struct ipa_buf *res, const struct ipa_
 	IPA_LOGP(SSCARD, LDEBUG, "PCSC reader #%d TX: \n", ctx->reader_num);
 	ipa_buf_hexdump_multiline(req, 64, 1, SSCARD, LINFO);
 
-	rc = SCardTransmit(ctx->hCard, ctx->pioSendPci, req->data, req->len, &ctx->pioRecvPci, res->data, &res->len);
+	rc = SCardTransmit(ctx->hCard, ctx->pioSendPci, req->data, req->len, &ctx->pioRecvPci, res->data, (LPDWORD) &res->len);
 	PCSC_ERROR(ctx->reader_num, rc, "SCardEndTransaction");
 
 	if (res->len) {
@@ -156,7 +156,7 @@ int ipa_scard_atr(void *scard_ctx, struct ipa_buf *atr)
 	assert(ctx);
 
 	atr->len = atr->data_len;
-	rc = SCardStatus(ctx->hCard, pbReader, &dwReaderLen, &dwState, &dwProt, atr->data, &atr->len);
+	rc = SCardStatus(ctx->hCard, pbReader, &dwReaderLen, &dwState, &dwProt, atr->data, (LPDWORD) &atr->len);
 	PCSC_ERROR(ctx->reader_num, rc, "SCardStatus");
 	IPA_LOGP(SSCARD, LINFO, "PCSC reader #%d ATR:%s\n", ctx->reader_num, ipa_buf_hexdump(atr));
 	return 0;
