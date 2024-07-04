@@ -7,12 +7,12 @@ as a library to add IPAd functionality to an IoT device that runs an arbitrary R
 Interfaces
 ----------
 
-## ESipa
+### ESipa
 
 The ESipa interface of onomondo-ipa is implemented as an HTTP client interface (see also GSMA SGP.32, section 6.1) that
 uses ASN.1 function bindings (see also GSMA SGP.32, section 6.3.
 
-## ES10x
+### ES10x
 
 The interface towards the eUICC is implemented according to GSMA SGP.32 and GSMA SGP.22. The ES10x interface of
 onomondo-ipa features an IoT eUICC emulation mode. This allows the usage of regular consumer eUICCs, which are readily
@@ -23,7 +23,7 @@ the case for the function related to the management of the eIM configuration.
 Installation
 ------------
 
-## Dependencies
+### Dependencies
 
 The IPAd core implementation (libasn, libipa) written in a way so that it has no dependencies other than a c99 compliant
 C-compiler. However, onomondo-ipa still requires platform dependent modules that allow it to make HTTP(s) requests and
@@ -42,7 +42,7 @@ On a Debian GNU/Linux system the following packages must be installed:
 
 you can use the standard `apt-get install ...` command to install those dependencies.
 
-## Building
+### Building
 
 To compile the IPAd the run the following four steps:
 
@@ -53,7 +53,7 @@ cmake -DENABLE_SANITIZE=ON -DSHOW_ASN_OUTPUT=ON ../
 make
 ```
 
-### Options
+#### Options
 
 *`-DENABLE_SANITIZE`: This feature is entirely optional and results in a build with AddressSanitizer which helps to
 find out-of-bounds memory accesses during development and testing.
@@ -81,7 +81,7 @@ Along with the platform depended modules also comes a sample application (`main.
 functional IPAd that runs on a linux system. However, its main purpose is to illustrates how to use the API presented
 in `onomondo/ipad.h`.
 
-## Commandline options
+### Commandline options
 
 There are a numer of commandline options supported. The most relevant options are:
 
@@ -93,7 +93,7 @@ but may be helpful for testing and debugging in lab setups.
 
 (use option -h to query the full list of parameters)
 
-## Initial setup
+### Initial setup
 
 During the first run onomondo-ipa will create an nvstate.bin file in its working directory. This file is used to as a
 non volatile storage of data.
@@ -106,11 +106,11 @@ onomondo-ipa ships with a sample configuration (contrib/sample_eim_cfg.ber) that
 127.0.0.1:8000.
 
 Example: load the initial eIM configuration onto the eUICC in PCSC reader 2
-'''
+```
 ./src/ipa/ipa -r 2 -f ../contrib/sample_eim_cfg.ber
-'''
+```
 
-## Quering eIM packages
+### Quering eIM packages
 
 When onomondo-ipa is called without the `-f` parameter, it will read the eUICC configuration and the eidValue from the
 eUICC and use it to query the eIM for eIM packages. In case no eIM package is available (error code
@@ -122,6 +122,6 @@ the requested procedure. Immediately after that, the next eIM package is request
 the error code noEimPackageAvailable.
 
 Example: Query the eIM for eIM packages
-'''
+```
 ./src/ipa/ipa -r 2
-'''
+```
