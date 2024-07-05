@@ -23,6 +23,19 @@
 
 bool running = true;
 
+bool prfle_inst_consent(char *sm_dp_plus_address, char *ac_token)
+{
+	char user_input;
+	printf("PLEASE CONSENT TO PROFILE INSTALLATION:\n");
+	printf("smdp+: %s\n", sm_dp_plus_address);
+	printf("ac-token: %s\n", ac_token);
+	printf("Consent (Y/N)? ");
+	user_input = getchar();
+	if (user_input == 'Y' || user_input == 'y')
+		return true;
+	return false;
+}
+
 static void print_help(void)
 {
 	printf("options:\n");
@@ -36,6 +49,7 @@ static void print_help(void)
 	printf(" -n PATH ............. path to nvstate file (default: %s)\n", DEFAULT_NVSTATE_PATH);
 	printf(" -y NUM .............. number of retries for ESipa requests (default: %u)\n",
 	       DEFAULT_ESIPA_REQ_RETRIES);
+	printf(" -a .................. ask end user for consent\n");
 	printf(" -C .................. CA (Certificate Authority) Bundle file\n");
 	printf(" -S .................. disable HTTPS\n");
 	printf(" -I .................. disable SSL certificate verification (insecure)\n");
@@ -142,7 +156,7 @@ int main(int argc, char **argv)
 
 	/* Overwrite configuration values with user defined parameters */
 	while (1) {
-		opt = getopt(argc, argv, "ht:e:r:c:f:mn:C:SEy:I1");
+		opt = getopt(argc, argv, "ht:e:r:c:f:mn:C:SIEy:a1");
 		if (opt == -1)
 			break;
 
@@ -186,6 +200,9 @@ int main(int argc, char **argv)
 			break;
 		case 'y':
 			cfg.esipa_req_retries = atoi(optarg);
+			break;
+		case 'a':
+			cfg.prfle_inst_consent_cb = prfle_inst_consent;
 			break;
 		case '1':
 			getopt_one_euicc_pkg_only = true;

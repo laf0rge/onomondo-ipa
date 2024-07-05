@@ -10,6 +10,8 @@
 struct ipa_context;
 struct ipa_buf;
 
+typedef bool (*ipa_prfle_inst_consent_cb)(char *sm_dp_plus_address, char *ac_token);
+
 enum ipa_poll_rc {
 	/*! The API user shall call ipa_poll() again immediately.
 	 *  (there may be still eIM packages waiting to be executed). */
@@ -71,6 +73,12 @@ struct ipa_config {
 	 *  IoT eUICC emulation is enabled, the IPAd will adapt the interface on ES10x function level so that the
 	 *  consumer eUICC appears as an IoT eUICC on procedure level. */
 	bool iot_euicc_emu_enabled;
+
+	/*! Consent to profile installation.
+	 *  SGP.32 requires to prompt the user to consent to a profile installation. The API user may pass a callback
+	 *  function here to handle the consent request. In case no callback function is provided onomondo-eim will
+	 *  automatically consent to any profile installation. */
+	ipa_prfle_inst_consent_cb prfle_inst_consent_cb;
 };
 
 struct ipa_context *ipa_new_ctx(struct ipa_config *cfg, struct ipa_buf *nvstate);
