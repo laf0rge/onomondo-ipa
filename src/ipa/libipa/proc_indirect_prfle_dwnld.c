@@ -79,10 +79,6 @@ int ipa_proc_indirect_prfle_dwnlod(struct ipa_context *ctx, const struct ipa_pro
 	prfle_inst_pars.bound_profile_package = &get_bnd_prfle_pkg_res->get_bnd_prfle_pkg_ok->boundProfilePackage;
 	ipa_proc_prfle_inst(ctx, &prfle_inst_pars);
 
-	/* TODO: Send back a ProfileDownloadTriggerResult to the eIM */
-
-	/* TODO: Take care that the profile is enabled, in case automatic profile activation is granted */
-
 error:
 	ipa_activation_code_free(activation_code);
 	ipa_esipa_auth_clnt_res_free(auth_clnt_res);
