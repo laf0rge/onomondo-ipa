@@ -63,7 +63,7 @@ int ipa_proc_indirect_prfle_dwnlod(struct ipa_context *ctx, const struct ipa_pro
 	prfle_dwnlod_pars.auth_clnt_ok_dpe = auth_clnt_res->auth_clnt_ok_dpe;
 	get_bnd_prfle_pkg_res = ipa_proc_prfle_dwnlod(ctx, &prfle_dwnlod_pars);
 	if (!get_bnd_prfle_pkg_res) {
-		IPA_LOGP(SIPA, LERROR, "sub profile download has failed -- canceling session!\n");
+		IPA_LOGP(SIPA, LERROR, "sub procedure profile download has failed -- canceling session!\n");
 		cmn_cancel_sess_pars.reason = CancelSessionReason_loadBppExecutionError;
 		cmn_cancel_sess_pars.transaction_id = *auth_clnt_res->transaction_id;
 		ipa_proc_cmn_cancel_sess(ctx, &cmn_cancel_sess_pars);
