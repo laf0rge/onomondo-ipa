@@ -83,7 +83,12 @@ int ipa_proc_indirect_prfle_dwnlod(struct ipa_context *ctx, const struct ipa_pro
 
 	/* Execute sub procedure: Sub-procedure Profile Installation (See also section 3.1.3.3 of SGP.22) */
 	prfle_inst_pars.bound_profile_package = &get_bnd_prfle_pkg_res->get_bnd_prfle_pkg_ok->boundProfilePackage;
-	ipa_proc_prfle_inst(ctx, &prfle_inst_pars);
+	if (ipa_proc_prfle_inst(ctx, &prfle_inst_pars) < 0) {
+		IPA_LOGP(SIPA, LERROR, "sub procedure profile installation has failed -- canceling session!\n");
+		cmn_cancel_sess_pars.reason = CancelSessionReason_loadBppExecutionError;
+		cmn_cancel_sess_pars.transaction_id = *auth_clnt_res->transaction_id;
+		ipa_proc_cmn_cancel_sess(ctx, &cmn_cancel_sess_pars);
+	}
 
 error:
 	ipa_activation_code_free(activation_code);
