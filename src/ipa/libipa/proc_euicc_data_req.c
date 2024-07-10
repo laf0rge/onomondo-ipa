@@ -177,10 +177,11 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 	}
 
 	if (ipa_tag_in_taglist(0xA6, tag_list)) {
-		if (get_certs_res)
+		if (get_certs_res) {
 			IPA_LOGP(SIPA, LINFO,
 				 "eIM asks for eUICC certificate (already known, no need to request it from eUICC)\n");
-		else {
+			ipa_euicc_data_response.choice.ipaEuiccData.euiccCertificate = get_certs_res->euicc_certificate;
+		} else {
 			IPA_LOGP(SIPA, LINFO, "eIM asks for eUICC certificate\n");
 			get_certs_req.req.euiccCiPKId = pars->ipa_euicc_data_request->euiccCiPKId;
 			get_certs_res = ipa_es10b_get_certs(ctx, &get_certs_req);
