@@ -108,10 +108,9 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 		euicc_cfg_addr = ipa_es10a_get_euicc_cfg_addr(ctx);
 		if (!euicc_cfg_addr)
 			goto handle_error;
-		if (!euicc_cfg_addr->res->defaultDpAddress) {
-			IPA_LOGP(SIPA, LINFO, "eUICC did not return a defaultDpAddress!\n");
-			goto handle_error;
-		}
+		/* It is not an error when the defaultDpAddress is not set. */
+		if (!euicc_cfg_addr->res->defaultDpAddress)
+			IPA_LOGP(SIPA, LINFO, "No defaultDpAddress set on this eUICC!\n");
 		ipa_euicc_data_response.choice.ipaEuiccData.defaultSmdpAddress = euicc_cfg_addr->res->defaultDpAddress;
 	} else {
 		ipa_euicc_data_response.choice.ipaEuiccData.defaultSmdpAddress = NULL;
