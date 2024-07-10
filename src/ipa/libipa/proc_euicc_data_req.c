@@ -113,21 +113,30 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 			goto handle_error;
 		}
 		ipa_euicc_data_response.choice.ipaEuiccData.defaultSmdpAddress = euicc_cfg_addr->res->defaultDpAddress;
+	} else {
+		ipa_euicc_data_response.choice.ipaEuiccData.defaultSmdpAddress = NULL;
 	}
+
 	if (ipa_tag_in_taglist(0xBF20, tag_list)) {
 		IPA_LOGP(SIPA, LINFO, "eIM asks for eUICCInfo1\n");
 		euicc_info_1 = ipa_es10b_get_euicc_info(ctx, false);
 		if (!euicc_info_1 || !euicc_info_1->euicc_info_1)
 			goto handle_error;
 		ipa_euicc_data_response.choice.ipaEuiccData.euiccInfo1 = euicc_info_1->euicc_info_1;
+	} else {
+		ipa_euicc_data_response.choice.ipaEuiccData.euiccInfo1 = NULL;
 	}
+
 	if (ipa_tag_in_taglist(0xBF22, tag_list)) {
 		IPA_LOGP(SIPA, LINFO, "eIM asks for eUICCInfo2\n");
 		euicc_info_2 = ipa_es10b_get_euicc_info(ctx, true);
 		if (!euicc_info_2 || !euicc_info_2->sgp32_euicc_info_2)
 			goto handle_error;
 		ipa_euicc_data_response.choice.ipaEuiccData.euiccInfo2 = euicc_info_2->sgp32_euicc_info_2;
+	} else {
+		ipa_euicc_data_response.choice.ipaEuiccData.euiccInfo2 = NULL;
 	}
+
 	if (ipa_tag_in_taglist(0x83, tag_list)) {
 		if (euicc_cfg_addr)
 			IPA_LOGP(SIPA, LINFO,
@@ -139,7 +148,10 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 				goto error;
 		}
 		ipa_euicc_data_response.choice.ipaEuiccData.rootSmdsAddress = &euicc_cfg_addr->res->rootDsAddress;
+	} else {
+		ipa_euicc_data_response.choice.ipaEuiccData.rootSmdsAddress = NULL;
 	}
+
 	if (ipa_tag_in_taglist(0x84, tag_list)) {
 		struct EimConfigurationData *eim_cfg_data_item;
 		IPA_LOGP(SIPA, LINFO, "eIM asks for Association token\n");
@@ -150,7 +162,10 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 		if (!eim_cfg_data_item)
 			goto handle_error;
 		ipa_euicc_data_response.choice.ipaEuiccData.associationToken = eim_cfg_data_item->associationToken;
+	} else {
+		ipa_euicc_data_response.choice.ipaEuiccData.associationToken = NULL;
 	}
+
 	if (ipa_tag_in_taglist(0xA5, tag_list)) {
 		IPA_LOGP(SIPA, LINFO, "eIM asks for EUM certificate\n");
 		get_certs_req.req.euiccCiPKId = pars->ipa_euicc_data_request->euiccCiPKId;
@@ -158,7 +173,10 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 		if (!get_certs_res || !get_certs_res->eum_certificate || !get_certs_res->euicc_certificate)
 			goto handle_error;
 		ipa_euicc_data_response.choice.ipaEuiccData.eumCertificate = get_certs_res->eum_certificate;
+	} else {
+		ipa_euicc_data_response.choice.ipaEuiccData.eumCertificate = NULL;
 	}
+
 	if (ipa_tag_in_taglist(0xA6, tag_list)) {
 		if (get_certs_res)
 			IPA_LOGP(SIPA, LINFO,
@@ -171,15 +189,24 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 				goto handle_error;
 			ipa_euicc_data_response.choice.ipaEuiccData.euiccCertificate = get_certs_res->euicc_certificate;
 		}
+	} else {
+		ipa_euicc_data_response.choice.ipaEuiccData.euiccCertificate = NULL;
 	}
+
 	if (ipa_tag_in_taglist(0x88, tag_list)) {
 		IPA_LOGP(SIPA, LINFO, "eIM asks for IPA Capabilities\n");
 		ipa_euicc_data_response.choice.ipaEuiccData.ipaCapabilities = make_ipa_capabilties();
+	} else {
+		ipa_euicc_data_response.choice.ipaEuiccData.ipaCapabilities = NULL;
 	}
+
 	if (ipa_tag_in_taglist(0xA9, tag_list)) {
 		IPA_LOGP(SIPA, LINFO, "eIM asks for Device Information\n");
 		ipa_euicc_data_response.choice.ipaEuiccData.deviceInfo = make_device_info(ctx);
+	} else {
+		ipa_euicc_data_response.choice.ipaEuiccData.deviceInfo = NULL;
 	}
+
 	if (ipa_tag_in_taglist(0xBF2B, tag_list)) {
 		IPA_LOGP(SIPA, LINFO, "eIM asks for List of Notifications and/or eUICC Package Results\n");
 
@@ -193,6 +220,8 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 			goto handle_error;
 
 		ipa_euicc_data_response.choice.ipaEuiccData.notificationsList = retr_notif_from_lst_res->sgp32_res;
+	} else {
+		ipa_euicc_data_response.choice.ipaEuiccData.notificationsList = NULL;
 	}
 
 	/* The procedure was executed without errors so far. Now we can return the collected data to the eIM */
