@@ -40,11 +40,22 @@ static struct IpaCapabilities *make_ipa_capabilties(void)
 	memset(ipa_ipaFeatures_buf, 0, sizeof(ipa_ipaFeatures_buf));
 	ipa_capabilties.ipaFeatures.size = sizeof(ipa_ipaFeatures_buf);
 	ipa_capabilties.ipaFeatures.buf = ipa_ipaFeatures_buf;
-	ipa_capabilties.ipaFeatures.buf[IpaCapabilities__ipaFeatures_directRspServerCommunication] = 1;
-	ipa_capabilties.ipaFeatures.buf[IpaCapabilities__ipaFeatures_indirectRspServerCommunication] = 0;
+	/* We only support indirectRspServerCommunication, see also proc_indirect_prfle_dwnld.c */
+	ipa_capabilties.ipaFeatures.buf[IpaCapabilities__ipaFeatures_directRspServerCommunication] = 0;
+	ipa_capabilties.ipaFeatures.buf[IpaCapabilities__ipaFeatures_indirectRspServerCommunication] = 1;
+
+	/* In eimDownloadDataHandling no AC is communicated, the eIM handles the identification of the download
+	 * internally then, this is a mode we do not support. */
 	ipa_capabilties.ipaFeatures.buf[IpaCapabilities__ipaFeatures_eimDownloadDataHandling] = 0;
-	ipa_capabilties.ipaFeatures.buf[IpaCapabilities__ipaFeatures_eimCtxParams1Generation] = 0;
+
+	/* We do generate ctxParams1, see also proc_cmn_mtl_auth.c */
+	ipa_capabilties.ipaFeatures.buf[IpaCapabilities__ipaFeatures_eimCtxParams1Generation] = 1;
+
+	/* We do not yet support the ProfileMetadata verification, see TODO in proc_indirect_prfle_dwnld.c */
 	ipa_capabilties.ipaFeatures.buf[IpaCapabilities__ipaFeatures_eimProfileMetadataVerification] = 0;
+
+	/* This is a mode that uses more compact ESipa message to save some bytes/traffic. This feature is also not
+	 * supported. */
 	ipa_capabilties.ipaFeatures.buf[IpaCapabilities__ipaFeatures_minimizeEsipaBytes] = 0;
 
 	ipa_capabilties.ipaSupportedProtocols = &ipa_supported_protocols;
