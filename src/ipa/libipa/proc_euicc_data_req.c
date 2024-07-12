@@ -108,43 +108,27 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 	/* Final response */
 	struct IpaEuiccDataResponse ipa_euicc_data_response = { 0 };
 
-	/* Preventively prepare IpaEuiccDataResponse with an error code, in case something fails. */
-	ipa_euicc_data_response.present = IpaEuiccDataResponse_PR_ipaEuiccDataError;
-	ipa_euicc_data_response.choice.ipaEuiccDataError = IpaEuiccDataResponse__ipaEuiccDataError_undefinedError;
-
 	/* Collect requested data */
 	tag_list = IPA_BUF_FROM_ASN(&pars->ipa_euicc_data_request->tagList);
 	if (ipa_tag_in_taglist(0x80, tag_list)) {
 		IPA_LOGP(SIPA, LINFO, "eIM asks for Default SM-DP+ address\n");
 		euicc_cfg_addr = ipa_es10a_get_euicc_cfg_addr(ctx);
-		if (!euicc_cfg_addr)
-			goto handle_error;
-		/* It is not an error when the defaultDpAddress is not set. */
-		if (!euicc_cfg_addr->res->defaultDpAddress)
-			IPA_LOGP(SIPA, LINFO, "No defaultDpAddress set on this eUICC!\n");
-		ipa_euicc_data_response.choice.ipaEuiccData.defaultSmdpAddress = euicc_cfg_addr->res->defaultDpAddress;
-	} else {
-		ipa_euicc_data_response.choice.ipaEuiccData.defaultSmdpAddress = NULL;
+		if (euicc_cfg_addr && euicc_cfg_addr->res->defaultDpAddress)
+			ipa_euicc_data_response.choice.ipaEuiccData.defaultSmdpAddress = euicc_cfg_addr->res->defaultDpAddress;
 	}
 
 	if (ipa_tag_in_taglist(0xBF20, tag_list)) {
 		IPA_LOGP(SIPA, LINFO, "eIM asks for eUICCInfo1\n");
 		euicc_info_1 = ipa_es10b_get_euicc_info(ctx, false);
-		if (!euicc_info_1 || !euicc_info_1->euicc_info_1)
-			goto handle_error;
-		ipa_euicc_data_response.choice.ipaEuiccData.euiccInfo1 = euicc_info_1->euicc_info_1;
-	} else {
-		ipa_euicc_data_response.choice.ipaEuiccData.euiccInfo1 = NULL;
+		if (euicc_info_1 && euicc_info_1->euicc_info_1)
+			ipa_euicc_data_response.choice.ipaEuiccData.euiccInfo1 = euicc_info_1->euicc_info_1;
 	}
 
 	if (ipa_tag_in_taglist(0xBF22, tag_list)) {
 		IPA_LOGP(SIPA, LINFO, "eIM asks for eUICCInfo2\n");
 		euicc_info_2 = ipa_es10b_get_euicc_info(ctx, true);
-		if (!euicc_info_2 || !euicc_info_2->sgp32_euicc_info_2)
-			goto handle_error;
-		ipa_euicc_data_response.choice.ipaEuiccData.euiccInfo2 = euicc_info_2->sgp32_euicc_info_2;
-	} else {
-		ipa_euicc_data_response.choice.ipaEuiccData.euiccInfo2 = NULL;
+		if (euicc_info_2 &&!euicc_info_2->sgp32_euicc_info_2)
+			ipa_euicc_data_response.choice.ipaEuiccData.euiccInfo2 = euicc_info_2->sgp32_euicc_info_2;
 	}
 
 	if (ipa_tag_in_taglist(0x83, tag_list)) {
@@ -154,37 +138,28 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 		else {
 			IPA_LOGP(SIPA, LINFO, "eIM asks for Root SM-DS address\n");
 			euicc_cfg_addr = ipa_es10a_get_euicc_cfg_addr(ctx);
-			if (!euicc_cfg_addr)
-				goto error;
+			if (euicc_cfg_addr)
+				ipa_euicc_data_response.choice.ipaEuiccData.rootSmdsAddress = &euicc_cfg_addr->res->rootDsAddress;
 		}
-		ipa_euicc_data_response.choice.ipaEuiccData.rootSmdsAddress = &euicc_cfg_addr->res->rootDsAddress;
-	} else {
-		ipa_euicc_data_response.choice.ipaEuiccData.rootSmdsAddress = NULL;
 	}
 
 	if (ipa_tag_in_taglist(0x84, tag_list)) {
 		struct EimConfigurationData *eim_cfg_data_item;
 		IPA_LOGP(SIPA, LINFO, "eIM asks for Association token\n");
 		eim_cfg_data = ipa_es10b_get_eim_cfg_data(ctx);
-		if (!eim_cfg_data || !eim_cfg_data->res)
-			goto handle_error;
-		eim_cfg_data_item = ipa_es10b_get_eim_cfg_data_filter(eim_cfg_data, ctx->eim_id);
-		if (!eim_cfg_data_item)
-			goto handle_error;
-		ipa_euicc_data_response.choice.ipaEuiccData.associationToken = eim_cfg_data_item->associationToken;
-	} else {
-		ipa_euicc_data_response.choice.ipaEuiccData.associationToken = NULL;
+		if (eim_cfg_data && eim_cfg_data->res) {
+			eim_cfg_data_item = ipa_es10b_get_eim_cfg_data_filter(eim_cfg_data, ctx->eim_id);
+			if (eim_cfg_data_item)
+				ipa_euicc_data_response.choice.ipaEuiccData.associationToken = eim_cfg_data_item->associationToken;
+		}
 	}
 
 	if (ipa_tag_in_taglist(0xA5, tag_list)) {
 		IPA_LOGP(SIPA, LINFO, "eIM asks for EUM certificate\n");
 		get_certs_req.req.euiccCiPKId = pars->ipa_euicc_data_request->euiccCiPKId;
 		get_certs_res = ipa_es10b_get_certs(ctx, &get_certs_req);
-		if (!get_certs_res || !get_certs_res->eum_certificate || !get_certs_res->euicc_certificate)
-			goto handle_error;
-		ipa_euicc_data_response.choice.ipaEuiccData.eumCertificate = get_certs_res->eum_certificate;
-	} else {
-		ipa_euicc_data_response.choice.ipaEuiccData.eumCertificate = NULL;
+		if (get_certs_res && get_certs_res->eum_certificate && get_certs_res->euicc_certificate)
+			ipa_euicc_data_response.choice.ipaEuiccData.eumCertificate = get_certs_res->eum_certificate;
 	}
 
 	if (ipa_tag_in_taglist(0xA6, tag_list)) {
@@ -196,12 +171,9 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 			IPA_LOGP(SIPA, LINFO, "eIM asks for eUICC certificate\n");
 			get_certs_req.req.euiccCiPKId = pars->ipa_euicc_data_request->euiccCiPKId;
 			get_certs_res = ipa_es10b_get_certs(ctx, &get_certs_req);
-			if (!get_certs_res || !get_certs_res->eum_certificate || !get_certs_res->euicc_certificate)
-				goto handle_error;
-			ipa_euicc_data_response.choice.ipaEuiccData.euiccCertificate = get_certs_res->euicc_certificate;
+			if (get_certs_res && get_certs_res->eum_certificate && get_certs_res->euicc_certificate)
+				ipa_euicc_data_response.choice.ipaEuiccData.euiccCertificate = get_certs_res->euicc_certificate;
 		}
-	} else {
-		ipa_euicc_data_response.choice.ipaEuiccData.euiccCertificate = NULL;
 	}
 
 	if (ipa_tag_in_taglist(0x88, tag_list)) {
@@ -223,22 +195,12 @@ int ipa_proc_euicc_data_req(struct ipa_context *ctx, const struct ipa_proc_euicc
 
 		retr_notif_from_lst_req.dr_search_criteria = pars->ipa_euicc_data_request->searchCriteria;
 		retr_notif_from_lst_res = ipa_es10b_retr_notif_from_lst(ctx, &retr_notif_from_lst_req);
-		if (!retr_notif_from_lst_res)
-			goto handle_error;
-		else if (retr_notif_from_lst_res->notif_lst_result_err)
-			goto handle_error;
-		else if (!retr_notif_from_lst_res->sgp32_res)
-			goto handle_error;
-
-		ipa_euicc_data_response.choice.ipaEuiccData.notificationsList = retr_notif_from_lst_res->sgp32_res;
-	} else {
-		ipa_euicc_data_response.choice.ipaEuiccData.notificationsList = NULL;
+		if (retr_notif_from_lst_res && retr_notif_from_lst_res->sgp32_res)
+			ipa_euicc_data_response.choice.ipaEuiccData.notificationsList = retr_notif_from_lst_res->sgp32_res;
 	}
 
-	/* The procedure was executed without errors so far. Now we can return the collected data to the eIM */
 	ipa_euicc_data_response.present = IpaEuiccDataResponse_PR_ipaEuiccData;
 	prvde_eim_pkg_rslt_req.ipa_euicc_data_resp = &ipa_euicc_data_response;
-handle_error:
 	prvde_eim_pkg_rslt_res = ipa_esipa_prvde_eim_pkg_rslt(ctx, &prvde_eim_pkg_rslt_req);
 	if (!prvde_eim_pkg_rslt_res)
 		goto error;
