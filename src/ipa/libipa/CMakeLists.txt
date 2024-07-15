@@ -41,6 +41,7 @@ add_library(libipa STATIC
   proc_eim_pkg_retr.c
   proc_euicc_data_req.c
   proc_euicc_pkg_dwnld_exec.c
+  proc_notif_delivery.c
   proc_prfle_dwnld.c
   proc_prfle_inst.c
   utils.c

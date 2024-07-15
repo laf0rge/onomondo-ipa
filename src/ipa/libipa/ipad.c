@@ -23,6 +23,7 @@
 #include "es10b_euicc_mem_rst.h"
 #include "es10b_load_euicc_pkg.h"
 #include "proc_euicc_pkg_dwnld_exec.h"
+#include "proc_notif_delivery.h"
 
 /* Counters to monitor heap memory usage, see also: onomondo/ipa/mem.h */
 #ifdef MEM_EMIT_DEBUG
@@ -297,6 +298,9 @@ int ipa_poll(struct ipa_context *ctx)
 			return IPA_POLL_AGAIN_WHEN_ONLINE;
 		}
 	} else {
+		/* See if there are pending notification on the eUICC and deliver them first */
+		ipa_notif_delivery(ctx);
+
 		/* Normal operation, we poll the eIM for the next eIM package. */
 		rc = ipa_proc_eim_pkg_retr(ctx);
 		if (rc == -GetEimPackageResponse__eimPackageError_noEimPackageAvailable)

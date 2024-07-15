@@ -23,15 +23,23 @@ static struct ipa_buf *enc_handle_notif_req(const struct ipa_esipa_handle_notif_
 	struct SGP32_ProfileInstallationResult *prfle_inst_res;
 
 	msg_to_eim.present = EsipaMessageFromIpaToEim_PR_handleNotificationEsipa;
-
 	msg_to_eim.choice.handleNotificationEsipa.present = HandleNotificationEsipa_PR_pendingNotification;
-	msg_to_eim.choice.handleNotificationEsipa.choice.pendingNotification.present =
-	    SGP32_PendingNotification_PR_profileInstallationResult;
-	prfle_inst_res =
-	    &msg_to_eim.choice.handleNotificationEsipa.choice.pendingNotification.choice.profileInstallationResult;
 
-	prfle_inst_res->profileInstallationResultData = req->profile_installation_result->profileInstallationResultData;
-	prfle_inst_res->euiccSignPIR = req->profile_installation_result->euiccSignPIR;
+	if (req->profile_installation_result) {
+		msg_to_eim.choice.handleNotificationEsipa.choice.pendingNotification.present =
+		    SGP32_PendingNotification_PR_profileInstallationResult;
+		prfle_inst_res =
+		    &msg_to_eim.choice.handleNotificationEsipa.choice.pendingNotification.choice.
+		    profileInstallationResult;
+		prfle_inst_res->profileInstallationResultData =
+		    req->profile_installation_result->profileInstallationResultData;
+		prfle_inst_res->euiccSignPIR = req->profile_installation_result->euiccSignPIR;
+	} else if (req->pending_notification) {
+		msg_to_eim.choice.handleNotificationEsipa.choice.pendingNotification = *req->pending_notification;
+	} else {
+		IPA_LOGP_ESIPA("HandleNotification", LERROR, "no notification data, nothing to deliver!\n");
+		return NULL;
+	}
 
 	/* Encode */
 	return ipa_esipa_msg_to_eim_enc(&msg_to_eim, "HandleNotification");
