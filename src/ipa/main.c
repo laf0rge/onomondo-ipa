@@ -286,9 +286,14 @@ int main(int argc, char **argv)
 				break;
 			case IPA_POLL_AGAIN:
 				/* ipa_poll asks us to continue polling normally */
-				IPA_LOGP(SMAIN, LINFO, "poll cycle continues normally\n");
 				rc = 0;
-				break;
+				if (getopt_one_euicc_pkg_only) {
+					IPA_LOGP(SMAIN, LINFO, "forcefully stopping poll cycle upon user decision!\n");
+					goto leave;
+				} else {
+					IPA_LOGP(SMAIN, LINFO, "poll cycle continues normally\n");
+					break;
+				}
 			case IPA_POLL_AGAIN_LATER:
 				/* ipa_poll tells us that we may poll less frequently, so just exit. */
 				IPA_LOGP(SMAIN, LERROR, "poll cycle ends normally\n");
@@ -301,11 +306,6 @@ int main(int argc, char **argv)
 				 * using ipa_free_ctx and start over. */
 				IPA_LOGP(SMAIN, LERROR, "poll cycle ends due to error (%d)\n", rc);
 				rc = -EINVAL;
-				goto leave;
-			}
-
-			if (getopt_one_euicc_pkg_only) {
-				IPA_LOGP(SMAIN, LERROR, "forcefully stopping poll cycle upon user decision!\n");
 				goto leave;
 			}
 		}
