@@ -53,7 +53,7 @@ int ipa_proc_indirect_prfle_dwnlod(struct ipa_context *ctx, const struct ipa_pro
 	cmn_mtl_auth_pars.ac_token = activation_code->ac_token;
 	auth_clnt_res = ipa_proc_cmn_mtl_auth(ctx, &cmn_mtl_auth_pars);
 	if (!auth_clnt_res) {
-		IPA_LOGP(SIPA, LERROR, "cannot continue, mutual authentication failed -- canceling session!\n");
+		IPA_LOGP(SIPA, LERROR, "cannot continue, mutual authentication failed!\n");
 		goto error;
 	}
 
