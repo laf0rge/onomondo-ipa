@@ -8,6 +8,8 @@ struct ipa_es10b_euicc_mem_rst {
 	bool operatnl_profiles;
 	bool test_profiles;
 	bool default_smdp_addr;
+	bool eim_cfg_data;
+	bool auto_enable_cfg;
 };
 
 int ipa_es10b_euicc_mem_rst(struct ipa_context *ctx, const struct ipa_es10b_euicc_mem_rst *req);

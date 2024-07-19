@@ -248,13 +248,15 @@ int ipa_add_init_eim_cfg(struct ipa_context *ctx, struct ipa_buf *cfg)
  *  \param[inout] test_profiles apply reset option "deleteFieldLoadedTestProfiles".
  *  \param[inout] default_smdp_addr apply reset option "resetDefaultSmdpAddress".
  *  \returns 0 on success, negative on error. */
-int ipa_euicc_mem_rst(struct ipa_context *ctx, bool operatnl_profiles, bool test_profiles, bool default_smdp_addr)
+int ipa_euicc_mem_rst(struct ipa_context *ctx, bool operatnl_profiles, bool test_profiles, bool default_smdp_addr,
+		      bool eim_cfg_data, bool auto_enable_cfg)
 {
 	struct ipa_es10b_euicc_mem_rst euicc_mem_rst = { 0 };
 	euicc_mem_rst.operatnl_profiles = operatnl_profiles;
 	euicc_mem_rst.test_profiles = test_profiles;
 	euicc_mem_rst.default_smdp_addr = default_smdp_addr;
-
+	euicc_mem_rst.eim_cfg_data = eim_cfg_data;
+	euicc_mem_rst.auto_enable_cfg = auto_enable_cfg;
 	return ipa_es10b_euicc_mem_rst(ctx, &euicc_mem_rst);
 }
 

@@ -263,7 +263,7 @@ int main(int argc, char **argv)
 		IPA_FREE(eim_cfg);
 	} else if (getopt_euicc_memory_reset) {
 		/* Perform an eUICC memory reset */
-		ipa_euicc_mem_rst(ctx, true, true, true);
+		ipa_euicc_mem_rst(ctx, true, true, true, true, true);
 	} else {
 		IPA_LOGP(SMAIN, LINFO, "-----------------------------8<-----------------------------\n");
 		rc = eim_init(ctx);
