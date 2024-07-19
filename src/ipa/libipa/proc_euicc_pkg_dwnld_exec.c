@@ -65,7 +65,8 @@ int ipa_proc_eucc_pkg_dwnld_exec_onset(struct ipa_context *ctx, struct ipa_proc_
 		goto error;
 
 	/* Step #9 (ES10b.RetrieveNotificationsList) */
-	/* TODO: this is a conditional step, only when the eUICC package contained PSMOs we retrieve notifications */
+	/* TODO: This should be a conditional step that is omitted when the eUICC package does not contain any PSMOs.
+	 * (it possibly does not hurt when the notification list is always included, even when it is empty.) */
 	retr_notif_from_lst_req.search_criteria.choice.seqNumber =
 	    res->load_euicc_pkg_res->res->choice.euiccPackageResultSigned.euiccPackageResultDataSigned.seqNumber;
 	retr_notif_from_lst_req.search_criteria.present = RetrieveNotificationsListRequest__searchCriteria_PR_seqNumber;
