@@ -24,6 +24,10 @@ ls *.h *.c -1 >> CMakeLists.txt
 echo ')' >> CMakeLists.txt
 echo 'target_include_directories(libasn PUBLIC ${CMAKE_SOURCE_DIR}/include PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})' >> CMakeLists.txt
 echo 'target_compile_options(libasn PRIVATE -Wall)' >> CMakeLists.txt
+echo 'if (M32)' >> CMakeLists.txt
+echo '  set_target_properties(libasn PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")' >> CMakeLists.txt
+echo 'endif()' >> CMakeLists.txt
+
 
 # Re-apply patches to generated sourcecode
 cd ../../../
