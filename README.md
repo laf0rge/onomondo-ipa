@@ -16,7 +16,7 @@ uses ASN.1 function bindings (see also GSMA SGP.32, section 6.3).
 
 The interface towards the eUICC is implemented according to GSMA SGP.32 and GSMA SGP.22. The ES10x interface of
 onomondo-ipa features an IoT eUICC emulation mode. This allows the usage of regular consumer eUICCs, which are readily
-available. The emulation replaces missing IoT eUICC functionality by calling an apropriate consumer eUICC function
+available. The emulation replaces missing IoT eUICC functionality by calling an appropriate consumer eUICC function
 as a replacement. In case no equivalent function is available, the function is emulated by onomondo-ipa directly. This
 is in particular the case for the functions related to the management of the eIM configuration.
 
@@ -64,7 +64,7 @@ development/testing. (The hexadecimal representation of messages is still printe
 ASN.1 compiler also adds debug messages, which can be enabled by adding this option.
 * `-DMEM_EMIT_DEBUG`: This option can be used to analyze the usage of heap memory. When this option is enabled IPA_ALLOC,
 IPA_ALLOC_N, IPA_REALLOC, and IPA_FREE will keep track on how much memory is currently allocated. The current memory
-usage and the peak memory usage is then displayed. The feature relys on the function malloc_usable_size(), which is a
+usage and the peak memory usage is then displayed. The feature relies on the function malloc_usable_size(), which is a
 non standard API. However, the function is available on GNU LINUX and FreeBSD (see also man malloc_usable_size)
 * `-DM32`: Use this option to compile onomondo-ipa for 32-BIT x86 architectures,
 see also GCC manual, section 3.19.54 x86 Options.
@@ -79,7 +79,7 @@ presented in `onomondo/ipad.h`.
 
 ### Commandline options
 
-There are a numer of commandline options supported. The most relevant options are:
+There are a number of commandline options supported. The most relevant options are:
 
 * `-r`: Specifies the PCSC reader number.
 * `-f`: Specifies the path to an initial eIM configuration file
@@ -93,8 +93,6 @@ but may be helpful for testing and debugging in lab setups.
 
 During the first run, onomondo-ipa will create an nvstate.bin file in its working directory. This file is used to as a
 non volatile storage of data.
-
-addInitialEimRequest
 
 In case the IoT eUICC is not yet provisioned with an eIM configuration, onomondo-ipa can be used to perform the
 provisioning. The configuration must be supplied as a file that contains an AddInitialEimRequest (see also GSMA SGP.32,
