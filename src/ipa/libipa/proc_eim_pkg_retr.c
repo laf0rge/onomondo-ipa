@@ -87,9 +87,8 @@ int eim_pkg_exec(struct ipa_context *ctx, const struct ipa_esipa_get_eim_pkg_res
 	} else if (get_eim_pkg_res->dwnld_trigger_request) {
 		struct ipa_proc_indirect_prfle_dwnlod_pars indirect_prfle_dwnlod_pars = { 0 };
 		if (!get_eim_pkg_res->dwnld_trigger_request->profileDownloadData) {
-			/* TODO: Perhaps there is a way to continue anyway. The ProfileDownloadTriggerRequest still
-			 * contains a eimTransactionId, which is also optional. Maybe this eimTransactionId can be
-			 * used to retrieve some context from somewhere that may allow us to continue. */
+			/* In case the IPA capability eimDownloadDataHandling used, profileDownloadData would not be
+			 * present. However, this is feature this IPAd implementation does not support. */
 			IPA_LOGP(SIPA, LERROR,
 				 "the ProfileDownloadTriggerRequest does not contain ProfileDownloadData -- cannot continue!\n");
 			rc = -EINVAL;
@@ -97,9 +96,7 @@ int eim_pkg_exec(struct ipa_context *ctx, const struct ipa_esipa_get_eim_pkg_res
 		}
 		if (get_eim_pkg_res->dwnld_trigger_request->profileDownloadData->present !=
 		    ProfileDownloadData_PR_activationCode) {
-			/* TODO: Perhaps there is a way to continue anyway. The ProfileDownloadData may alternatively
-			 * contain a contactDefaultSmdp flag or an contactSmds information. Maybe we can just ask the
-			 * SM-DP/SM-DS for more context information? */
+			/* (see comment above) */
 			IPA_LOGP(SIPA, LERROR,
 				 "the ProfileDownloadData does not contain an activationCode -- cannot continue!\n");
 			rc = -EINVAL;
