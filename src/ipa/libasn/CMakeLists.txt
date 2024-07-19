@@ -798,6 +798,10 @@ SGP32-CancelSessionResponse.c
 SGP32-CancelSessionResponse.h
 SGP32-EUICCInfo2.c
 SGP32-EUICCInfo2.h
+SGP32-EuiccMemoryResetRequest.c
+SGP32-EuiccMemoryResetRequest.h
+SGP32-EuiccMemoryResetResponse.c
+SGP32-EuiccMemoryResetResponse.h
 SGP32-PendingNotification.c
 SGP32-PendingNotification.h
 SGP32-PrepareDownloadResponse.c
