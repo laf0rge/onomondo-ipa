@@ -1,0 +1,34 @@
+From 5c91cfac83d4f99557e9a29abe3f4f4aef2fc47e Mon Sep 17 00:00:00 2001
+From: Philipp Maier <pmaier@sysmocom.de>
+Date: Fri, 19 Jul 2024 11:36:07 +0200
+Subject: [PATCH] asn_internal: use custom memory allocator functions
+
+configure the asn1c generated code so that it uses the libipa provided
+memory allocator and memory free functions.
+---
+ src/ipa/libasn/asn_internal.h | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/src/ipa/libasn/asn_internal.h b/src/ipa/libasn/asn_internal.h
+index 4e72d62..76dac64 100644
+--- a/src/ipa/libasn/asn_internal.h
++++ b/src/ipa/libasn/asn_internal.h
+@@ -24,10 +24,11 @@ extern "C" {
+ #define	ASN1C_ENVIRONMENT_VERSION	923	/* Compile-time version */
+ int get_asn1c_environment_version(void);	/* Run-time version */
+ 
+-#define	CALLOC(nmemb, size)	calloc(nmemb, size)
+-#define	MALLOC(size)		malloc(size)
+-#define	REALLOC(oldptr, size)	realloc(oldptr, size)
+-#define	FREEMEM(ptr)		free(ptr)
++#include <onomondo/ipa/mem.h>
++#define	CALLOC(nmemb, size)	IPA_CALLOC(nmemb, size)
++#define	MALLOC(size)		IPA_ALLOC_N(size)
++#define	REALLOC(oldptr, size)	IPA_REALLOC(oldptr, size)
++#define	FREEMEM(ptr)		IPA_FREE(ptr)
+ 
+ #define	asn_debug_indent	0
+ #define ASN_DEBUG_INDENT_ADD(i) do{}while(0)
+-- 
+2.20.1
+
