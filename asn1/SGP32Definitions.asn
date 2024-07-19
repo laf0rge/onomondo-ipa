@@ -402,6 +402,23 @@ AddInitialEimResponse ::= [87] CHOICE { -- Tag 'BF57'
 }
 -- ASN1STOP
 
+-- Section 5.9.5
+-- (added manually since the PDF document lacks the ASN1START/ASN1STOP token for this function, which aused problems
+--  during the automatic parsing of the PDF document.)
+SGP32-EuiccMemoryResetRequest ::= [52] SEQUENCE { -- Tag 'BF34'
+   resetOptions [2] BIT STRING {
+      deleteOperationalProfiles(0),
+      deleteFieldLoadedTestProfiles(1),
+      resetDefaultSmdpAddress(2),
+      resetEimConfigData(3),
+      resetAutoEnableConfig(4)
+   }
+}
+SGP32-EuiccMemoryResetResponse ::= [52] SEQUENCE { -- Tag 'BF34'
+   resetResult INTEGER {ok(0), nothingToDelete(1), catBusy(5), undefinedError(127)},
+   resetEimResult [1] INTEGER {ok(0), nothingToDelete(1), eimResetNotSupported(2), undefinedError(127)} OPTIONAL,
+   resetAutoEnableConfigResult [2] INTEGER {ok(0), resetAECNotSupported(1), undefinedError(127)} OPTIONAL
+}
 
 -- Section 5.9.10
 -- ASN1START
