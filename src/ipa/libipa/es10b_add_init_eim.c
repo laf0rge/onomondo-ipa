@@ -89,6 +89,8 @@ error:
 	return NULL;
 }
 
+/* This function is only relevant in case the IoT eUICC emulation is enabled. It checks the presented eIM configuration
+ * for completeness and adds missing values in the same way a native IoT eUICC would do. */
 int complete_eim_cfg(struct ipa_context *ctx, struct EimConfigurationData *eim_cfg)
 {
 	/* The eimFqdn is not strictly mandatory, but it is necessary to reach the eIM at all. This makes eimFqdn a
@@ -104,11 +106,10 @@ int complete_eim_cfg(struct ipa_context *ctx, struct EimConfigurationData *eim_c
 		return -1;
 	}
 
-	/* Mandatory, See also SGP.32, section 5.9.4 */
-	if (!eim_cfg->eimPublicKeyData) {
-		IPA_LOGP_ES10X("AddInitialEim", LERROR, "eimPublicKeyData is missing from eimConfigurationData!\n");
-		return -1;
-	}
+	/* Mandatory, See also SGP.32, section 5.9.4 (but not used/ignored by the IoT eUICC emulation) */
+	if (!eim_cfg->eimPublicKeyData && !eim_cfg->trustedPublicKeyDataTls)
+		IPA_LOGP_ES10X("AddInitialEim", LINFO,
+			       "eimPublicKeyData/trustedPublicKeyDataTls is missing from eimConfigurationData!\n");
 
 	/* Calculate a new associationToken if requested */
 	if (eim_cfg->associationToken && *eim_cfg->associationToken == -1) {
@@ -116,7 +117,9 @@ int complete_eim_cfg(struct ipa_context *ctx, struct EimConfigurationData *eim_c
 		*eim_cfg->associationToken = ctx->nvstate.iot_euicc_emu.association_token_counter;
 	}
 
-	/* TODO: do more validation (and modify if necessary) of the input data as described in SGP.32, section 5.9.4 */
+	/* TODO: This validation function is not complete yet. It currently barely covers the parameters that IoT
+	 * eUICC emulation needs. However, it might make sense to do more validation of the input data to ensure
+	 * only spec compliant eIM configuration files can be loaded. (see also SGP.32, section 5.9.4) */
 	return 0;
 }
 
