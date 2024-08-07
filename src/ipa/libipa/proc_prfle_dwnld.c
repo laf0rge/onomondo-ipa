@@ -28,12 +28,12 @@ struct ipa_esipa_get_bnd_prfle_pkg_res *ipa_proc_prfle_dwnlod(struct ipa_context
 	struct ipa_es10b_prep_dwnld_res *prep_dwnld_res = NULL;
 	struct ipa_esipa_get_bnd_prfle_pkg_req get_bnd_prfle_pkg_req = { 0 };
 	struct ipa_esipa_get_bnd_prfle_pkg_res *get_bnd_prfle_pkg_res = NULL;
-	struct ipa_buf *smdp_signature_2 = NULL;
 
 	prep_dwnld_req.req.smdpSigned2 = pars->auth_clnt_ok_dpe->smdpSigned2;
-	smdp_signature_2 = IPA_BUF_FROM_ASN(&pars->auth_clnt_ok_dpe->smdpSignature2);
-	ipa_strip_tlv_envelope(smdp_signature_2, 0x5f37);
-	IPA_ASSIGN_IPA_BUF_TO_ASN(prep_dwnld_req.req.smdpSignature2, smdp_signature_2);
+	prep_dwnld_req.req.smdpSignature2 = pars->auth_clnt_ok_dpe->smdpSignature2;
+	prep_dwnld_req.req.smdpSignature2.size =
+	    ipa_strip_tlv_envelope(prep_dwnld_req.req.smdpSignature2.buf, prep_dwnld_req.req.smdpSignature2.size,
+				   0x5f37);
 	prep_dwnld_req.req.hashCc = pars->auth_clnt_ok_dpe->hashCc;
 	prep_dwnld_req.req.smdpCertificate = pars->auth_clnt_ok_dpe->smdpCertificate;
 
@@ -58,11 +58,9 @@ struct ipa_esipa_get_bnd_prfle_pkg_res *ipa_proc_prfle_dwnlod(struct ipa_context
 	 * installation. */
 
 	ipa_es10b_prep_dwnld_res_free(prep_dwnld_res);
-	IPA_FREE(smdp_signature_2);
 	return get_bnd_prfle_pkg_res;
 error:
 	ipa_es10b_prep_dwnld_res_free(prep_dwnld_res);
 	ipa_esipa_get_bnd_prfle_pkg_res_free(get_bnd_prfle_pkg_res);
-	IPA_FREE(smdp_signature_2);
 	return NULL;
 }

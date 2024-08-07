@@ -290,19 +290,13 @@ bool ipa_tag_in_taglist(uint16_t tag, const struct ipa_buf *tag_list)
 	return false;
 }
 
-/*! Parse a BER TLV tag from an ipa_buf.
- *  \param[out] len length as specified in the TLV header (caller may pass NULL if not interested).
- *  \param[out] tag tag value from the TLV header (caller may pass NULL if not interested).
- *  \returns total length of the TLV header (offset to the beginning of the value part), NULL on error. */
-size_t ipa_parse_btlv_hdr(size_t *len, uint16_t *tag, struct ipa_buf *buf)
+static size_t parse_btlv_hdr(size_t *len, uint16_t *tag, uint8_t *data, size_t data_len)
 {
 	uint8_t tag_len = 1;
 	uint16_t value_len = 0;
 	uint8_t len_bytes;
 	size_t skip_len = 0;
 	unsigned int i;
-	uint8_t *data = buf->data;
-	size_t data_len = buf->len;
 
 	/* decode tag */
 	if ((*data & 0x1f) == 0x1f)
@@ -354,28 +348,44 @@ size_t ipa_parse_btlv_hdr(size_t *len, uint16_t *tag, struct ipa_buf *buf)
 	return skip_len;
 }
 
-/*! Strip a TLV envelope (if it is present) from an ipa_buf.
+/*! Parse a BER TLV tag from an ipa_buf.
+ *  \param[out] len length as specified in the TLV header (caller may pass NULL if not interested).
+ *  \param[out] tag tag value from the TLV header (caller may pass NULL if not interested).
+ *  \returns total length of the TLV header (offset to the beginning of the value part), NULL on error. */
+size_t ipa_parse_btlv_hdr(size_t *len, uint16_t *tag, struct ipa_buf *buf)
+{
+	return parse_btlv_hdr(len, tag, buf->data, buf->len);
+}
+
+/*! Strip a TLV envelope (if it is present) from a buffer.
  *  \param[inout] buf ipa_buf that contains the data to be stripped
- *  \param[in] envelope_tag tag of the envelope (as a verification so we won't strip random data). */
-void ipa_strip_tlv_envelope(struct ipa_buf *buf, uint16_t envelope_tag)
+ *  \param[in] envelope_tag tag of the envelope (as a verification so we won't strip random data).
+ *  \returns new length of the data. */
+int ipa_strip_tlv_envelope(uint8_t *data, size_t data_len, uint16_t envelope_tag)
 {
 	size_t chop_bytes = 0;
 	uint16_t tlv_tag;
 
-	chop_bytes = ipa_parse_btlv_hdr(NULL, &tlv_tag, buf);
+	chop_bytes = parse_btlv_hdr(NULL, &tlv_tag, data, data_len);
 
 	/* The header is invalid, this indicates that this buffer has no TLV header, so the envelope we looking for
 	 * is also not present. */
 	if (chop_bytes < 0)
-		return;
+		return data_len;
 
 	/* The header is valid, but the TLV tag does not match, so the envelope we
 	 * looking for is not present either. */
 	if (tlv_tag != envelope_tag)
-		return;
+		return data_len;
 
-	buf->len -= chop_bytes;
-	buf->data += chop_bytes;
+	/* The number of bytes to be chopped exceeds the data length, something can not be right, so we better
+	 * do not touch the buffer */
+	if (chop_bytes > data_len)
+		return data_len;
+
+	/* Chop bytes and return new data length */
+	memmove(data, data + chop_bytes, data_len - chop_bytes);
+	return data_len - chop_bytes;
 }
 
 static bool is_hex(char hex_digit)

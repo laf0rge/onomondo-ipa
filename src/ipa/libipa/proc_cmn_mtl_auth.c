@@ -153,8 +153,7 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx,
 	struct ipa_proc_cmn_cancel_sess_pars cmn_cancel_sess_pars = { 0 };
 	int rc;
 	bool exec_cmn_cancel_sess = false;
-	struct ipa_buf *euicc_ci_pkid_to_be_used = NULL;
-	struct ipa_buf *server_signature_1 = NULL;
+	IPA_BUF_STATIC(transaction_id, 16);
 
 	/* Step #1 */
 	euicc_info = ipa_es10b_get_euicc_info(ctx, false);
@@ -181,6 +180,15 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx,
 	else if (!init_auth_res->init_auth_ok)
 		goto error;
 
+	/* Pick the transactionId early since we will need it often in the following steps */
+	rc = IPA_COPY_ASN_TO_IPA_BUF(&transaction_id, &init_auth_res->init_auth_ok->serverSigned1.transactionId);
+	if (rc < 0)
+		goto error;
+
+	/* Save some heap memory by freeing early */
+	ipa_es10b_get_euicc_info_free(euicc_info);
+	euicc_info = NULL;
+
 	/* Step #10 */
 	rc = check_certificate(pars->allowed_ca, &init_auth_res->init_auth_ok->serverCertificate);
 	if (rc < 0)
@@ -188,27 +196,33 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx,
 
 	/* Step #11-#14 */
 	auth_serv_req.req.serverSigned1 = init_auth_res->init_auth_ok->serverSigned1;
-	server_signature_1 = IPA_BUF_FROM_ASN(&init_auth_res->init_auth_ok->serverSignature1);
-	ipa_strip_tlv_envelope(server_signature_1, 0x5f37);
-	IPA_ASSIGN_IPA_BUF_TO_ASN(auth_serv_req.req.serverSignature1, server_signature_1);
-	euicc_ci_pkid_to_be_used = IPA_BUF_FROM_ASN(&init_auth_res->init_auth_ok->euiccCiPKIdToBeUsed);
-	ipa_strip_tlv_envelope(euicc_ci_pkid_to_be_used, 0x04);
-	IPA_ASSIGN_IPA_BUF_TO_ASN(auth_serv_req.req.euiccCiPKIdToBeUsed, euicc_ci_pkid_to_be_used);
+	auth_serv_req.req.serverSignature1 = init_auth_res->init_auth_ok->serverSignature1;
+	auth_serv_req.req.serverSignature1.size =
+	    ipa_strip_tlv_envelope(auth_serv_req.req.serverSignature1.buf, auth_serv_req.req.serverSignature1.size,
+				   0x5f37);
+	auth_serv_req.req.euiccCiPKIdToBeUsed = init_auth_res->init_auth_ok->euiccCiPKIdToBeUsed;
+	auth_serv_req.req.euiccCiPKIdToBeUsed.size =
+	    ipa_strip_tlv_envelope(auth_serv_req.req.euiccCiPKIdToBeUsed.buf,
+				   auth_serv_req.req.euiccCiPKIdToBeUsed.size, 0x04);
 	auth_serv_req.req.serverCertificate = init_auth_res->init_auth_ok->serverCertificate;
 	gen_ctx_params_1(&auth_serv_req.req.ctxParams1, pars->tac, pars->ac_token);
 	auth_serv_res = ipa_es10b_auth_serv(ctx, &auth_serv_req);
 	if (!auth_serv_res)
 		goto error;
 
+	/* Save some heap memory by freeing early */
+	ipa_esipa_init_auth_res_free(init_auth_res);
+	init_auth_res = NULL;
+
 	/* Step #15-#19 */
-	auth_clnt_req.req.transactionId = init_auth_res->init_auth_ok->serverSigned1.transactionId;
+	IPA_ASSIGN_IPA_BUF_TO_ASN(auth_clnt_req.req.transactionId, &transaction_id);
 	if (auth_serv_res->auth_serv_err) {
 		auth_clnt_req.req.authenticateServerResponse.present =
 		    SGP32_AuthenticateServerResponse_PR_authenticateResponseError;
 		auth_clnt_req.req.authenticateServerResponse.choice.authenticateResponseError.authenticateErrorCode =
 		    auth_serv_res->auth_serv_err;
-		auth_clnt_req.req.authenticateServerResponse.choice.authenticateResponseError.transactionId =
-		    init_auth_res->init_auth_ok->serverSigned1.transactionId;
+		IPA_ASSIGN_IPA_BUF_TO_ASN(auth_clnt_req.req.authenticateServerResponse.choice.authenticateResponseError.
+					  transactionId, &transaction_id);
 	} else if (auth_serv_res->auth_serv_ok) {
 		auth_clnt_req.req.authenticateServerResponse.present =
 		    SGP32_AuthenticateServerResponse_PR_authenticateResponseOk;
@@ -230,14 +244,12 @@ struct ipa_esipa_auth_clnt_res *ipa_proc_cmn_mtl_auth(struct ipa_context *ctx,
 	ipa_esipa_init_auth_res_free(init_auth_res);
 	ipa_es10b_get_euicc_info_free(euicc_info);
 	ipa_es10b_auth_serv_res_free(auth_serv_res);
-	IPA_FREE(euicc_ci_pkid_to_be_used);
-	IPA_FREE(server_signature_1);
 	IPA_LOGP(SIPA, LINFO, "mutual authentication succeeded!\n");
 	return auth_clnt_res;
 error:
 	if (exec_cmn_cancel_sess) {
 		cmn_cancel_sess_pars.reason = CancelSessionReason_undefinedReason;
-		cmn_cancel_sess_pars.transaction_id = auth_clnt_req.req.transactionId;
+		IPA_ASSIGN_IPA_BUF_TO_ASN(cmn_cancel_sess_pars.transaction_id, &transaction_id);
 		ipa_proc_cmn_cancel_sess(ctx, &cmn_cancel_sess_pars);
 	}
 
@@ -245,8 +257,6 @@ error:
 	ipa_es10b_get_euicc_info_free(euicc_info);
 	ipa_es10b_auth_serv_res_free(auth_serv_res);
 	ipa_esipa_auth_clnt_res_free(auth_clnt_res);
-	IPA_FREE(euicc_ci_pkid_to_be_used);
-	IPA_FREE(server_signature_1);
 	IPA_LOGP(SIPA, LERROR, "mutual authentication failed!\n");
 	return NULL;
 }
