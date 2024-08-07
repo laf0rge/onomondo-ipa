@@ -146,12 +146,11 @@ void *ipa_asn1c_dup(const struct asn_TYPE_descriptor_s *td, const void *struct_p
 })
 
 /* \! Copy the contents of an ipa_buf to an ASN.1 string object. The target buffer in the ASN.1 string object is
- *    allocated by this macro. The data is actually copied, so the source ipa_buf can be freed when copying is done.
- *    This macro is used in situations where lists have to be populated with ASN.1 string objects (SEQUENCE OF). In
- *    those cases, the caller is expected to allocate the ASN.1 string object and equip its buff and size member using
- *    this macro.
- *    \param[out] asn1_obj pointer to asn1c generated string object to equip.
- *    \param[in] ipa_buf pointer to ipa_buf with data. */
+ *    allocated by this macro. The data is actually copied, so the source ipa_buf may be freed when copying is done.
+ *    If this macro is used in situations where lists have to be populated with ASN.1 string objects (SEQUENCE OF),
+ *    the caller is expected to allocate the ASN.1 string object and equip its buf and size member using this macro.
+ *    \param[out] asn1_obj pointer to asn1c generated string object where the data should be copied to.
+ *    \param[in] ipa_buf pointer to ipa_buf object to copy from. */
 #define IPA_COPY_IPA_BUF_TO_ASN(asn1_obj, ipa_buf) ({ \
 	(asn1_obj)->buf = IPA_ALLOC_N((ipa_buf)->len);	\
 	assert((asn1_obj)->buf); \
