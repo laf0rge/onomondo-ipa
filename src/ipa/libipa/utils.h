@@ -158,6 +158,21 @@ void *ipa_asn1c_dup(const struct asn_TYPE_descriptor_s *td, const void *struct_p
 	(asn1_obj)->size = (ipa_buf)->len; \
 })
 
+/* \! Copy the contents of an ASN.1 string object to an existing ipa_buf. The data is actually copied, so the source
+ *    ASN.1 object may be freed when copying is done. It should also be noted that the target ipa_buf object must
+ *    be initialized and equipped with sufficient buffer space.
+ *    \param[out] ipa_buf pointer to the target ipa_buf where the data should be copied to.
+ *    \param[in] asn1_obj pointer to asn1c generated string object to copy from. */
+#define IPA_COPY_ASN_TO_IPA_BUF(ipa_buf, asn1_obj) ({	\
+	int __rc = -ENOMEM; \
+	if ((ipa_buf)->data_len >= (asn1_obj)->size) { \
+		memcpy((ipa_buf)->data, (asn1_obj)->buf, (asn1_obj)->size);	\
+		(ipa_buf)->len = (asn1_obj)->size;				\
+		__rc = 0; \
+	} \
+	__rc; \
+})
+
 /* \! Free an allocated SEQUENCE OF ASN.1 string objects. This macro is used to get rid of a list of ASN.1 string
  *    objects that the caller has allocated before. The macro loops through that list, frees the buffers and ASN.1
  *    string objects and eventually the list pointer array also. This macro must not be used on ASN.1 structs that
