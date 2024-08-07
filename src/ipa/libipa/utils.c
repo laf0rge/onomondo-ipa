@@ -290,7 +290,7 @@ bool ipa_tag_in_taglist(uint16_t tag, const struct ipa_buf *tag_list)
 	return false;
 }
 
-/*! Parse a BER TLV tagAG from an ipa_buf.
+/*! Parse a BER TLV tag from an ipa_buf.
  *  \param[out] len length as specified in the TLV header (caller may pass NULL if not interested).
  *  \param[out] tag tag value from the TLV header (caller may pass NULL if not interested).
  *  \returns total length of the TLV header (offset to the beginning of the value part), NULL on error. */
