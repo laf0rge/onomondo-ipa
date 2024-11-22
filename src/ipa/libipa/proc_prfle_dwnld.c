@@ -1,5 +1,6 @@
 /*
  * Author: Philipp Maier <pmaier@sysmocom.de> / sysmocom - s.f.m.c. GmbH
+ * TODO: fix spec reference, see github issue #5
  * See also: GSMA SGP.22, section 3.1.3.2: Sub-procedure Profile Download and Installation – Download Confirmation
  *
  */

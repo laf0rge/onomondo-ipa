@@ -60,6 +60,7 @@ int ipa_proc_indirect_prfle_dwnlod(struct ipa_context *ctx, const struct ipa_pro
 	/* TODO: Check if ProfileMetadata contains Profile Policy Rulses (PPRs) and apply the PPRs as configured on the
 	 * eUICC. (This is an optional feature, which we currently do not support, see also proc_euicc_data_req.c) */
 
+	/* TODO: remove this part as it is not required (see also github issue #5) */
 	/* Execute sub procedure: Sub-procedure Profile Download and Installation – Download Confirmation */
 	prfle_dwnlod_pars.auth_clnt_ok_dpe = auth_clnt_res->auth_clnt_ok_dpe;
 	get_bnd_prfle_pkg_res = ipa_proc_prfle_dwnlod(ctx, &prfle_dwnlod_pars);
